@@ -1,0 +1,111 @@
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
+import GlassOrbs from '@/components/GlassOrbs';
+import GlassCard from '@/components/GlassCard';
+import GlowButton from '@/components/GlowButton';
+import { useAuth } from '@/contexts/AuthContext';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+
+const OrganizerLogin: React.FC = () => {
+  const navigate = useNavigate();
+  const { signIn, session } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (session) navigate('/organizer', { replace: true });
+  }, [session, navigate]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await signIn(email, password);
+      navigate('/organizer', { replace: true });
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
+      <GlassOrbs />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md relative z-10"
+      >
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </Link>
+        <GlassCard className="p-8" hover={false}>
+          <div className="text-center mb-8">
+            <img
+              src={steamFoundryLogo}
+              alt="STEAM Foundry"
+              className="w-16 h-16 mx-auto mb-4 object-contain"
+            />
+            <h1 className="text-2xl font-bold text-foreground mb-1">Organizer Sign In</h1>
+            <p className="text-muted-foreground text-sm">
+              APEN 2026 Innovation Store — operations console
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm text-muted-foreground mb-2">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-secondary/50 border border-white/10 rounded-lg py-3 pl-11 pr-4 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-muted-foreground mb-2">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-secondary/50 border border-white/10 rounded-lg py-3 pl-11 pr-4 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+
+            {error && <p className="text-sm text-red-400">{error}</p>}
+
+            <GlowButton type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 mt-2">
+              {loading ? 'Signing in…' : 'Sign in'}
+              <ArrowRight className="w-4 h-4" />
+            </GlowButton>
+          </form>
+
+          <p className="text-center text-xs text-muted-foreground mt-6">
+            Organizer accounts are provisioned in Supabase Auth. Contact the APEN 2026
+            team if you need access.
+          </p>
+        </GlassCard>
+      </motion.div>
+    </div>
+  );
+};
+
+export default OrganizerLogin;

@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/');
+      navigate('/lab');
     }
   }, [isAuthenticated, navigate]);
 
