@@ -5,16 +5,16 @@ import { cn } from '@/lib/utils';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 const navItems = [
-  { icon: Home, label: 'Dashboard', href: '/dashboard' },
-  { icon: Target, label: 'Missions', href: '/missions' },
-  { icon: Award, label: 'Badges', href: '/badges' },
-  { icon: FolderOpen, label: 'Portfolio', href: '/portfolio' },
+  { icon: Home, label: 'Dashboard', href: '/lab/dashboard' },
+  { icon: Target, label: 'Missions', href: '/lab/missions' },
+  { icon: Award, label: 'Badges', href: '/lab/badges' },
+  { icon: FolderOpen, label: 'Portfolio', href: '/lab/portfolio' },
 ];
 
 const DashboardSidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { tierConfig } = useTheme();
-  const [activeItem, setActiveItem] = useState('/dashboard');
+  const [activeItem, setActiveItem] = useState('/lab/dashboard');
 
   return (
     <aside

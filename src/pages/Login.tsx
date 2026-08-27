@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setUserName(username || 'Student');
     setIsAuthenticated(true);
-    navigate('/dashboard');
+    navigate('/lab/dashboard');
   };
 
   return (

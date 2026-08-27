@@ -1,0 +1,192 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+
+/**
+ * Emails a school its order reference and payment instructions.
+ *
+ * Deliberately public (no JWT): schools register anonymously, so there is no
+ * token to present. The endpoint is safe to expose because the recipient is
+ * read from the database, never from the request — a caller can only ever
+ * cause a legitimate confirmation to be re-sent to the school that owns the
+ * order, and a cooldown stops that being used to flood an inbox.
+ */
+
+const REF_PATTERN = /^APEN-[A-Z0-9]{6}$/;
+const RESEND_COOLDOWN_MS = 60_000;
+
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+
+const naira = (n: number) =>
+  "NGN " + Number(n).toLocaleString("en-NG", { maximumFractionDigits: 0 });
+
+const DIVISIONS: Record<string, string> = {
+  primary: "Primary School (Ages 7–12) — Agriculture",
+  secondary: "Secondary School (Ages 13–16) — Power",
+  sixth_form: "Sixth Form (Ages 16–18) — Security",
+};
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!)
+  );
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
+  // Validate the request before looking at server configuration, so a bad
+  // request is always reported as a bad request rather than as a config fault.
+  let orderReference: string;
+  try {
+    orderReference = String((await req.json()).orderReference ?? "").toUpperCase();
+  } catch {
+    return json({ error: "Invalid request body." }, 400);
+  }
+
+  if (!REF_PATTERN.test(orderReference)) {
+    return json({ error: "Invalid order reference." }, 400);
+  }
+
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  const fromAddress = Deno.env.get("ORDER_EMAIL_FROM") ??
+    "APEN 2026 <onboarding@resend.dev>";
+  const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
+
+  if (!apiKey) {
+    console.error("RESEND_API_KEY is not set; cannot send confirmation.");
+    return json({ error: "Email is not configured on the server." }, 500);
+  }
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    { auth: { persistSession: false } },
+  );
+
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select(
+      "order_reference, division, team_count, total_amount, confirmation_sent_at, schools ( name, contact_name, contact_email )",
+    )
+    .eq("order_reference", orderReference)
+    .maybeSingle();
+
+  // Never disclose whether a reference exists.
+  if (error || !order) return json({ ok: true });
+
+  const school = order.schools as {
+    name: string;
+    contact_name: string;
+    contact_email: string;
+  } | null;
+  if (!school?.contact_email) return json({ ok: true });
+
+  if (order.confirmation_sent_at) {
+    const age = Date.now() - new Date(order.confirmation_sent_at).getTime();
+    if (age < RESEND_COOLDOWN_MS) return json({ ok: true, throttled: true });
+  }
+
+  const bank = {
+    name: Deno.env.get("BANK_NAME") ?? "(bank details not yet configured)",
+    accountName: Deno.env.get("BANK_ACCOUNT_NAME") ?? "",
+    accountNumber: Deno.env.get("BANK_ACCOUNT_NUMBER") ?? "",
+  };
+
+  const statusLink = siteUrl ? `${siteUrl}/order/${orderReference}` : "";
+  const ref = escapeHtml(orderReference);
+
+  const html = `<!doctype html>
+<html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #dce3e8;border-radius:4px;padding:28px">
+    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2026 · Innovation Store</p>
+    <h1 style="margin:0 0 16px;font-size:22px">Your registration is received</h1>
+    <p style="margin:0 0 16px">Hello ${escapeHtml(school.contact_name)},</p>
+    <p style="margin:0 0 20px">${escapeHtml(school.name)} is registered for APEN 2026. Keep this email — your order reference is how you track the order and how we match your payment.</p>
+
+    <div style="background:#e7ecf7;border:1px solid #1a3b8b;border-radius:4px;padding:16px;text-align:center;margin:0 0 20px">
+      <p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#1a3b8b">Order reference</p>
+      <p style="margin:0;font-size:26px;font-weight:700;letter-spacing:.06em;font-family:ui-monospace,'SFMono-Regular',Menlo,monospace">${ref}</p>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:14px">
+      <tr><td style="padding:6px 0;color:#47586b">Division</td><td style="padding:6px 0;text-align:right">${escapeHtml(DIVISIONS[order.division] ?? order.division)}</td></tr>
+      <tr><td style="padding:6px 0;color:#47586b">Teams / kits</td><td style="padding:6px 0;text-align:right">${order.team_count}</td></tr>
+      <tr><td style="padding:10px 0;border-top:1px solid #dce3e8;font-weight:700">Total due</td><td style="padding:10px 0;border-top:1px solid #dce3e8;text-align:right;font-weight:700">${naira(order.total_amount)}</td></tr>
+    </table>
+
+    <h2 style="margin:0 0 8px;font-size:16px">How to pay</h2>
+    <p style="margin:0 0 12px;font-size:14px">Transfer <strong>${naira(order.total_amount)}</strong> to the account below, using <strong>${ref}</strong> as the transfer narration, then upload your proof of payment.</p>
+    <div style="background:#f4f6f7;border:1px solid #e9eef1;border-radius:4px;padding:14px;font-size:14px;margin:0 0 20px">
+      <div>Bank: ${escapeHtml(bank.name)}</div>
+      ${bank.accountName ? `<div>Account name: ${escapeHtml(bank.accountName)}</div>` : ""}
+      ${bank.accountNumber ? `<div>Account number: ${escapeHtml(bank.accountNumber)}</div>` : ""}
+    </div>
+
+    ${statusLink ? `<p style="margin:0 0 20px;text-align:center"><a href="${statusLink}" style="display:inline-block;background:#1a3b8b;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">Track your order &amp; upload proof</a></p>` : ""}
+
+    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Registration closes 25 September 2026. Kits are dispatched 14–30 September 2026.</p>
+  </div>
+</body></html>`;
+
+  const text = [
+    `APEN 2026 - Innovation Store`,
+    ``,
+    `Hello ${school.contact_name},`,
+    ``,
+    `${school.name} is registered for APEN 2026.`,
+    ``,
+    `ORDER REFERENCE: ${orderReference}`,
+    `Division: ${DIVISIONS[order.division] ?? order.division}`,
+    `Teams / kits: ${order.team_count}`,
+    `Total due: ${naira(order.total_amount)}`,
+    ``,
+    `HOW TO PAY`,
+    `Transfer ${naira(order.total_amount)} to:`,
+    `  Bank: ${bank.name}`,
+    bank.accountName ? `  Account name: ${bank.accountName}` : "",
+    bank.accountNumber ? `  Account number: ${bank.accountNumber}` : "",
+    `Use ${orderReference} as the transfer narration, then upload your proof.`,
+    ``,
+    statusLink ? `Track your order: ${statusLink}` : "",
+    ``,
+    `Registration closes 25 September 2026.`,
+  ].filter(Boolean).join("\n");
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromAddress,
+      to: [school.contact_email],
+      subject: `APEN 2026 registration — ${orderReference}`,
+      html,
+      text,
+    }),
+  });
+
+  if (!res.ok) {
+    console.error("Resend rejected the send:", res.status, await res.text());
+    return json({ error: "Could not send the confirmation email." }, 502);
+  }
+
+  await supabase
+    .from("orders")
+    .update({ confirmation_sent_at: new Date().toISOString() })
+    .eq("order_reference", orderReference);
+
+  return json({ ok: true });
+});
