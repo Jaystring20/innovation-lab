@@ -5,7 +5,14 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
-import { listKits, registerOrder, naira, DIVISION_LABELS, type Kit } from '@/lib/store';
+import {
+  listKits,
+  registerOrder,
+  sendOrderConfirmation,
+  naira,
+  DIVISION_LABELS,
+  type Kit,
+} from '@/lib/store';
 
 const inputCls =
   'w-full bg-secondary/50 border border-white/10 rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all';
@@ -54,6 +61,9 @@ const Store: React.FC = () => {
         division: selectedKit.division,
         kitId: selectedKit.id,
       });
+      // Fire-and-forget: the order exists and the reference is about to be on
+      // screen, so a failed email must not block or fail the registration.
+      void sendOrderConfirmation(ref);
       navigate(`/order/${ref}`);
     } catch (err) {
       setError((err as Error).message);
