@@ -1,73 +1,55 @@
-# Welcome to your Lovable project
+# STEAM Foundry
 
-## Project info
+The **APEN 2026 Innovation Store and Lab** — one app.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+- **Store** — schools register, choose a division, order their kit, and submit payment proof.
+- **Lab** — runs the innovation challenge end to end: submissions, judging, judge
+  comments, feedback, and final score aggregation.
+- **Organizer console** — holds both halves, gated by Supabase Auth.
 
-## How can I edit this code?
+## Stack
 
-There are several ways of editing your application.
+- Vite + React 18 + TypeScript
+- Tailwind CSS + shadcn/ui
+- Supabase (Postgres + RLS, Auth, Storage, Edge Functions)
+- React Router
 
-**Use Lovable**
+## Local development
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Requires Node.js 18+ and npm.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The dev server runs on `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `.env` from the variables below (Vite exposes anything prefixed `VITE_`
+to the client bundle):
 
-**Use GitHub Codespaces**
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_BANK_NAME=
+VITE_BANK_ACCOUNT_NAME=
+VITE_BANK_ACCOUNT_NUMBER=
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Build
 
-## What technologies are used for this project?
+```sh
+npm run build      # outputs to dist/
+npm run preview     # serve the production build locally
+```
 
-This project is built with:
+## Deploy
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The app is a static SPA (`dist/`). Any static host works — point the host at the
+`npm run build` command with `dist/` as the publish directory, set the `VITE_*`
+env vars in the host dashboard, and make sure unknown routes fall back to
+`index.html` (config for Netlify, Cloudflare Pages, and Vercel is included in the
+repo).
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Supabase (project `sctsrxuquhzdjjnlsqbm`, eu-west-2) is managed separately —
+migrations and Edge Functions are deployed with the Supabase CLI / dashboard.
