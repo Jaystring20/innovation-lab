@@ -22,7 +22,7 @@ import {
   type AdminOrder,
   type OrderStatus,
 } from '@/lib/store';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 type Section = 'store' | 'lab';
 

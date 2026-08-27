@@ -13,6 +13,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
  */
 
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
+const RESEND_COOLDOWN_MS = 60_000;
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -86,7 +87,7 @@ Deno.serve(async (req: Request) => {
   const { data: schools, error } = await supabase
     .from("schools")
     .select(
-      "name, contact_name, contact_email, orders ( order_reference, division, team_count, total_amount, status, created_at )",
+      "id, name, contact_name, contact_email, recovery_sent_at, orders ( order_reference, division, team_count, total_amount, status, created_at )",
     )
     .ilike("contact_email", email);
 
@@ -110,6 +111,18 @@ Deno.serve(async (req: Request) => {
   // Nothing to send — but the caller is told exactly what it would be told
   // if there had been.
   if (rows.length === 0) return json(GENERIC);
+
+  // Throttle: without this, a known school address can be mail-bombed and the
+  // sending quota drained. The response is unchanged either way, so throttling
+  // stays invisible to a caller probing for behaviour.
+  const lastSent = (schools ?? [])
+    .map((s) => (s as { recovery_sent_at: string | null }).recovery_sent_at)
+    .filter(Boolean)
+    .sort()
+    .pop();
+  if (lastSent && Date.now() - new Date(lastSent).getTime() < RESEND_COOLDOWN_MS) {
+    return json(GENERIC);
+  }
 
   rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
 
@@ -169,6 +182,12 @@ Deno.serve(async (req: Request) => {
 
   if (!res.ok) {
     console.error("Resend rejected the recovery send:", res.status, await res.text());
+  } else {
+    const ids = (schools ?? []).map((s) => (s as { id: string }).id);
+    await supabase
+      .from("schools")
+      .update({ recovery_sent_at: new Date().toISOString() })
+      .in("id", ids);
   }
 
   return json(GENERIC);

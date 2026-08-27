@@ -4,7 +4,7 @@ import { ShoppingCart, Rocket, ShieldCheck, PackageSearch, ArrowRight } from 'lu
 import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 const Landing: React.FC = () => {
   return (
