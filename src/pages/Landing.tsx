@@ -1,10 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Rocket, ShieldCheck, PackageSearch, ArrowRight } from 'lucide-react';
+import { ShoppingCart, FlaskConical, ShieldCheck, PackageSearch, ArrowRight } from 'lucide-react';
 import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
+
+const FUNNEL = [
+  { n: '01', name: 'Design', note: '3-minute video pitch · field research' },
+  { n: '02', name: 'Build', note: 'standardized kit prototype' },
+  { n: '03', name: 'Intelligize', note: 'AI layer + prompt log' },
+  { n: '04', name: 'BATTLE', note: 'live grand finale, Lagos' },
+];
 
 const Landing: React.FC = () => {
   return (
@@ -30,8 +37,9 @@ const Landing: React.FC = () => {
             Innovation Store &amp; Lab
           </h1>
           <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-            Order your division kit for the APEN 2026 challenge, then step into the
-            Future-Ready Innovation Lab to build, learn, and compete.
+            Order your division&rsquo;s kit, then run your team through the 4-Stage
+            Innovation Funnel &mdash; Design, Build, Intelligize &mdash; to the
+            Grand Finale BATTLE.
           </p>
         </motion.header>
 
@@ -76,13 +84,27 @@ const Landing: React.FC = () => {
           >
             <GlassCard className="h-full flex flex-col">
               <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
-                <Rocket className="w-6 h-6 text-primary" />
+                <FlaskConical className="w-6 h-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold text-foreground mb-2">The Lab</h2>
-              <p className="text-sm text-muted-foreground flex-1 mb-5">
-                A tier-based learning space — from Explorer to Leader. Missions, live
-                classes, XP and leaderboards, themed to each grade band.
+              <p className="text-sm text-muted-foreground mb-4">
+                Where your teams run the competition &mdash; submit each stage,
+                read judge feedback, and track aggregated scores through to the
+                BATTLE.
               </p>
+              <ol className="space-y-2 mb-5 flex-1">
+                {FUNNEL.map((s) => (
+                  <li key={s.n} className="flex gap-3 text-sm">
+                    <span className="font-mono text-xs text-primary/80 pt-0.5 tabular-nums">
+                      {s.n}
+                    </span>
+                    <span>
+                      <span className="font-semibold text-foreground">{s.name}</span>
+                      <span className="text-muted-foreground"> &mdash; {s.note}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
               <Link to="/lab" className="mt-auto">
                 <GlowButton className="w-full flex items-center justify-center gap-2">
                   Enter the Lab <ArrowRight className="w-4 h-4" />
