@@ -10,15 +10,24 @@ import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
 
 const OrganizerLogin: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, session } = useAuth();
+  const { signIn, signOut, session, isOrganizer, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Only forward an actual organizer. A teacher or judge with valid credentials
+  // is signed back out and told why, rather than bounced with no explanation.
   useEffect(() => {
-    if (session) navigate('/organizer', { replace: true });
-  }, [session, navigate]);
+    if (authLoading || !session) return;
+    if (isOrganizer) {
+      navigate('/organizer', { replace: true });
+    } else {
+      signOut().then(() =>
+        setError('That account is not an organizer account. Ask the APEN 2026 team for access.'),
+      );
+    }
+  }, [authLoading, session, isOrganizer, navigate, signOut]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,7 +35,7 @@ const OrganizerLogin: React.FC = () => {
     setError(null);
     try {
       await signIn(email, password);
-      navigate('/organizer', { replace: true });
+      // Routing is handled by the effect above, once the role has resolved.
     } catch (err) {
       setError((err as Error).message);
     } finally {

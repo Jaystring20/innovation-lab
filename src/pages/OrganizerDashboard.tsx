@@ -42,16 +42,19 @@ const badgeCls: Record<string, string> = {
 
 const OrganizerDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { session, loading: authLoading, organizerName, signOut } = useAuth();
+  const { session, loading: authLoading, isOrganizer, displayName, signOut } = useAuth();
   const [section, setSection] = useState<Section>('store');
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
+  // Signed in is not enough — only organizers belong here. A teacher or judge
+  // who reaches this URL is sent back to sign-in rather than shown empty tables.
   useEffect(() => {
-    if (!authLoading && !session) navigate('/organizer/login', { replace: true });
-  }, [authLoading, session, navigate]);
+    if (authLoading) return;
+    if (!session || !isOrganizer) navigate('/organizer/login', { replace: true });
+  }, [authLoading, session, isOrganizer, navigate]);
 
   async function refresh() {
     setLoading(true);
@@ -66,8 +69,8 @@ const OrganizerDashboard: React.FC = () => {
   }
 
   useEffect(() => {
-    if (session) refresh();
-  }, [session]);
+    if (session && isOrganizer) refresh();
+  }, [session, isOrganizer]);
 
   const stats = useMemo(() => {
     const sum = (f: (o: AdminOrder) => boolean) => orders.filter(f).length;
@@ -101,7 +104,7 @@ const OrganizerDashboard: React.FC = () => {
     else setError('Could not generate a link for that proof.');
   }
 
-  if (authLoading || !session) {
+  if (authLoading || !session || !isOrganizer) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -151,7 +154,7 @@ const OrganizerDashboard: React.FC = () => {
               {section === 'store' ? 'Store — Orders' : 'Lab — Cohorts'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Signed in as <span className="text-primary">{organizerName}</span>
+              Signed in as <span className="text-primary">{displayName}</span>
             </p>
           </div>
           {/* Mobile section toggle */}
