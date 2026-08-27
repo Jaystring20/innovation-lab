@@ -86,13 +86,10 @@ export const naira = new Intl.NumberFormat('en-NG', {
   maximumFractionDigits: 0,
 });
 
-/** Short, human-friendly, hard-to-guess order reference. e.g. APEN-7K2QX9 */
-export function generateOrderReference(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  return `APEN-${code}`;
-}
+// Order references are minted server-side in the register-order Edge Function
+// using crypto.getRandomValues(). They used to be generated here with
+// Math.random(), which is a recoverable PRNG and the wrong primitive for a
+// value that authenticates order lookup and proof-of-payment submission.
 
 /* ----------------------------- Public ----------------------------- */
 
@@ -109,51 +106,47 @@ export interface RegisterInput {
   contactEmail: string;
   contactPhone: string;
   division: Division;
-  kitId: string;
   teamCount: number;
 }
 
+/**
+ * Registers a school and creates its order.
+ *
+ * All of this runs in the register-order Edge Function under the service role.
+ * The browser has no write access to `schools` or `orders` any more: it used to,
+ * and that let anyone holding the publishable key POST an order already marked
+ * paid and dispatched. Status, price and reference are decided server-side and
+ * are not accepted from here.
+ */
 export async function registerOrder(input: RegisterInput): Promise<string> {
-  if (input.teamCount < 1) throw new Error('Team count must be at least 1.');
-
-  // Snapshot the price server-side of trust: re-read the kit, never trust a client price.
-  const { data: kit, error: kitError } = await supabase
-    .from('kits')
-    .select('*')
-    .eq('id', input.kitId)
-    .single();
-  if (kitError || !kit) throw new Error('Kit not found.');
-
-  const { data: school, error: schoolError } = await supabase
-    .from('schools')
-    .insert({
-      name: input.schoolName,
-      state: input.state || null,
-      contact_name: input.contactName,
-      contact_email: input.contactEmail,
-      contact_phone: input.contactPhone,
-      division: input.division,
-    })
-    .select()
-    .single();
-  if (schoolError || !school) throw new Error(schoolError?.message ?? 'Could not register school.');
-
-  const orderReference = generateOrderReference();
-  const totalAmount = Number(kit.unit_price) * Number(input.teamCount);
-
-  const { error: orderError } = await supabase.from('orders').insert({
-    school_id: school.id,
-    kit_id: kit.id,
-    division: input.division,
-    team_count: input.teamCount,
-    kit_unit_price: kit.unit_price,
-    total_amount: totalAmount,
-    status: 'registered',
-    order_reference: orderReference,
+  const { data, error } = await supabase.functions.invoke('register-order', {
+    body: input,
   });
-  if (orderError) throw new Error(orderError.message);
 
-  return orderReference;
+  // A non-2xx from the function carries the user-facing reason in its body;
+  // surface that rather than the generic "Edge Function returned a non-2xx".
+  if (error) {
+    const detail = await readFunctionError(error);
+    throw new Error(detail ?? 'Could not complete your registration. Please try again.');
+  }
+  if (!data?.orderReference) {
+    throw new Error('Could not complete your registration. Please try again.');
+  }
+  return data.orderReference as string;
+}
+
+/** Pulls the `error` message out of a FunctionsHttpError response body. */
+async function readFunctionError(error: unknown): Promise<string | null> {
+  try {
+    const res = (error as { context?: Response }).context;
+    if (res && typeof res.json === 'function') {
+      const body = await res.json();
+      if (typeof body?.error === 'string') return body.error;
+    }
+  } catch {
+    // fall through to the generic message
+  }
+  return null;
 }
 
 /**

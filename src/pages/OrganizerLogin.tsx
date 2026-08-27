@@ -6,7 +6,7 @@ import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
 import { useAuth } from '@/contexts/AuthContext';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 const OrganizerLogin: React.FC = () => {
   const navigate = useNavigate();

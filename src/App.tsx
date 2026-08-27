@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,55 +6,79 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
+// Landing is the entry point, so it stays in the main chunk. Everything else is
+// split: a school ordering a kit should not download the Lab and the organizer
+// console to do it.
 import Landing from "./pages/Landing";
-import Store from "./pages/Store";
-import OrderStatus from "./pages/OrderStatus";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import OrganizerLogin from "./pages/OrganizerLogin";
-import OrganizerDashboard from "./pages/OrganizerDashboard";
-import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const Store = lazy(() => import("./pages/Store"));
+const OrderStatus = lazy(() => import("./pages/OrderStatus"));
+const Login = lazy(() => import("./pages/Login"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const OrganizerLogin = lazy(() => import("./pages/OrganizerLogin"));
+const OrganizerDashboard = lazy(() => import("./pages/OrganizerDashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // The kit catalogue changes at most once a season; refetching it on every
+      // mount is wasted round trips on a slow connection.
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+const RouteFallback = () => (
+  <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+    <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+  </div>
+);
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Shared entry */}
-              <Route path="/" element={<Landing />} />
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                  {/* Shared entry */}
+                  <Route path="/" element={<Landing />} />
 
-              {/* Store — public, no account needed */}
-              <Route path="/store" element={<Store />} />
-              <Route path="/order" element={<OrderStatus />} />
-              <Route path="/order/:reference" element={<OrderStatus />} />
+                  {/* Store — public, no account needed */}
+                  <Route path="/store" element={<Store />} />
+                  <Route path="/order" element={<OrderStatus />} />
+                  <Route path="/order/:reference" element={<OrderStatus />} />
 
-              {/* Lab — tier-themed learning space */}
-              <Route path="/lab" element={<Login />} />
-              <Route path="/lab/dashboard" element={<Dashboard />} />
+                  {/* Lab — tier-themed learning space */}
+                  <Route path="/lab" element={<Login />} />
+                  <Route path="/lab/dashboard" element={<Dashboard />} />
 
-              {/* Organizer console — Store + Lab admin, Supabase Auth gated */}
-              <Route path="/organizer/login" element={<OrganizerLogin />} />
-              <Route path="/organizer" element={<OrganizerDashboard />} />
+                  {/* Organizer console — Store + Lab admin, Supabase Auth gated */}
+                  <Route path="/organizer/login" element={<OrganizerLogin />} />
+                  <Route path="/organizer" element={<OrganizerDashboard />} />
 
-              {/* Legacy paths from the earlier shell */}
-              <Route path="/dashboard" element={<Navigate to="/lab/dashboard" replace />} />
-              <Route path="/admin" element={<Navigate to="/organizer" replace />} />
+                  {/* Legacy paths from the earlier shell */}
+                  <Route path="/dashboard" element={<Navigate to="/lab/dashboard" replace />} />
+                  <Route path="/admin" element={<Navigate to="/organizer" replace />} />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

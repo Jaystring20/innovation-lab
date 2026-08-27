@@ -6,7 +6,7 @@ import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
 import TierSelector from '@/components/TierSelector';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 import { User, Lock, ArrowRight } from 'lucide-react';
 
 const Login: React.FC = () => {

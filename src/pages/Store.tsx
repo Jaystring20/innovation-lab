@@ -59,7 +59,6 @@ const Store: React.FC = () => {
         ...form,
         teamCount: Number(form.teamCount),
         division: selectedKit.division,
-        kitId: selectedKit.id,
       });
       // Fire-and-forget: the order exists and the reference is about to be on
       // screen, so a failed email must not block or fail the registration.

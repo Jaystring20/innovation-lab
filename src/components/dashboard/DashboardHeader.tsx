@@ -1,6 +1,6 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { Bell, Settings } from 'lucide-react';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 const DashboardHeader: React.FC = () => {
   const { tierConfig, userName } = useTheme();
