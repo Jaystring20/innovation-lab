@@ -156,6 +156,42 @@ export async function registerOrder(input: RegisterInput): Promise<string> {
   return orderReference;
 }
 
+/**
+ * Emails the school its reference and payment instructions.
+ *
+ * Never throws. A failed send must not cost a school its registration — the
+ * order already exists and the reference is on screen either way, so this
+ * reports to the console and moves on.
+ */
+export async function sendOrderConfirmation(ref: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.functions.invoke('send-order-confirmation', {
+      body: { orderReference: ref },
+    });
+    if (error) {
+      console.error('Confirmation email failed:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('Confirmation email failed:', e);
+    return false;
+  }
+}
+
+/**
+ * Emails every reference registered against an address.
+ *
+ * Resolves the same way whether or not the address has orders — the server
+ * refuses to disclose that, so the UI must not imply it either.
+ */
+export async function recoverOrderReferences(email: string): Promise<void> {
+  const { error } = await supabase.functions.invoke('recover-order-references', {
+    body: { email },
+  });
+  if (error) throw new Error('Could not send the recovery email. Please try again.');
+}
+
 export async function getOrderStatus(ref: string): Promise<OrderStatusRow | null> {
   const { data, error } = await supabase.rpc('get_order_status', { ref });
   if (error) throw new Error(error.message);

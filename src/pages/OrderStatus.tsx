@@ -8,6 +8,7 @@ import { BANK_DETAILS } from '@/lib/supabase';
 import {
   getOrderStatus,
   submitPaymentProof,
+  recoverOrderReferences,
   naira,
   DIVISION_LABELS,
   STATUS_LABELS,
@@ -32,6 +33,27 @@ const OrderStatus: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [recoverEmail, setRecoverEmail] = useState('');
+  const [recovering, setRecovering] = useState(false);
+  const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
+
+  async function handleRecover(e: React.FormEvent) {
+    e.preventDefault();
+    setRecovering(true);
+    setRecoverMsg(null);
+    try {
+      await recoverOrderReferences(recoverEmail.trim());
+      // Phrased so it reveals nothing about whether the address is registered.
+      setRecoverMsg(
+        'If that address has any APEN 2026 orders, we have emailed the reference numbers to it.',
+      );
+      setRecoverEmail('');
+    } catch (err) {
+      setRecoverMsg((err as Error).message);
+    } finally {
+      setRecovering(false);
+    }
+  }
 
   async function load(ref: string) {
     setLoading(true);
@@ -95,6 +117,38 @@ const OrderStatus: React.FC = () => {
                 className="w-full bg-secondary/50 border border-white/10 rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
               <GlowButton type="submit" className="w-full">Look up</GlowButton>
+            </form>
+          </GlassCard>
+
+          <GlassCard className="mt-4">
+            <h2 className="text-base font-semibold text-foreground mb-1">
+              Lost your reference?
+            </h2>
+            <p className="text-sm text-muted-foreground mb-3">
+              Enter the email you registered with and we&apos;ll send your reference
+              number to it.
+            </p>
+            <form onSubmit={handleRecover} className="grid gap-3">
+              <input
+                type="email"
+                required
+                value={recoverEmail}
+                onChange={(e) => setRecoverEmail(e.target.value)}
+                placeholder="you@school.edu.ng"
+                className="w-full bg-secondary/50 border border-white/10 rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              <GlowButton
+                type="submit"
+                variant="secondary"
+                size="sm"
+                disabled={recovering}
+                className="w-full"
+              >
+                {recovering ? 'Sending…' : 'Email me my reference'}
+              </GlowButton>
+              {recoverMsg && (
+                <p className="text-sm text-muted-foreground">{recoverMsg}</p>
+              )}
             </form>
           </GlassCard>
         </div>
