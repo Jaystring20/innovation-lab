@@ -43,12 +43,10 @@
     --glass-bg: 222 47% 11% / 0.5;
     --glass-border: 0 0% 100% / 0.1;
     
-    /* Tier Colors */
-    --tier-explorer: 48 96% 53%;
-    --tier-creator: 27 97% 62%;
-    --tier-innovator: 217 91% 60%;
-    --tier-engineer: 142 71% 45%;
-    --tier-leader: 45 93% 47%;
+    /* APEN Division Colors */
+    --tier-primary: 48 96% 53%;
+    --tier-secondary: 27 96% 61%;
+    --tier-sixth-form: 217 91% 60%;
     
     /* Glow Effects */
     --glow-color: 48 96% 53%;
@@ -63,66 +61,6 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 0 0% 100% / 0.1;
     --sidebar-ring: 48 96% 53%;
-  }
-
-  /* Tier: EXPLORER - Playful, Curiosity */
-  .tier-explorer {
-    --primary: 48 96% 53%;
-    --primary-foreground: 222 47% 3%;
-    --ring: 48 96% 53%;
-    --glow-color: 48 96% 53%;
-    --radius: 1rem;
-    --sidebar-primary: 48 96% 53%;
-    --sidebar-ring: 48 96% 53%;
-    font-family: 'Nunito', 'Quicksand', sans-serif;
-  }
-
-  /* Tier: CREATOR - Builder, LEGO-like */
-  .tier-creator {
-    --primary: 27 97% 62%;
-    --primary-foreground: 222 47% 3%;
-    --ring: 27 97% 62%;
-    --glow-color: 27 97% 62%;
-    --radius: 0.75rem;
-    --sidebar-primary: 27 97% 62%;
-    --sidebar-ring: 27 97% 62%;
-    font-family: 'Quicksand', 'Nunito', sans-serif;
-  }
-
-  /* Tier: INNOVATOR - Tech, Coding */
-  .tier-innovator {
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
-    --ring: 217 91% 60%;
-    --glow-color: 217 91% 60%;
-    --radius: 0.5rem;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-ring: 217 91% 60%;
-    font-family: 'Inter', 'JetBrains Mono', sans-serif;
-  }
-
-  /* Tier: ENGINEER - Industrial, Systems */
-  .tier-engineer {
-    --primary: 142 71% 45%;
-    --primary-foreground: 222 47% 3%;
-    --ring: 142 71% 45%;
-    --glow-color: 142 71% 45%;
-    --radius: 0.375rem;
-    --sidebar-primary: 142 71% 45%;
-    --sidebar-ring: 142 71% 45%;
-    font-family: 'JetBrains Mono', 'Inter', monospace;
-  }
-
-  /* Tier: LEADER - Executive, Professional */
-  .tier-leader {
-    --primary: 45 93% 47%;
-    --primary-foreground: 222 47% 3%;
-    --ring: 45 93% 47%;
-    --glow-color: 45 93% 47%;
-    --radius: 0.5rem;
-    --sidebar-primary: 45 93% 47%;
-    --sidebar-ring: 45 93% 47%;
-    font-family: 'Inter', system-ui, sans-serif;
   }
 
   * {
@@ -226,4 +164,46 @@
   .tier-transition {
     @apply transition-all duration-500 ease-in-out;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   APEN Division theming — unlayered so it always ships and
+   overrides the :root defaults when a division class is set on
+   <html> by ThemeContext (tier-primary | tier-secondary | tier-sixth_form).
+   ───────────────────────────────────────────────────────────── */
+
+/* PRIMARY — Ages 7–12 · Agriculture Challenge */
+.tier-primary {
+  --primary: 48 96% 53%;
+  --primary-foreground: 222 47% 3%;
+  --ring: 48 96% 53%;
+  --glow-color: 48 96% 53%;
+  --radius: 1rem;
+  --sidebar-primary: 48 96% 53%;
+  --sidebar-ring: 48 96% 53%;
+  font-family: 'Nunito', 'Quicksand', sans-serif;
+}
+
+/* SECONDARY — Ages 13–16 · Power Challenge */
+.tier-secondary {
+  --primary: 27 96% 61%;
+  --primary-foreground: 222 47% 3%;
+  --ring: 27 96% 61%;
+  --glow-color: 27 96% 61%;
+  --radius: 0.75rem;
+  --sidebar-primary: 27 96% 61%;
+  --sidebar-ring: 27 96% 61%;
+  font-family: 'Inter', 'Nunito', sans-serif;
+}
+
+/* SIXTH FORM — Ages 16–18 · Security Challenge */
+.tier-sixth_form {
+  --primary: 217 91% 60%;
+  --primary-foreground: 210 40% 98%;
+  --ring: 217 91% 60%;
+  --glow-color: 217 91% 60%;
+  --radius: 0.5rem;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-ring: 217 91% 60%;
+  font-family: 'JetBrains Mono', 'Inter', monospace;
 }

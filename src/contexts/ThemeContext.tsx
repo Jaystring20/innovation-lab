@@ -74,7 +74,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const value: ThemeContextType = {
     tier,
     setTier,
-    tierConfig: TIER_CONFIGS[tier],
+    tierConfig: TIER_CONFIGS[tier] ?? TIER_CONFIGS.primary,
     isAuthenticated,
     setIsAuthenticated,
     userName,

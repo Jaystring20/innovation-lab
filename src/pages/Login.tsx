@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
 import TierSelector from '@/components/TierSelector';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 import { User, Lock, ArrowRight } from 'lucide-react';
 
 const Login: React.FC = () => {
@@ -29,104 +29,151 @@ const Login: React.FC = () => {
 
       {/* Login Card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        initial={{ opacity: 0, scale: 0.92, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
         className="w-full max-w-md relative z-10"
       >
-        <GlassCard className="p-8" hover={false}>
-          {/* Logo & Title */}
-          <div className="text-center mb-8">
+        <GlassCard className="p-8 overflow-hidden" hover={false}>
+          {/* Logo Banner — full-bleed hero */}
+          <motion.div
+            className="-mx-8 -mt-8 mb-8 h-32 overflow-hidden relative"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
             <motion.img
               src={steamFoundryLogo}
               alt="STEAM Foundry"
-              className="w-20 h-20 mx-auto mb-4 object-contain"
-              initial={{ scale: 0 }}
+              className="w-full h-full object-cover object-center"
+              initial={{ scale: 1.12 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              transition={{ delay: 0.1, duration: 1.2, ease: 'easeOut' }}
             />
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Access Portal
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Enter the Future-Ready Innovation Lab
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/80" />
+          </motion.div>
+
+          {/* Title — Amplified */}
+          <div className="mb-10">
+            <motion.h1
+              className="text-4xl font-bold text-foreground mb-3 leading-[1.1] tracking-tight"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              Enter the Lab
+            </motion.h1>
+            <motion.p
+              className="text-base text-muted-foreground leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              Pick your division and master its challenge
+            </motion.p>
+          </div>
+
+          {/* Tier Selector — Now the Hero */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+              Choose Your Division
             </p>
-          </div>
-
-          {/* Demo Tier Selector */}
-          <div className="mb-6">
-            <label className="block text-sm text-muted-foreground mb-2">
-              Demo Mode: Select Your Tier
-            </label>
             <TierSelector />
-          </div>
+          </motion.div>
 
-          {/* Login Form */}
+          {/* Challenge context — supporting strip, not a second selector */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tierConfig.name}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 8 }}
+              transition={{ duration: 0.25 }}
+              className="mb-8 pl-4 py-1 border-l-2"
+              style={{ borderColor: tierConfig.color }}
+            >
+              <p
+                className="text-xs font-semibold uppercase tracking-widest"
+                style={{ color: tierConfig.color }}
+              >
+                {tierConfig.vibe}
+              </p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Build: {tierConfig.description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Login Form — Tier-Colored Inputs */}
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 }}
+            >
+              <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
                 Username / Email
               </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-all group-focus-within:scale-110 pointer-events-none" style={{ color: tierConfig.color }} />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your username"
-                  className="w-full bg-secondary/50 border border-white/10 rounded-lg py-3 pl-11 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full bg-secondary/40 border-2 rounded-lg py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-secondary/60 transition-all"
+                  style={{
+                    borderColor: username ? tierConfig.color : 'rgba(255,255,255,0.1)',
+                  }}
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
                 Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-all group-focus-within:scale-110 pointer-events-none" style={{ color: tierConfig.color }} />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full bg-secondary/50 border border-white/10 rounded-lg py-3 pl-11 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full bg-secondary/40 border-2 rounded-lg py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-secondary/60 transition-all"
+                  style={{
+                    borderColor: password ? tierConfig.color : 'rgba(255,255,255,0.1)',
+                  }}
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <GlowButton type="submit" className="w-full flex items-center justify-center gap-2 mt-6">
-              Enter the Lab
-              <ArrowRight className="w-4 h-4" />
-            </GlowButton>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+            >
+              <GlowButton type="submit" className="w-full mt-8 py-3 font-semibold text-base">
+                <span className="flex items-center justify-center gap-2">
+                  Begin Your Challenge
+                  <ArrowRight className="w-5 h-5" />
+                </span>
+              </GlowButton>
+            </motion.div>
           </form>
 
-          {/* Tier Info */}
-          <motion.div
-            key={tierConfig.name}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 p-4 rounded-lg bg-white/5 border border-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: tierConfig.color }}
-              />
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  {tierConfig.label} Mode
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {tierConfig.description}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Footer */}
-          <p className="text-center text-xs text-muted-foreground mt-6">
-            By logging in, you agree to our Terms of Service
+          {/* Footer — Toned Down */}
+          <p className="text-center text-xs text-muted-foreground/60 mt-6">
+            Terms of Service apply
           </p>
         </GlassCard>
       </motion.div>

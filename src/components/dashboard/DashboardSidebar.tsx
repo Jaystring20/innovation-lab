@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Home, Target, Award, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.png';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 const navItems = [
   { icon: Home, label: 'Dashboard', href: '/dashboard' },
