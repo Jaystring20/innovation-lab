@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type TierType = 'explorer' | 'creator' | 'innovator' | 'engineer' | 'leader';
+export type TierType = 'primary' | 'secondary' | 'sixth_form';
 
 interface TierConfig {
   name: string;
@@ -12,45 +12,29 @@ interface TierConfig {
 }
 
 export const TIER_CONFIGS: Record<TierType, TierConfig> = {
-  explorer: {
-    name: 'explorer',
-    label: 'Explorer',
-    gradeRange: 'Primary 1-3',
+  primary: {
+    name: 'primary',
+    label: 'Primary',
+    gradeRange: 'Ages 7–12',
     color: '#FACC15',
-    vibe: 'Playful & Curious',
-    description: 'Discover the world of innovation through play',
+    vibe: 'Agriculture Challenge',
+    description: 'Smart Farm Bot + LED Interface',
   },
-  creator: {
-    name: 'creator',
-    label: 'Creator',
-    gradeRange: 'Primary 4-6',
+  secondary: {
+    name: 'secondary',
+    label: 'Secondary',
+    gradeRange: 'Ages 13–16',
     color: '#FB923C',
-    vibe: 'Builder & Maker',
-    description: 'Build amazing things with your imagination',
+    vibe: 'Power Challenge',
+    description: 'Smart Energy Bot',
   },
-  innovator: {
-    name: 'innovator',
-    label: 'Innovator',
-    gradeRange: 'JSS 1-3',
+  sixth_form: {
+    name: 'sixth_form',
+    label: 'Sixth Form',
+    gradeRange: 'Ages 16–18',
     color: '#3B82F6',
-    vibe: 'Tech & Coding',
-    description: 'Code your ideas into reality',
-  },
-  engineer: {
-    name: 'engineer',
-    label: 'Engineer',
-    gradeRange: 'SS 1-2',
-    color: '#22C55E',
-    vibe: 'Industrial & Systems',
-    description: 'Design systems that change the world',
-  },
-  leader: {
-    name: 'leader',
-    label: 'Leader',
-    gradeRange: 'SS 3',
-    color: '#EAB308',
-    vibe: 'Executive & Professional',
-    description: 'Lead the future of innovation',
+    vibe: 'Security Challenge',
+    description: 'ESP32-CAM Smart Security Bot',
   },
 };
 
@@ -67,7 +51,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [tier, setTier] = useState<TierType>('explorer');
+  const [tier, setTier] = useState<TierType>('primary');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState('Student');
 
