@@ -1,23 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+/**
+ * Supabase connection.
+ *
+ * The project URL and the *publishable* (anon) key are safe to ship in the
+ * browser bundle — RLS is the real access control, and the anon role can only
+ * do what its policies allow. They are baked in here as the default so a deploy
+ * needs no environment configuration at all. Set VITE_SUPABASE_URL /
+ * VITE_SUPABASE_ANON_KEY to point a build at a different project (e.g. staging).
+ *
+ * Never put the service_role key anywhere in this file — that one bypasses RLS
+ * and belongs only in Edge Function secrets.
+ */
+const DEFAULT_URL = 'https://sctsrxuquhzdjjnlsqbm.supabase.co';
+const DEFAULT_ANON_KEY = 'sb_publishable_Ci09czHBOmFNcIz-ib672g_79IixEfA';
 
-/** True when the build has no Supabase config — the app renders a setup notice. */
-export const supabaseConfigured = Boolean(url && anonKey);
+const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined) || DEFAULT_URL;
+const anonKey =
+  (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) || DEFAULT_ANON_KEY;
 
-if (!supabaseConfigured) {
-  console.error(
-    'Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. Set them in the host ' +
-      'environment (or copy .env.example to .env for local dev).',
-  );
-}
-
-// createClient throws on an empty URL, which would blank the whole page on a
-// misconfigured deploy. Fall back to a harmless placeholder origin so the app
-// still mounts and can show ConfigNotice instead of a white screen; every real
-// call fails cleanly until the env vars are set.
-export const supabase = createClient(
-  url || 'https://placeholder.supabase.co',
-  anonKey || 'placeholder-anon-key',
-);
+export const supabase = createClient(url, anonKey);
