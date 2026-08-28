@@ -15,6 +15,7 @@ export interface Profile {
   role: UserRole;
   full_name: string | null;
   email: string | null;
+  school_id: string | null;
 }
 
 interface AuthContextType {
@@ -28,7 +29,9 @@ interface AuthContextType {
   isTeacher: boolean;
   displayName: string | null;
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,7 +44,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 async function fetchProfile(userId: string): Promise<Profile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, role, full_name, email')
+    .select('id, role, full_name, email, school_id')
     .eq('id', userId)
     .maybeSingle();
   if (error) {
@@ -84,9 +87,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (error) throw new Error(error.message);
   };
 
+  const signUp = async (email: string, password: string, fullName: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name: fullName } },
+    });
+    if (error) throw new Error(error.message);
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
+  };
+
+  const refresh = async () => {
+    if (session) setProfile(await fetchProfile(session.user.id));
   };
 
   const role = profile?.role ?? null;
@@ -105,7 +121,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       session?.user.email ??
       null,
     signIn,
+    signUp,
     signOut,
+    refresh,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -22,6 +22,7 @@ import {
   type AdminOrder,
   type OrderStatus,
 } from '@/lib/store';
+import LabConsole from '@/components/organizer/lab/LabConsole';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 type Section = 'store' | 'lab';
@@ -133,7 +134,7 @@ const OrganizerDashboard: React.FC = () => {
           <SideItem
             active={section === 'lab'}
             icon={<GraduationCap className="w-5 h-5" />}
-            label="Lab — Cohorts"
+            label="Lab — Competition"
             onClick={() => setSection('lab')}
           />
         </nav>
@@ -151,7 +152,7 @@ const OrganizerDashboard: React.FC = () => {
         <header className="h-16 glass-card rounded-none border-x-0 border-t-0 flex items-center justify-between px-6">
           <div>
             <h1 className="text-lg font-semibold text-foreground">
-              {section === 'store' ? 'Store — Orders' : 'Lab — Cohorts'}
+              {section === 'store' ? 'Store — Orders' : 'Lab — Competition'}
             </h1>
             <p className="text-sm text-muted-foreground">
               Signed in as <span className="text-primary">{displayName}</span>
@@ -279,22 +280,7 @@ const OrganizerDashboard: React.FC = () => {
               </GlassCard>
             </>
           ) : (
-            <GlassCard>
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-primary/15">
-                  <GraduationCap className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-foreground">Lab cohorts</h2>
-                  <p className="text-sm text-muted-foreground mt-1 max-w-prose">
-                    Once schools have paid for their kits, their teams become Lab
-                    cohorts here — tier assignment, mission unlocks, and live-class
-                    scheduling. This module plugs into the same Supabase project; the
-                    schema for missions and XP is the next build step.
-                  </p>
-                </div>
-              </div>
-            </GlassCard>
+            <LabConsole />
           )}
         </motion.main>
       </div>
