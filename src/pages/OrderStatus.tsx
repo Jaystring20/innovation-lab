@@ -12,6 +12,7 @@ import {
   naira,
   DIVISION_LABELS,
   STATUS_LABELS,
+  FULFILMENT_LABELS,
   type OrderStatusRow,
 } from '@/lib/store';
 
@@ -185,7 +186,24 @@ const OrderStatus: React.FC = () => {
             <GlassCard className="mb-4">
               <Row label="Division" value={DIVISION_LABELS[order.division]} />
               <Row label="Teams / kits" value={String(order.team_count)} />
-              <Row label="Total" value={naira.format(order.total_amount)} />
+              <Row
+                label={`Kit × ${order.team_count}`}
+                value={naira.format(Number(order.kit_unit_price) * order.team_count)}
+              />
+              <Row
+                label={
+                  order.fulfilment ? FULFILMENT_LABELS[order.fulfilment] : 'Delivery'
+                }
+                value={
+                  Number(order.delivery_fee) === 0
+                    ? 'Free'
+                    : naira.format(order.delivery_fee)
+                }
+              />
+              <div className="flex justify-between py-2 border-t border-white/10 mt-1 font-bold text-foreground">
+                <span>Total</span>
+                <span className="tabular-nums">{naira.format(order.total_amount)}</span>
+              </div>
               <Row
                 label="Status"
                 value={
@@ -195,6 +213,37 @@ const OrderStatus: React.FC = () => {
                 }
               />
             </GlassCard>
+
+            {order.line_items && order.line_items.length > 0 && (
+              <GlassCard className="mb-4">
+                <h2 className="text-base font-semibold text-foreground mb-2">
+                  Kit contents (per team)
+                </h2>
+                <ul className="text-sm divide-y divide-white/5">
+                  {order.line_items.map((li) => (
+                    <li
+                      key={li.component}
+                      className={`py-2 flex justify-between gap-3 ${
+                        li.included ? 'text-foreground' : 'text-muted-foreground/50 line-through'
+                      }`}
+                    >
+                      <span>
+                        {li.component}
+                        {li.qty > 1 && <span className="text-muted-foreground"> × {li.qty}</span>}
+                      </span>
+                      <span className="tabular-nums">
+                        {naira.format(Number(li.qty) * Number(li.unit_price))}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {order.line_items.some((li) => !li.included) && (
+                  <p className="text-xs text-muted-foreground/70 mt-2">
+                    Struck-through items were not ordered.
+                  </p>
+                )}
+              </GlassCard>
+            )}
 
             {(order.status === 'registered' || order.status === 'payment_pending') && (
               <GlassCard>

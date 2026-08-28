@@ -4,21 +4,24 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 /**
  * Creates a school + order server-side, under the service role.
  *
- * The browser used to write both tables directly through PostgREST, which meant
- * the "look the price up server-side" rule was unenforceable: anyone holding the
- * publishable key could POST an order with status='dispatched' and total=1.
- * Order state is now decided here and never accepted from the caller.
+ * Every price is decided here from the `kits` and `store_settings` rows. The
+ * caller may say which optional components to drop and how the kit is
+ * fulfilled, but the per-team price, the delivery fee and the total are all
+ * recomputed — a tampered client total is ignored.
  *
- * Public on purpose (no JWT): schools register without an account. Everything
- * the caller sends is treated as untrusted and validated below.
+ * Public on purpose (no JWT): schools register without an account.
  */
 
 const DIVISIONS = ["primary", "secondary", "sixth_form"] as const;
 type Division = (typeof DIVISIONS)[number];
 
+const FULFILMENTS = ["delivery_lagos", "delivery_outside", "pickup"] as const;
+type Fulfilment = (typeof FULFILMENTS)[number];
+
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
 const MAX_TEAMS = 100;
 const MAX_LEN = 200;
+const MAX_EXCLUDED = 50;
 const REF_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
 
 const cors = {
@@ -33,14 +36,17 @@ const json = (body: unknown, status = 200) =>
     headers: { ...cors, "Content-Type": "application/json" },
   });
 
+interface BomItem {
+  component: string;
+  qty: number;
+  unit_price: number;
+  required: boolean;
+}
+
 /**
  * Cryptographically secure reference. Math.random() was previously used here,
  * which is a recoverable PRNG — unacceptable for a value that is the sole
  * credential for reading an order and attaching proof of payment.
- *
- * Rejection sampling keeps the 32-char alphabet uniform: 256 % 32 === 0, so a
- * plain modulo is unbiased here, but the guard documents the intent and stays
- * correct if the alphabet ever changes length.
  */
 function generateOrderReference(): string {
   const bytes = new Uint8Array(6);
@@ -81,6 +87,14 @@ Deno.serve(async (req: Request) => {
   const contactPhone = clean(body.contactPhone);
   const division = clean(body.division) as Division;
   const teamCount = Number(body.teamCount);
+  const fulfilment = clean(body.fulfilment) as Fulfilment;
+
+  const excludedComponents = Array.isArray(body.excludedComponents)
+    ? (body.excludedComponents as unknown[])
+        .map((c) => String(c ?? "").trim())
+        .filter(Boolean)
+        .slice(0, MAX_EXCLUDED)
+    : [];
 
   if (!schoolName || !contactName || !contactPhone) {
     return json({ error: "Please fill in all school and contact details." }, 400);
@@ -90,6 +104,9 @@ Deno.serve(async (req: Request) => {
   }
   if (!DIVISIONS.includes(division)) {
     return json({ error: "Please select a valid division." }, 400);
+  }
+  if (!FULFILMENTS.includes(fulfilment)) {
+    return json({ error: "Please choose how you want the kit delivered." }, 400);
   }
   if (!Number.isInteger(teamCount) || teamCount < 1 || teamCount > MAX_TEAMS) {
     return json(
@@ -104,11 +121,9 @@ Deno.serve(async (req: Request) => {
     { auth: { persistSession: false } },
   );
 
-  // Price comes from the database, keyed on division. The caller cannot name a
-  // kit or a price, so neither can be substituted.
   const { data: kit, error: kitError } = await supabase
     .from("kits")
-    .select("id, unit_price")
+    .select("id, bom")
     .eq("division", division)
     .maybeSingle();
 
@@ -117,8 +132,52 @@ Deno.serve(async (req: Request) => {
     return json({ error: "That division is not open for registration." }, 400);
   }
 
-  // Reuse the school when the same contact registers again, so a second order
-  // does not create a duplicate record.
+  const bom = (kit.bom ?? []) as BomItem[];
+  const excludedSet = new Set(excludedComponents);
+
+  // Required items are always in. Optional items are in unless excluded.
+  const lineItems = bom.map((item) => {
+    const included = item.required || !excludedSet.has(item.component);
+    return {
+      component: item.component,
+      qty: Number(item.qty) || 0,
+      unit_price: Number(item.unit_price) || 0,
+      included,
+    };
+  });
+
+  const kitUnitPrice = lineItems
+    .filter((i) => i.included)
+    .reduce((sum, i) => sum + i.qty * i.unit_price, 0);
+
+  if (kitUnitPrice <= 0) {
+    return json({ error: "Your kit selection has no items in it." }, 400);
+  }
+
+  const { data: settings } = await supabase
+    .from("store_settings")
+    .select("lagos_delivery_fee, outside_lagos_delivery_fee, pickup_enabled")
+    .eq("id", 1)
+    .maybeSingle();
+
+  const lagosFee = Number(settings?.lagos_delivery_fee ?? 10000);
+  const outsideFee = Number(settings?.outside_lagos_delivery_fee ?? 20000);
+  const pickupEnabled = settings?.pickup_enabled ?? true;
+
+  if (fulfilment === "pickup" && !pickupEnabled) {
+    return json({ error: "Pickup is not available right now." }, 400);
+  }
+
+  const deliveryFee =
+    fulfilment === "pickup"
+      ? 0
+      : fulfilment === "delivery_lagos"
+        ? lagosFee
+        : outsideFee;
+
+  const totalAmount = kitUnitPrice * teamCount + deliveryFee;
+
+  // Reuse the school when the same contact registers again.
   const { data: existing } = await supabase
     .from("schools")
     .select("id")
@@ -158,10 +217,7 @@ Deno.serve(async (req: Request) => {
     schoolId = created.id;
   }
 
-  const totalAmount = Number(kit.unit_price) * teamCount;
-
-  // order_reference is UNIQUE; retry on the astronomically unlikely collision
-  // rather than failing the school's registration.
+  // order_reference is UNIQUE; retry on the astronomically unlikely collision.
   for (let attempt = 0; attempt < 5; attempt++) {
     const orderReference = generateOrderReference();
     const { error: orderError } = await supabase.from("orders").insert({
@@ -169,7 +225,10 @@ Deno.serve(async (req: Request) => {
       kit_id: kit.id,
       division,
       team_count: teamCount,
-      kit_unit_price: kit.unit_price,
+      kit_unit_price: kitUnitPrice,
+      delivery_fee: deliveryFee,
+      fulfilment,
+      line_items: lineItems,
       total_amount: totalAmount,
       status: "registered", // never accepted from the caller
       order_reference: orderReference,

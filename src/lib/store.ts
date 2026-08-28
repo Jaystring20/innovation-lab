@@ -16,7 +16,19 @@ export type OrderStatus =
 export interface BomItem {
   component: string;
   qty: number;
+  unit_price: number;
+  required: boolean;
 }
+
+/** A line on an order — the component snapshot at the time it was placed. */
+export interface OrderLineItem {
+  component: string;
+  qty: number;
+  unit_price: number;
+  included: boolean;
+}
+
+export type Fulfilment = 'delivery_lagos' | 'delivery_outside' | 'pickup';
 
 export interface Kit {
   id: string;
@@ -27,11 +39,22 @@ export interface Kit {
   created_at: string;
 }
 
+export interface StoreSettings {
+  lagos_delivery_fee: number;
+  outside_lagos_delivery_fee: number;
+  pickup_enabled: boolean;
+  pickup_location: string;
+}
+
 export interface OrderStatusRow {
   order_reference: string;
   division: Division;
   team_count: number;
+  kit_unit_price: number;
+  delivery_fee: number;
   total_amount: number;
+  fulfilment: Fulfilment | null;
+  line_items: OrderLineItem[] | null;
   status: OrderStatus;
   created_at: string;
   paid_at: string | null;
@@ -45,6 +68,9 @@ export interface AdminOrder {
   division: Division;
   team_count: number;
   kit_unit_price: number;
+  delivery_fee: number;
+  fulfilment: Fulfilment | null;
+  line_items: OrderLineItem[] | null;
   total_amount: number;
   status: OrderStatus;
   proof_of_payment_url: string | null;
@@ -80,6 +106,19 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
   cancelled: 'Cancelled',
 };
 
+export const FULFILMENT_LABELS: Record<Fulfilment, string> = {
+  delivery_lagos: 'Delivery within Lagos',
+  delivery_outside: 'Delivery outside Lagos',
+  pickup: 'Pickup (collect in Lagos)',
+};
+
+/** Per-team kit price for a given exclusion set — mirrors the Edge Function. */
+export function kitPriceFor(bom: BomItem[], excluded: Set<string>): number {
+  return bom
+    .filter((item) => item.required || !excluded.has(item.component))
+    .reduce((sum, item) => sum + Number(item.qty) * Number(item.unit_price), 0);
+}
+
 export const naira = new Intl.NumberFormat('en-NG', {
   style: 'currency',
   currency: 'NGN',
@@ -99,6 +138,16 @@ export async function listKits(): Promise<Kit[]> {
   return (data ?? []) as Kit[];
 }
 
+export async function getStoreSettings(): Promise<StoreSettings> {
+  const { data, error } = await supabase
+    .from('store_settings')
+    .select('lagos_delivery_fee, outside_lagos_delivery_fee, pickup_enabled, pickup_location')
+    .eq('id', 1)
+    .single();
+  if (error) throw new Error(error.message);
+  return data as StoreSettings;
+}
+
 export interface RegisterInput {
   schoolName: string;
   state: string;
@@ -107,6 +156,9 @@ export interface RegisterInput {
   contactPhone: string;
   division: Division;
   teamCount: number;
+  fulfilment: Fulfilment;
+  /** Optional components the school chose not to buy (by exact component name). */
+  excludedComponents: string[];
 }
 
 /**
@@ -214,7 +266,7 @@ export async function listAllOrders(): Promise<AdminOrder[]> {
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, order_reference, division, team_count, kit_unit_price, total_amount, status, proof_of_payment_url, created_at, paid_at, dispatched_at, schools ( name, state, contact_name, contact_email, contact_phone )',
+      'id, order_reference, division, team_count, kit_unit_price, delivery_fee, fulfilment, line_items, total_amount, status, proof_of_payment_url, created_at, paid_at, dispatched_at, schools ( name, state, contact_name, contact_email, contact_phone )',
     )
     .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);

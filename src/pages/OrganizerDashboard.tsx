@@ -19,6 +19,7 @@ import {
   naira,
   DIVISION_SHORT,
   STATUS_LABELS,
+  FULFILMENT_LABELS,
   type AdminOrder,
   type OrderStatus,
 } from '@/lib/store';
@@ -216,6 +217,7 @@ const OrganizerDashboard: React.FC = () => {
                       <th className="p-3 font-medium">School</th>
                       <th className="p-3 font-medium">Division</th>
                       <th className="p-3 font-medium">Teams</th>
+                      <th className="p-3 font-medium">Fulfilment</th>
                       <th className="p-3 font-medium">Total</th>
                       <th className="p-3 font-medium">Status</th>
                       <th className="p-3 font-medium">Proof</th>
@@ -236,6 +238,14 @@ const OrganizerDashboard: React.FC = () => {
                           </td>
                           <td className="p-3 text-muted-foreground">{DIVISION_SHORT[o.division]}</td>
                           <td className="p-3 text-muted-foreground">{o.team_count}</td>
+                          <td className="p-3 text-muted-foreground">
+                            {o.fulfilment ? FULFILMENT_LABELS[o.fulfilment] : '—'}
+                            {Number(o.delivery_fee) > 0 && (
+                              <span className="block text-xs">
+                                +{naira.format(o.delivery_fee)}
+                              </span>
+                            )}
+                          </td>
                           <td className="p-3 text-foreground">{naira.format(o.total_amount)}</td>
                           <td className="p-3">
                             <span className={`px-2 py-1 rounded-md text-xs font-medium ${badgeCls[o.status]}`}>
@@ -270,7 +280,7 @@ const OrganizerDashboard: React.FC = () => {
                     })}
                     {!loading && orders.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="p-6 text-center text-muted-foreground">
+                        <td colSpan={9} className="p-6 text-center text-muted-foreground">
                           No orders yet.
                         </td>
                       </tr>

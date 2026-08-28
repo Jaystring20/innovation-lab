@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      "order_reference, division, team_count, total_amount, confirmation_sent_at, schools ( name, contact_name, contact_email )",
+      "order_reference, division, team_count, kit_unit_price, delivery_fee, fulfilment, line_items, total_amount, confirmation_sent_at, schools ( name, contact_name, contact_email )",
     )
     .eq("order_reference", orderReference)
     .maybeSingle();
@@ -106,6 +106,40 @@ Deno.serve(async (req: Request) => {
   const statusLink = siteUrl ? `${siteUrl}/order/${orderReference}` : "";
   const ref = escapeHtml(orderReference);
 
+  const FULFILMENT: Record<string, string> = {
+    delivery_lagos: "Delivery within Lagos",
+    delivery_outside: "Delivery outside Lagos (estimate — confirmed by location)",
+    pickup: "Pickup — collect in Lagos",
+  };
+  const lineItems = Array.isArray(order.line_items)
+    ? (order.line_items as { component: string; qty: number; unit_price: number; included: boolean }[])
+    : [];
+  const includedItems = lineItems.filter((i) => i.included);
+  const kitPerTeam = Number(order.kit_unit_price ?? 0);
+  const deliveryFee = Number(order.delivery_fee ?? 0);
+
+  const itemsHtml = includedItems.length
+    ? `<h2 style="margin:0 0 8px;font-size:16px">Kit contents (per team)</h2>
+       <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px">
+       ${includedItems
+         .map(
+           (i) =>
+             `<tr><td style="padding:4px 0;color:#47586b">${escapeHtml(i.component)}${i.qty > 1 ? ` &times; ${i.qty}` : ""}</td><td style="padding:4px 0;text-align:right">${naira(i.qty * i.unit_price)}</td></tr>`,
+         )
+         .join("")}
+       </table>`
+    : "";
+
+  const itemsText = includedItems.length
+    ? [
+        "",
+        "KIT CONTENTS (per team)",
+        ...includedItems.map(
+          (i) => `  ${i.component}${i.qty > 1 ? ` x${i.qty}` : ""} - ${naira(i.qty * i.unit_price)}`,
+        ),
+      ]
+    : [];
+
   const html = `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #dce3e8;border-radius:4px;padding:28px">
@@ -121,9 +155,12 @@ Deno.serve(async (req: Request) => {
 
     <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:14px">
       <tr><td style="padding:6px 0;color:#47586b">Division</td><td style="padding:6px 0;text-align:right">${escapeHtml(DIVISIONS[order.division] ?? order.division)}</td></tr>
-      <tr><td style="padding:6px 0;color:#47586b">Teams / kits</td><td style="padding:6px 0;text-align:right">${order.team_count}</td></tr>
+      <tr><td style="padding:6px 0;color:#47586b">Kit &times; ${order.team_count} team${order.team_count === 1 ? "" : "s"}</td><td style="padding:6px 0;text-align:right">${naira(kitPerTeam * order.team_count)}</td></tr>
+      <tr><td style="padding:6px 0;color:#47586b">${escapeHtml(FULFILMENT[order.fulfilment as string] ?? "Delivery")}</td><td style="padding:6px 0;text-align:right">${deliveryFee === 0 ? "Free" : naira(deliveryFee)}</td></tr>
       <tr><td style="padding:10px 0;border-top:1px solid #dce3e8;font-weight:700">Total due</td><td style="padding:10px 0;border-top:1px solid #dce3e8;text-align:right;font-weight:700">${naira(order.total_amount)}</td></tr>
     </table>
+
+    ${itemsHtml}
 
     <h2 style="margin:0 0 8px;font-size:16px">How to pay</h2>
     <p style="margin:0 0 12px;font-size:14px">Transfer <strong>${naira(order.total_amount)}</strong> to the account below, using <strong>${ref}</strong> as the transfer narration, then upload your proof of payment.</p>
@@ -148,8 +185,10 @@ Deno.serve(async (req: Request) => {
     ``,
     `ORDER REFERENCE: ${orderReference}`,
     `Division: ${DIVISIONS[order.division] ?? order.division}`,
-    `Teams / kits: ${order.team_count}`,
+    `Kit x ${order.team_count} team(s): ${naira(kitPerTeam * order.team_count)}`,
+    `${FULFILMENT[order.fulfilment as string] ?? "Delivery"}: ${deliveryFee === 0 ? "Free" : naira(deliveryFee)}`,
     `Total due: ${naira(order.total_amount)}`,
+    ...itemsText,
     ``,
     `HOW TO PAY`,
     `Transfer ${naira(order.total_amount)} to:`,
