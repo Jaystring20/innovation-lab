@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ConfigNotice from "@/components/ConfigNotice";
+import { supabaseConfigured } from "@/lib/supabase";
 
 // Landing is the entry point, so it stays in the main chunk. Everything else is
 // split: a school ordering a kit should not download the Lab and the organizer
@@ -39,7 +41,10 @@ const RouteFallback = () => (
   </div>
 );
 
-const App = () => (
+const App = () =>
+  !supabaseConfigured ? (
+    <ConfigNotice />
+  ) : (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -82,6 +87,6 @@ const App = () => (
       </ThemeProvider>
     </QueryClientProvider>
   </ErrorBoundary>
-);
+  );
 
 export default App;
