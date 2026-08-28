@@ -25,16 +25,17 @@ npm run dev
 
 The dev server runs on `http://localhost:8080`.
 
-Create a `.env` from the variables below (Vite exposes anything prefixed `VITE_`
-to the client bundle):
+Create a `.env` with the Supabase URL + publishable (anon) key — both are safe
+to expose to the browser; RLS protects the data:
 
 ```
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
-VITE_BANK_NAME=
-VITE_BANK_ACCOUNT_NAME=
-VITE_BANK_ACCOUNT_NUMBER=
 ```
+
+The bank transfer details shown on the order page are a plain constant in
+`src/config/bank.ts` (public, display-only). The payment-instruction emails
+read their own copy from Supabase Edge Function secrets — see `EMAIL_SETUP.md`.
 
 ## Build
 

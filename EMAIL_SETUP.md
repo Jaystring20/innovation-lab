@@ -35,9 +35,10 @@ supabase secrets set --project-ref sctsrxuquhzdjjnlsqbm RESEND_API_KEY=re_xxxxxx
 | `BANK_ACCOUNT_NAME` | **Yes, before launch** | |
 | `BANK_ACCOUNT_NUMBER` | **Yes, before launch** | |
 
-> The bank details are set **twice** — here for the emails, and in the site's
-> own `.env` (`VITE_BANK_*`) for the order page. Both must match. They are
-> public either way, so only use an account you're willing to publish.
+> The email bank details (`BANK_*` Edge Function secrets, above) and the ones
+> shown on the order page (`src/config/bank.ts`, a plain constant) are separate
+> — keep them in sync. Both are public, so only use an account you're willing
+> to publish.
 
 ## 3. Check it works
 

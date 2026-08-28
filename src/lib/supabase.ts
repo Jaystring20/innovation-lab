@@ -21,10 +21,3 @@ export const supabase = createClient(
   url || 'https://placeholder.supabase.co',
   anonKey || 'placeholder-anon-key',
 );
-
-export const BANK_DETAILS = {
-  name: import.meta.env.VITE_BANK_NAME || '(set VITE_BANK_NAME)',
-  accountName: import.meta.env.VITE_BANK_ACCOUNT_NAME || '(set VITE_BANK_ACCOUNT_NAME)',
-  accountNumber:
-    import.meta.env.VITE_BANK_ACCOUNT_NUMBER || '(set VITE_BANK_ACCOUNT_NUMBER)',
-};

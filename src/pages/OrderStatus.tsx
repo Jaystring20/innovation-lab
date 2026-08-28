@@ -4,7 +4,7 @@ import { ArrowLeft, Loader2, CheckCircle2, Truck } from 'lucide-react';
 import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
-import { BANK_DETAILS } from '@/lib/supabase';
+import { BANK_DETAILS } from '@/config/bank';
 import {
   getOrderStatus,
   submitPaymentProof,

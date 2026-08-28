@@ -11,15 +11,12 @@ const ConfigNotice: React.FC = () => (
       <h1 className="text-xl font-bold mb-3">Not configured yet</h1>
       <p className="text-sm text-slate-400 mb-4">
         This deployment is missing its Supabase credentials, so the Store and Lab
-        cannot load. Set these environment variables in the hosting project, then
-        redeploy:
+        cannot load. Set both of these environment variables in the hosting
+        project, then redeploy:
       </p>
       <ul className="text-sm font-mono space-y-1 text-slate-300 mb-4">
         <li>VITE_SUPABASE_URL</li>
         <li>VITE_SUPABASE_ANON_KEY</li>
-        <li>VITE_BANK_NAME</li>
-        <li>VITE_BANK_ACCOUNT_NAME</li>
-        <li>VITE_BANK_ACCOUNT_NUMBER</li>
       </ul>
       <p className="text-xs text-slate-500">
         These are read at build time — adding them requires a fresh deploy, not
