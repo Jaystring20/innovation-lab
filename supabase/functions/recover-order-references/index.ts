@@ -70,7 +70,9 @@ Deno.serve(async (req: Request) => {
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const fromAddress = Deno.env.get("ORDER_EMAIL_FROM") ??
-    "APEN 2026 <onboarding@resend.dev>";
+    "APEN 2026 <apen@digitalcreativeshubltd.com>";
+  const replyTo = Deno.env.get("ORDER_EMAIL_REPLY_TO") ||
+    (fromAddress.match(/<([^>]+)>/)?.[1] ?? fromAddress);
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
 
   if (!apiKey) {
@@ -173,6 +175,7 @@ Deno.serve(async (req: Request) => {
     },
     body: JSON.stringify({
       from: fromAddress,
+      reply_to: replyTo,
       to: [email],
       subject: "Your APEN 2026 order reference" + (rows.length > 1 ? "s" : ""),
       html,

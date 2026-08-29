@@ -13,6 +13,7 @@ import {
   kitPriceFor,
   naira,
   DIVISION_LABELS,
+  DISPATCH_NOTES,
   type Fulfilment,
   type Kit,
   type StoreSettings,
@@ -358,6 +359,9 @@ const Store: React.FC = () => {
                       <span>Total</span>
                       <span className="tabular-nums">{naira.format(total)}</span>
                     </div>
+                    <p className="text-xs text-muted-foreground pt-1">
+                      Every registered school receives a kit. Dispatched {DISPATCH_NOTES[fulfilment]}.
+                    </p>
                   </GlassCard>
 
                   {error && <p className="text-sm text-red-400">{error}</p>}

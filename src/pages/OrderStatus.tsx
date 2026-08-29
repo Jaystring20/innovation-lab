@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, CheckCircle2, Truck } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle2, Truck, MessageCircle } from 'lucide-react';
 import GlassOrbs from '@/components/GlassOrbs';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
@@ -9,10 +9,14 @@ import {
   getOrderStatus,
   submitPaymentProof,
   recoverOrderReferences,
+  markWhatsappPinged,
+  whatsappPayLink,
   naira,
   DIVISION_LABELS,
   STATUS_LABELS,
   FULFILMENT_LABELS,
+  DISPATCH_NOTES,
+  WHATSAPP_DISPLAY,
   type OrderStatusRow,
 } from '@/lib/store';
 
@@ -87,6 +91,18 @@ const OrderStatus: React.FC = () => {
       setMsg((err as Error).message);
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleWhatsapp() {
+    if (!order || !reference) return;
+    const link = whatsappPayLink(reference, order.total_amount);
+    window.open(link, '_blank', 'noopener');
+    try {
+      await markWhatsappPinged(reference);
+      setOrder({ ...order, whatsapp_pinged_at: new Date().toISOString() });
+    } catch {
+      /* the badge is a nicety — a failed ping flag is not worth surfacing */
     }
   }
 
@@ -254,7 +270,7 @@ const OrderStatus: React.FC = () => {
                   Transfer <strong className="text-foreground">{naira.format(order.total_amount)}</strong>{' '}
                   to the account below, using{' '}
                   <strong className="text-foreground">{reference}</strong> as your transfer
-                  narration, then upload your proof of payment.
+                  narration.
                 </p>
 
                 <div className="bg-white/5 border border-white/10 rounded-lg p-3 mt-3 text-sm text-muted-foreground space-y-1">
@@ -263,8 +279,31 @@ const OrderStatus: React.FC = () => {
                   <div>Account number: {BANK_DETAILS.accountNumber}</div>
                 </div>
 
+                <p className="text-sm text-muted-foreground mt-4 mb-2">
+                  Then confirm your payment — either upload your proof here, or send it on
+                  WhatsApp to <strong className="text-foreground">{WHATSAPP_DISPLAY}</strong>{' '}
+                  quoting <strong className="text-foreground">{reference}</strong>.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={handleWhatsapp}
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#20bd5a] transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Confirm payment on WhatsApp
+                </button>
+                {order.whatsapp_pinged_at && (
+                  <p className="text-xs text-emerald-400 mt-2">
+                    We&apos;ve noted your WhatsApp message — the organizer will confirm shortly.
+                  </p>
+                )}
+
                 {order.status === 'registered' && (
-                  <form onSubmit={handleUpload} className="mt-4 grid gap-3">
+                  <form onSubmit={handleUpload} className="mt-4 grid gap-3 border-t border-white/10 pt-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Or upload proof here
+                    </p>
                     <input
                       type="file"
                       accept="image/*,application/pdf"
@@ -288,9 +327,14 @@ const OrderStatus: React.FC = () => {
 
             {order.status === 'paid' && (
               <GlassCard>
-                <p className="flex items-center gap-2 text-emerald-400">
-                  <CheckCircle2 className="w-5 h-5" />
-                  Payment confirmed. Your kit ships in the dispatch window (Sep 14–30, 2026).
+                <p className="flex items-start gap-2 text-emerald-400">
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                  <span>
+                    Payment confirmed. Every registered school receives a kit — yours is
+                    being prepared and will be dispatched{' '}
+                    {order.fulfilment ? DISPATCH_NOTES[order.fulfilment] : 'after payment is confirmed'}.
+                    A receipt has been emailed to you.
+                  </span>
                 </p>
               </GlassCard>
             )}

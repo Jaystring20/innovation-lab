@@ -8,6 +8,7 @@ import {
   Loader2,
   ExternalLink,
   RefreshCw,
+  MessageCircle,
 } from 'lucide-react';
 import GlassCard from '@/components/GlassCard';
 import GlowButton from '@/components/GlowButton';
@@ -15,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import {
   listAllOrders,
   setOrderStatus,
+  sendPaymentReceipt,
   proofUrl,
   naira,
   DIVISION_SHORT,
@@ -92,6 +94,13 @@ const OrganizerDashboard: React.FC = () => {
     setBusyId(o.id);
     try {
       await setOrderStatus(o.id, to);
+      // Confirming payment auto-emails the school its receipt. Fire-and-forget:
+      // a receipt that fails to send must not undo the status change.
+      if (to === 'paid') {
+        void sendPaymentReceipt(o.order_reference).then((ok) => {
+          if (!ok) setError(`Marked paid, but the receipt email to ${o.order_reference} did not send.`);
+        });
+      }
       await refresh();
     } catch (e) {
       setError((e as Error).message);
@@ -251,18 +260,30 @@ const OrganizerDashboard: React.FC = () => {
                             <span className={`px-2 py-1 rounded-md text-xs font-medium ${badgeCls[o.status]}`}>
                               {STATUS_LABELS[o.status]}
                             </span>
+                            {o.receipt_sent_at && (
+                              <span className="block text-[11px] text-emerald-400/80 mt-1">
+                                receipt sent
+                              </span>
+                            )}
                           </td>
                           <td className="p-3">
-                            {o.proof_of_payment_url ? (
-                              <button
-                                onClick={() => openProof(o.proof_of_payment_url!)}
-                                className="inline-flex items-center gap-1 text-primary hover:underline"
-                              >
-                                View <ExternalLink className="w-3.5 h-3.5" />
-                              </button>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
+                            <div className="flex flex-col gap-1">
+                              {o.proof_of_payment_url ? (
+                                <button
+                                  onClick={() => openProof(o.proof_of_payment_url!)}
+                                  className="inline-flex items-center gap-1 text-primary hover:underline"
+                                >
+                                  View <ExternalLink className="w-3.5 h-3.5" />
+                                </button>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                              {o.whatsapp_pinged_at && (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#25d366]">
+                                  <MessageCircle className="w-3 h-3" /> WhatsApp
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="p-3">
                             {action && (
