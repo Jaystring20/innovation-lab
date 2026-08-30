@@ -60,16 +60,12 @@ const Landing: React.FC = () => {
               </p>
               <div className="flex flex-col gap-2">
                 <Link to="/store">
-                  <GlowButton className="w-full flex items-center justify-center gap-2">
+                  <GlowButton className="w-full">
                     Order a kit <ArrowRight className="w-4 h-4" />
                   </GlowButton>
                 </Link>
                 <Link to="/order">
-                  <GlowButton
-                    variant="secondary"
-                    size="sm"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
+                  <GlowButton variant="secondary" size="sm" className="w-full">
                     <PackageSearch className="w-4 h-4" /> Track an existing order
                   </GlowButton>
                 </Link>
@@ -106,7 +102,7 @@ const Landing: React.FC = () => {
                 ))}
               </ol>
               <Link to="/lab" className="mt-auto">
-                <GlowButton className="w-full flex items-center justify-center gap-2">
+                <GlowButton className="w-full">
                   Enter the Lab <ArrowRight className="w-4 h-4" />
                 </GlowButton>
               </Link>

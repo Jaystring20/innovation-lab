@@ -33,7 +33,9 @@ const GlowButton = forwardRef<HTMLButtonElement, GlowButtonProps>(
         )}
         {...props}
       >
-        <span className="relative z-10">{children}</span>
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {children}
+        </span>
       </button>
     );
   }

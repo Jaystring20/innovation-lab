@@ -101,7 +101,7 @@ const OrganizerLogin: React.FC = () => {
 
             {error && <p className="text-sm text-red-400">{error}</p>}
 
-            <GlowButton type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 mt-2">
+            <GlowButton type="submit" disabled={loading} className="w-full mt-2">
               {loading ? 'Signing in…' : 'Sign in'}
               <ArrowRight className="w-4 h-4" />
             </GlowButton>
