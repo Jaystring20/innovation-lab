@@ -62,17 +62,17 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
         <div>
           <h3 className="text-lg font-bold text-foreground">{team.name}</h3>
           {team.eliminated_after_stage ? (
-            <p className="text-sm text-red-400 mt-0.5">
+            <p className="text-sm text-danger mt-0.5">
               Not advanced past Stage {team.eliminated_after_stage}
             </p>
           ) : team.advanced_at ? (
-            <p className="text-sm text-emerald-400 mt-0.5">Advanced to the finals</p>
+            <p className="text-sm text-ok mt-0.5">Advanced to the finals</p>
           ) : null}
         </div>
         {activeSub && <StatusPill status={activeSub.status} />}
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <StageTracker
         stages={stages}

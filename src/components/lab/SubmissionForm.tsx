@@ -74,7 +74,7 @@ const SubmissionForm: React.FC<{
       </p>
 
       {locked && (
-        <p className="flex items-center gap-2 text-sm text-emerald-400">
+        <p className="flex items-center gap-2 text-sm text-ok">
           <Lock className="w-4 h-4" />
           Judging is complete — this submission is locked.
         </p>
@@ -129,8 +129,8 @@ const SubmissionForm: React.FC<{
         />
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
-      {saved && !error && <p className="text-sm text-emerald-400">Saved.</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
+      {saved && !error && <p className="text-sm text-ok">Saved.</p>}
 
       {!locked && (
         <GlowButton type="submit" disabled={busy} size="sm">

@@ -113,7 +113,7 @@ const ScoreForm: React.FC<{
         </p>
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <GlowButton type="submit" size="sm" disabled={busy}>
         <span className="flex items-center gap-2">

@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
 
         {error && (
           <Panel className="mb-4" hover={false}>
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-danger">{error}</p>
           </Panel>
         )}
 
