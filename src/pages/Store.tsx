@@ -20,7 +20,7 @@ import {
 } from '@/lib/store';
 
 const inputCls =
-  'w-full bg-secondary/50 border border-white/10 rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all';
+  'w-full bg-secondary/50 border border-border rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all';
 
 const Store: React.FC = () => {
   const navigate = useNavigate();
@@ -117,7 +117,7 @@ const Store: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       <Backdrop />
       <div className="relative z-10 max-w-2xl mx-auto px-5 py-12">
         <Link
@@ -203,7 +203,7 @@ const Store: React.FC = () => {
                               item.required
                                 ? 'bg-primary/30 border-primary/40 cursor-not-allowed'
                                 : isExcluded
-                                  ? 'bg-transparent border-white/20 hover:border-white/40'
+                                  ? 'bg-transparent border-border/50 hover:border-border'
                                   : 'bg-primary border-primary'
                             }`}
                           >
@@ -234,7 +234,7 @@ const Store: React.FC = () => {
                       );
                     })}
                   </ul>
-                  <div className="flex justify-between pt-3 mt-1 border-t border-white/10 text-sm">
+                  <div className="flex justify-between pt-3 mt-1 border-t border-border text-sm">
                     <span className="text-muted-foreground">Kit price per team</span>
                     <span className="font-semibold text-foreground tabular-nums">
                       {naira.format(perTeam)}
@@ -355,7 +355,7 @@ const Store: React.FC = () => {
                       }
                       value={deliveryFee === 0 ? 'Free' : naira.format(deliveryFee)}
                     />
-                    <div className="flex justify-between pt-2 border-t border-white/10 text-lg font-bold text-foreground">
+                    <div className="flex justify-between pt-2 border-t border-border text-lg font-bold text-foreground">
                       <span>Total</span>
                       <span className="tabular-nums">{naira.format(total)}</span>
                     </div>
@@ -391,7 +391,7 @@ const FulfilmentOption: React.FC<{
     type="button"
     onClick={onSelect}
     className={`w-full text-left rounded-lg border-2 p-3 flex items-start gap-3 transition-colors ${
-      selected ? 'border-primary/60 bg-primary/10' : 'border-white/10 hover:bg-white/5'
+      selected ? 'border-primary/60 bg-primary/10' : 'border-border hover:bg-surface/30'
     }`}
   >
     <span className="mt-0.5 text-primary">{icon}</span>

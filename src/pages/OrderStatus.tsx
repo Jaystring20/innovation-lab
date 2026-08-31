@@ -106,7 +106,7 @@ const OrderStatus: React.FC = () => {
     }
   }
 
-  const wrap = 'min-h-screen bg-[#020617] relative overflow-hidden';
+  const wrap = 'min-h-screen bg-background relative overflow-hidden';
   const inner = 'relative z-10 max-w-xl mx-auto px-5 py-12';
 
   // No reference in the URL — show a lookup box.
@@ -131,7 +131,7 @@ const OrderStatus: React.FC = () => {
                 value={lookup}
                 onChange={(e) => setLookup(e.target.value)}
                 placeholder="APEN-XXXXXX"
-                className="w-full bg-secondary/50 border border-white/10 rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full bg-secondary/50 border border-border rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
               <GlowButton type="submit" className="w-full">Look up</GlowButton>
             </form>
@@ -152,7 +152,7 @@ const OrderStatus: React.FC = () => {
                 value={recoverEmail}
                 onChange={(e) => setRecoverEmail(e.target.value)}
                 placeholder="you@school.edu.ng"
-                className="w-full bg-secondary/50 border border-white/10 rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full bg-secondary/50 border border-border rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
               <GlowButton
                 type="submit"
@@ -216,7 +216,7 @@ const OrderStatus: React.FC = () => {
                     : naira.format(order.delivery_fee)
                 }
               />
-              <div className="flex justify-between py-2 border-t border-white/10 mt-1 font-bold text-foreground">
+              <div className="flex justify-between py-2 border-t border-border mt-1 font-bold text-foreground">
                 <span>Total</span>
                 <span className="tabular-nums">{naira.format(order.total_amount)}</span>
               </div>
@@ -273,7 +273,7 @@ const OrderStatus: React.FC = () => {
                   narration.
                 </p>
 
-                <div className="bg-white/5 border border-white/10 rounded-lg p-3 mt-3 text-sm text-muted-foreground space-y-1">
+                <div className="bg-surface/30 border border-border rounded-lg p-3 mt-3 text-sm text-muted-foreground space-y-1">
                   <div>Bank: {BANK_DETAILS.name}</div>
                   <div>Account name: {BANK_DETAILS.accountName}</div>
                   <div>Account number: {BANK_DETAILS.accountNumber}</div>
@@ -288,7 +288,7 @@ const OrderStatus: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleWhatsapp}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#20bd5a] transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg bg-ok px-4 py-2.5 text-sm font-semibold text-white hover:bg-ok/90 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Confirm payment on WhatsApp
@@ -300,7 +300,7 @@ const OrderStatus: React.FC = () => {
                 )}
 
                 {order.status === 'registered' && (
-                  <form onSubmit={handleUpload} className="mt-4 grid gap-3 border-t border-white/10 pt-4">
+                  <form onSubmit={handleUpload} className="mt-4 grid gap-3 border-t border-border pt-4">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
                       Or upload proof here
                     </p>
