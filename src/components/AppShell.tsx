@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import Backdrop from './Backdrop';
-import Wordmark from './Wordmark';
+import HeroImagePlate from './HeroImagePlate';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 interface AppShellProps {
   children: ReactNode;
@@ -28,7 +29,13 @@ const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, classNam
         transition={{ duration: 0.4 }}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-          <Wordmark size="sm" />
+          <div className="h-10 w-auto max-w-xs">
+            <HeroImagePlate
+              src={steamFoundryLogo}
+              alt="STEAM Foundry"
+              className="h-full w-full object-contain"
+            />
+          </div>
           {header && <div className="flex-1 flex justify-end">{header}</div>}
         </div>
       </motion.header>

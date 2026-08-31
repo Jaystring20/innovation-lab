@@ -23,6 +23,12 @@ const testUsers = [
     role: 'judge',
     fullName: 'Test Judge',
   },
+  {
+    email: 'jerryadeyemi20@gmail.com',
+    password: '@Welcome2026&',
+    role: 'organizer',
+    fullName: 'Test Organizer',
+  },
 ];
 
 async function makeRequest(method, path, body, serviceRoleKey) {

@@ -5,7 +5,6 @@ import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import Wordmark from '@/components/Wordmark';
 import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
@@ -68,7 +67,7 @@ const Login: React.FC = () => {
         <Panel className="p-8 overflow-hidden" hover={false}>
           {/* Logo hero image */}
           <motion.div
-            className="mb-6"
+            className="mb-8"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
@@ -78,16 +77,6 @@ const Login: React.FC = () => {
               alt="STEAM Foundry"
               className="mx-auto"
             />
-          </motion.div>
-
-          {/* Wordmark header */}
-          <motion.div
-            className="mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-          >
-            <Wordmark size="lg" className="justify-center" />
           </motion.div>
 
           <div className="mb-8">

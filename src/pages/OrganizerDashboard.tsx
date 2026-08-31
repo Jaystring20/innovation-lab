@@ -11,8 +11,9 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import Panel from '@/components/Panel';
-import Wordmark from '@/components/Wordmark';
+import HeroImagePlate from '@/components/HeroImagePlate';
 import GlowButton from '@/components/GlowButton';
+import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   listAllOrders,
@@ -127,9 +128,15 @@ const OrganizerDashboard: React.FC = () => {
     <div className="min-h-screen bg-background flex w-full">
       {/* Sidebar */}
       <aside className="w-60 hidden md:flex flex-col bg-surface border-r border-border overflow-hidden">
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <Wordmark size="sm" />
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground ml-2 flex-shrink-0">Org</p>
+        <div className="p-4 border-b border-border flex items-center justify-between gap-3">
+          <div className="h-8 w-auto flex-1 min-w-0">
+            <HeroImagePlate
+              src={steamFoundryLogo}
+              alt="STEAM Foundry"
+              className="h-full w-full object-contain"
+            />
+          </div>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex-shrink-0">Org</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">
           <SideItem

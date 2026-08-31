@@ -5,7 +5,6 @@ import { Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import Wordmark from '@/components/Wordmark';
 import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
@@ -63,7 +62,7 @@ const OrganizerLogin: React.FC = () => {
         <Panel className="p-8 overflow-hidden" hover={false}>
           {/* Logo hero image */}
           <motion.div
-            className="mb-6"
+            className="mb-8"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
@@ -76,7 +75,6 @@ const OrganizerLogin: React.FC = () => {
           </motion.div>
 
           <div className="text-center mb-8">
-            <Wordmark size="md" className="justify-center mb-4" />
             <h1 className="text-xl font-semibold text-foreground mb-1 font-display">Organizer Sign In</h1>
             <p className="text-muted-foreground text-sm">
               APEN 2026 Innovation Store — operations console
