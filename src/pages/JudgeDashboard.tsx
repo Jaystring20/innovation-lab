@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronDown, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
+import { ChevronDown, ExternalLink, Loader2, RefreshCw, LogOut } from 'lucide-react';
 import Panel from '@/components/Panel';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import AppShell from '@/components/AppShell';
 import StatusPill from '@/components/lab/StatusPill';
 import ScoreForm from '@/components/lab/ScoreForm';
 import { useAuth } from '@/contexts/AuthContext';
@@ -59,10 +59,21 @@ const JudgeDashboard: React.FC = () => {
   const pending = items.filter((i) => !i.my_score).length;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <DashboardHeader />
-
-      <motion.main
+    <AppShell
+      header={
+        <button
+          onClick={() => {
+            localStorage.removeItem('sb-auth-token');
+            navigate('/lab', { replace: true });
+          }}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign out
+        </button>
+      }
+    >
+      <motion.div
         className="flex-1 overflow-y-auto p-6 max-w-4xl w-full mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -199,8 +210,8 @@ const JudgeDashboard: React.FC = () => {
             </Panel>
           )}
         </div>
-      </motion.main>
-    </div>
+      </motion.div>
+    </AppShell>
   );
 };
 

@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, Plus, RefreshCw, Users } from 'lucide-react';
+import { Loader2, Plus, RefreshCw, Users, LogOut } from 'lucide-react';
 import Panel from '@/components/Panel';
+import AppShell from '@/components/AppShell';
 import GlowButton from '@/components/GlowButton';
-import Backdrop from '@/components/Backdrop';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import TeamPanel from '@/components/lab/TeamPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type TierType } from '@/contexts/ThemeContext';
@@ -84,7 +83,7 @@ const Dashboard: React.FC = () => {
   // Registered, but no organizer has linked the account to a school yet.
   if (!profile?.school_id) {
     return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
         <Backdrop />
         <Panel className="max-w-md relative z-10 text-center p-8" hover={false}>
           <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-4">
@@ -104,10 +103,22 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <DashboardHeader />
+    <AppShell
+      header={
+        <button
+          onClick={() => {
+            localStorage.removeItem('sb-auth-token');
+            navigate('/lab', { replace: true });
+          }}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign out
+        </button>
+      }
+    >
 
-      <motion.main
+      <motion.div
         className="flex-1 overflow-y-auto p-6 max-w-6xl w-full mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -181,8 +192,8 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
         )}
-      </motion.main>
-    </div>
+      </motion.div>
+    </AppShell>
   );
 };
 
