@@ -20,7 +20,7 @@ import { createTeam, listMyTeams, listStages, type Stage, type Team } from '@/li
  */
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { session, profile, role, loading: authLoading, displayName } = useAuth();
+  const { session, profile, role, loading: authLoading, displayName, signOut } = useAuth();
   const { setTier } = useTheme();
   const reduceMotion = useReducedMotion();
 
@@ -110,8 +110,7 @@ const Dashboard: React.FC = () => {
       header={
         <button
           onClick={() => {
-            localStorage.removeItem('sb-auth-token');
-            navigate('/lab', { replace: true });
+            signOut().then(() => navigate('/lab', { replace: true }));
           }}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
