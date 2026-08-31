@@ -6,6 +6,7 @@ import StageTracker from './StageTracker';
 import SubmissionForm from './SubmissionForm';
 import FeedbackPanel from './FeedbackPanel';
 import StatusPill from './StatusPill';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import {
   listTeamSubmissions,
   type Stage,
@@ -15,6 +16,7 @@ import {
 
 /** One team's run through the funnel: stepper → deliverable → feedback. */
 const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) => {
+  const reduceMotion = useReducedMotion();
   const [subs, setSubs] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +86,7 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
           key={activeStage.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={reduceMotion ? {} : { duration: 0.2 }}
           className="grid lg:grid-cols-2 gap-6 pt-2 border-t border-white/5"
         >
           <div className="pt-4">

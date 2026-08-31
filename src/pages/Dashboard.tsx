@@ -9,6 +9,7 @@ import GlowButton from '@/components/GlowButton';
 import TeamPanel from '@/components/lab/TeamPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type TierType } from '@/contexts/ThemeContext';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { createTeam, listMyTeams, listStages, type Stage, type Team } from '@/lib/lab';
 
 /**
@@ -21,6 +22,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { session, profile, role, loading: authLoading, displayName } = useAuth();
   const { setTier } = useTheme();
+  const reduceMotion = useReducedMotion();
 
   const [stages, setStages] = useState<Stage[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -123,7 +125,7 @@ const Dashboard: React.FC = () => {
         className="flex-1 overflow-y-auto p-6 max-w-6xl w-full mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
+        transition={reduceMotion ? {} : { delay: 0.1 }}
       >
         <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
           <div>

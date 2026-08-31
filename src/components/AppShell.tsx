@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import Backdrop from './Backdrop';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 interface AppShellProps {
@@ -16,6 +17,8 @@ interface AppShellProps {
  * All children animate in with framer-motion on page load
  */
 const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, className }) => {
+  const reduceMotion = useReducedMotion();
+
   return (
     <div className="min-h-screen bg-background">
       <Backdrop />
@@ -25,7 +28,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, classNam
         className="sticky top-0 z-20 bg-surface border-b border-border"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={reduceMotion ? {} : { duration: 0.4 }}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <img
@@ -44,7 +47,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, classNam
             className="hidden md:block w-64 bg-surface border-r border-border overflow-y-auto"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={reduceMotion ? {} : { duration: 0.5, delay: 0.1 }}
           >
             {sidebar}
           </motion.aside>
@@ -55,7 +58,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, classNam
           className={`flex-1 overflow-y-auto ${className}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={reduceMotion ? {} : { duration: 0.5, delay: 0.2 }}
         >
           {children}
         </motion.main>
