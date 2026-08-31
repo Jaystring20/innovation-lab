@@ -48,22 +48,24 @@ const Landing: React.FC = () => {
           </p>
         </motion.header>
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Panel className="h-full flex flex-col">
-              <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
-                <ShoppingCart className="w-6 h-6 text-primary" />
+            <Panel className="h-full flex flex-col overflow-hidden border-l-4 border-l-primary p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-lg bg-primary/15">
+                  <ShoppingCart className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground">The Store</h2>
               </div>
-              <h2 className="text-xl font-bold text-foreground mb-2">The Store</h2>
-              <p className="text-sm text-muted-foreground flex-1 mb-5">
+              <p className="text-sm text-muted-foreground flex-1 mb-6 leading-relaxed">
                 Browse the official kit for your division, register your school and
                 teams, pay by bank transfer, and track dispatch — no account needed.
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <Link to="/store">
                   <GlowButton className="w-full">
                     Order a kit <ArrowRight className="w-4 h-4" />
@@ -83,25 +85,27 @@ const Landing: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Panel className="h-full flex flex-col">
-              <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
-                <FlaskConical className="w-6 h-6 text-primary" />
+            <Panel className="h-full flex flex-col overflow-hidden border-l-4 border-l-primary p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-lg bg-primary/15">
+                  <FlaskConical className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground">The Lab</h2>
               </div>
-              <h2 className="text-xl font-bold text-foreground mb-2">The Lab</h2>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                 Where your teams run the competition &mdash; submit each stage,
                 read judge feedback, and track aggregated scores through to the
                 BATTLE.
               </p>
-              <ol className="space-y-2 mb-5 flex-1">
+              <ol className="space-y-3 mb-6 flex-1">
                 {FUNNEL.map((s) => (
                   <li key={s.n} className="flex gap-3 text-sm">
-                    <span className="font-mono text-xs text-primary/80 pt-0.5 tabular-nums">
+                    <span className="font-mono text-xs font-semibold text-primary/80 pt-0.5 tabular-nums">
                       {s.n}
                     </span>
-                    <span>
+                    <span className="flex-1">
                       <span className="font-semibold text-foreground">{s.name}</span>
-                      <span className="text-muted-foreground"> &mdash; {s.note}</span>
+                      <span className="text-muted-foreground"> — {s.note}</span>
                     </span>
                   </li>
                 ))}
