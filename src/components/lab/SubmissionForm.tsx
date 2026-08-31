@@ -125,7 +125,7 @@ const SubmissionForm: React.FC<{
           value={payload.notes ?? ''}
           onChange={(e) => set('notes', e.target.value)}
           placeholder="Anything the judges should know — constraints, what you would do next."
-          className="w-full bg-secondary/40 border-2 border-white/10 rounded-lg py-2.5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all disabled:opacity-60"
+          className="w-full bg-secondary/40 border-2 border-border rounded-lg py-2.5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all disabled:opacity-60"
         />
       </div>
 

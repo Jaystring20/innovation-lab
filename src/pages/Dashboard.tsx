@@ -159,7 +159,7 @@ const Dashboard: React.FC = () => {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g. Team Harvest"
-                className="w-full bg-secondary/40 border-2 border-white/10 rounded-lg py-2.5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+                className="w-full bg-secondary/40 border-2 border-border rounded-lg py-2.5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
               />
             </div>
             <GlowButton type="submit" size="sm" disabled={creating || !newName.trim()}>

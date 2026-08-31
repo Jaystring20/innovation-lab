@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import Backdrop from './Backdrop';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
+import steamFoundryLogoHeader from '@/assets/steam-foundry-logo-header.webp';
 
 interface AppShellProps {
   children: ReactNode;
@@ -32,7 +32,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, classNam
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <img
-            src={steamFoundryLogo}
+            src={steamFoundryLogoHeader}
             alt="STEAM Foundry"
             className="h-10 w-auto object-contain"
           />
