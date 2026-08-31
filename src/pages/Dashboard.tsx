@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, RefreshCw, Users, LogOut } from 'lucide-react';
+import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import AppShell from '@/components/AppShell';
 import GlowButton from '@/components/GlowButton';
