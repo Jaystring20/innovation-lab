@@ -7,7 +7,7 @@ interface GlassCardProps {
   hover?: boolean;
 }
 
-const GlassCard: React.FC<GlassCardProps> = ({ children, className, hover = true }) => {
+const GlassCard: React.FC<PanelProps> = ({ children, className, hover = true }) => {
   return (
     <div
       className={cn(

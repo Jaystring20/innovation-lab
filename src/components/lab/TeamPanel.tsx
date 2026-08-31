@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import StageTracker from './StageTracker';
 import SubmissionForm from './SubmissionForm';
 import FeedbackPanel from './FeedbackPanel';
@@ -46,16 +46,16 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
 
   if (loading) {
     return (
-      <GlassCard>
+      <Panel>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" /> Loading {team.name}…
         </div>
-      </GlassCard>
+      </Panel>
     );
   }
 
   return (
-    <GlassCard className="space-y-5" hover={false}>
+    <Panel className="space-y-5" hover={false}>
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h3 className="text-lg font-bold text-foreground">{team.name}</h3>
@@ -107,7 +107,7 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
           </div>
         </motion.div>
       )}
-    </GlassCard>
+    </Panel>
   );
 };
 

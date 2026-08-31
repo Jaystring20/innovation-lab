@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ExternalLink, Undo2, Unlock } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import StatusPill from '@/components/lab/StatusPill';
 import { releaseFeedback, returnSubmission, type AdminSubmission } from '@/lib/lab';
 import { DIVISION_SHORT } from '@/lib/store';
@@ -39,24 +39,24 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
 
   if (data.teams.length === 0) {
     return (
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-sm text-muted-foreground">
           No teams yet. Teams appear once a school's teacher account is linked and they add
           their teams.
         </p>
-      </GlassCard>
+      </Panel>
     );
   }
 
   return (
     <>
       {error && (
-        <GlassCard className="mb-3" hover={false}>
+        <Panel className="mb-3" hover={false}>
           <p className="text-sm text-red-400">{error}</p>
-        </GlassCard>
+        </Panel>
       )}
 
-      <GlassCard className="p-0 overflow-x-auto" hover={false}>
+      <Panel className="p-0 overflow-x-auto" hover={false}>
         <table className="w-full text-sm min-w-[720px]">
           <thead>
             <tr className="text-left text-muted-foreground border-b border-white/10">
@@ -122,10 +122,10 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
             })}
           </tbody>
         </table>
-      </GlassCard>
+      </Panel>
 
       {open && (
-        <GlassCard className="mt-4" hover={false}>
+        <Panel className="mt-4" hover={false}>
           <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
             <div>
               <p className="font-semibold text-foreground">
@@ -225,7 +225,7 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
               )}
             </div>
           </div>
-        </GlassCard>
+        </Panel>
       )}
     </>
   );

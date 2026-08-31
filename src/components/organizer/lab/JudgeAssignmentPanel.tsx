@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Loader2, Plus, X } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import StatusPill from '@/components/lab/StatusPill';
 import { assignJudge, unassignJudge, type AdminSubmission } from '@/lib/lab';
 import { DIVISION_SHORT } from '@/lib/store';
@@ -66,13 +66,13 @@ const JudgeAssignmentPanel: React.FC<{
 
   if (data.judges.length === 0) {
     return (
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-sm text-muted-foreground">
           No judge accounts yet. A judge signs up at <code className="text-primary">/lab</code>,
           then an organizer sets their role to <code className="text-primary">judge</code> (see
           LAB_SETUP.md).
         </p>
-      </GlassCard>
+      </Panel>
     );
   }
 
@@ -96,7 +96,7 @@ const JudgeAssignmentPanel: React.FC<{
         ))}
       </div>
 
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
           Judge workload
         </p>
@@ -114,26 +114,26 @@ const JudgeAssignmentPanel: React.FC<{
             </span>
           ))}
         </div>
-      </GlassCard>
+      </Panel>
 
       {error && (
-        <GlassCard hover={false}>
+        <Panel hover={false}>
           <p className="text-sm text-red-400">{error}</p>
-        </GlassCard>
+        </Panel>
       )}
 
       {rows.length === 0 ? (
-        <GlassCard hover={false}>
+        <Panel hover={false}>
           <p className="text-sm text-muted-foreground">
             Nothing submitted for this stage yet.
           </p>
-        </GlassCard>
+        </Panel>
       ) : (
         <div className="space-y-3">
           {rows.map((sub) => {
             const assigned = assignmentsBySubmission.get(sub.id) ?? [];
             return (
-              <GlassCard key={sub.id} hover={false}>
+              <Panel key={sub.id} hover={false}>
                 <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
                   <div>
                     <p className="font-semibold text-foreground">{sub.teams?.name}</p>
@@ -173,7 +173,7 @@ const JudgeAssignmentPanel: React.FC<{
                     );
                   })}
                 </div>
-              </GlassCard>
+              </Panel>
             );
           })}
         </div>

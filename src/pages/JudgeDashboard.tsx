@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronDown, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import StatusPill from '@/components/lab/StatusPill';
 import ScoreForm from '@/components/lab/ScoreForm';
@@ -88,9 +88,9 @@ const JudgeDashboard: React.FC = () => {
         </div>
 
         {error && (
-          <GlassCard className="mb-4" hover={false}>
+          <Panel className="mb-4" hover={false}>
             <p className="text-sm text-red-400">{error}</p>
-          </GlassCard>
+          </Panel>
         )}
 
         <div className="space-y-3">
@@ -103,7 +103,7 @@ const JudgeDashboard: React.FC = () => {
             ].filter((l) => l.url);
 
             return (
-              <GlassCard key={item.submission_id} className="p-0 overflow-hidden" hover={false}>
+              <Panel key={item.submission_id} className="p-0 overflow-hidden" hover={false}>
                 <button
                   onClick={() => setOpenId(open ? null : item.submission_id)}
                   className="w-full p-4 flex items-center justify-between gap-4 text-left hover:bg-white/[0.03] transition-colors"
@@ -186,17 +186,17 @@ const JudgeDashboard: React.FC = () => {
                     </div>
                   </div>
                 )}
-              </GlassCard>
+              </Panel>
             );
           })}
 
           {!loading && items.length === 0 && (
-            <GlassCard hover={false}>
+            <Panel hover={false}>
               <p className="text-sm text-muted-foreground">
                 The organizer assigns submissions to judges. Once you have assignments they
                 appear here, grouped by stage.
               </p>
-            </GlassCard>
+            </Panel>
           )}
         </div>
       </motion.main>

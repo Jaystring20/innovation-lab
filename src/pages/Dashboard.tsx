@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, RefreshCw, Users } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import GlassOrbs from '@/components/GlassOrbs';
+import Backdrop from '@/components/Backdrop';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import TeamPanel from '@/components/lab/TeamPanel';
 import { useAuth } from '@/contexts/AuthContext';
@@ -85,8 +85,8 @@ const Dashboard: React.FC = () => {
   if (!profile?.school_id) {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
-        <GlassOrbs />
-        <GlassCard className="max-w-md relative z-10 text-center p-8" hover={false}>
+        <Backdrop />
+        <Panel className="max-w-md relative z-10 text-center p-8" hover={false}>
           <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-4">
             <Users className="w-6 h-6 text-primary" />
           </div>
@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
             school once your kit order is confirmed — then your teams and the Innovation
             Funnel appear here.
           </p>
-        </GlassCard>
+        </Panel>
       </div>
     );
   }
@@ -130,12 +130,12 @@ const Dashboard: React.FC = () => {
         </div>
 
         {error && (
-          <GlassCard className="mb-4" hover={false}>
+          <Panel className="mb-4" hover={false}>
             <p className="text-sm text-red-400">{error}</p>
-          </GlassCard>
+          </Panel>
         )}
 
-        <GlassCard className="mb-6" hover={false}>
+        <Panel className="mb-6" hover={false}>
           <form onSubmit={handleCreate} className="flex gap-3 items-end flex-wrap">
             <div className="flex-1 min-w-[220px]">
               <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
@@ -162,18 +162,18 @@ const Dashboard: React.FC = () => {
           <p className="text-xs text-muted-foreground/70 mt-2">
             You can add as many teams as your school registered kits for.
           </p>
-        </GlassCard>
+        </Panel>
 
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" /> Loading your teams…
           </div>
         ) : teams.length === 0 ? (
-          <GlassCard hover={false}>
+          <Panel hover={false}>
             <p className="text-sm text-muted-foreground">
               No teams yet. Add your first team above to open Stage 1.
             </p>
-          </GlassCard>
+          </Panel>
         ) : (
           <div className="space-y-5">
             {teams.map((team) => (

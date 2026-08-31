@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import Wordmark from '@/components/Wordmark';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,7 +46,7 @@ const OrganizerLogin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      <GlassOrbs />
+      <Backdrop />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -59,7 +59,7 @@ const OrganizerLogin: React.FC = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
-        <GlassCard className="p-8" hover={false}>
+        <Panel className="p-8" hover={false}>
           <div className="text-center mb-8">
             <Wordmark size="md" className="justify-center mb-4" />
             <h1 className="text-xl font-semibold text-foreground mb-1 font-display">Organizer Sign In</h1>
@@ -108,7 +108,7 @@ const OrganizerLogin: React.FC = () => {
             Organizer accounts are provisioned in Supabase Auth. Contact the APEN 2026
             team if you need access.
           </p>
-        </GlassCard>
+        </Panel>
       </motion.div>
     </div>
   );

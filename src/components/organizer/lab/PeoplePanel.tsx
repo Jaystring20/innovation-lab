@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link2, Loader2 } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import { linkTeacher } from '@/lib/lab';
 import { DIVISION_SHORT } from '@/lib/store';
 import type { LabData } from './LabConsole';
@@ -36,12 +36,12 @@ const PeoplePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
   return (
     <div className="space-y-4">
       {error && (
-        <GlassCard hover={false}>
+        <Panel hover={false}>
           <p className="text-sm text-red-400">{error}</p>
-        </GlassCard>
+        </Panel>
       )}
 
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
           Teacher accounts waiting to be linked
         </p>
@@ -86,9 +86,9 @@ const PeoplePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
             ))}
           </ul>
         )}
-      </GlassCard>
+      </Panel>
 
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Judges</p>
         {data.judges.length === 0 ? (
           <p className="text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ const PeoplePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
             ))}
           </ul>
         )}
-      </GlassCard>
+      </Panel>
     </div>
   );
 };

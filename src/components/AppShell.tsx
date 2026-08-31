@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import GlassOrbs from './GlassOrbs';
+import Backdrop from './Backdrop';
 import Wordmark from './Wordmark';
 
 interface AppShellProps {
@@ -18,7 +18,7 @@ interface AppShellProps {
 const AppShell: React.FC<AppShellProps> = ({ children, header, sidebar, className }) => {
   return (
     <div className="min-h-screen bg-background">
-      <GlassOrbs />
+      <Backdrop />
 
       {/* Header bar */}
       <motion.header

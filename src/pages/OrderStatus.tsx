@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, CheckCircle2, Truck, MessageCircle } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import { BANK_DETAILS } from '@/config/bank';
 import {
@@ -113,13 +113,13 @@ const OrderStatus: React.FC = () => {
   if (!reference) {
     return (
       <div className={wrap}>
-        <GlassOrbs />
+        <Backdrop />
         <div className={inner}>
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <h1 className="text-2xl font-bold text-foreground mb-4">Track your order</h1>
-          <GlassCard>
+          <Panel>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -135,9 +135,9 @@ const OrderStatus: React.FC = () => {
               />
               <GlowButton type="submit" className="w-full">Look up</GlowButton>
             </form>
-          </GlassCard>
+          </Panel>
 
-          <GlassCard className="mt-4">
+          <Panel className="mt-4">
             <h2 className="text-base font-semibold text-foreground mb-1">
               Lost your reference?
             </h2>
@@ -167,7 +167,7 @@ const OrderStatus: React.FC = () => {
                 <p className="text-sm text-muted-foreground">{recoverMsg}</p>
               )}
             </form>
-          </GlassCard>
+          </Panel>
         </div>
       </div>
     );
@@ -175,7 +175,7 @@ const OrderStatus: React.FC = () => {
 
   return (
     <div className={wrap}>
-      <GlassOrbs />
+      <Backdrop />
       <div className={inner}>
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
           <ArrowLeft className="w-4 h-4" /> Back
@@ -186,12 +186,12 @@ const OrderStatus: React.FC = () => {
             <Loader2 className="w-4 h-4 animate-spin" /> Loading…
           </div>
         ) : notFound ? (
-          <GlassCard>
+          <Panel>
             <p className="text-muted-foreground">
               We couldn&apos;t find an order with reference{' '}
               <strong className="text-foreground">{reference}</strong>.
             </p>
-          </GlassCard>
+          </Panel>
         ) : order ? (
           <>
             <p className="text-sm font-semibold tracking-wider text-primary">
@@ -199,7 +199,7 @@ const OrderStatus: React.FC = () => {
             </p>
             <h1 className="text-2xl font-bold text-foreground mt-1 mb-6">{reference}</h1>
 
-            <GlassCard className="mb-4">
+            <Panel className="mb-4">
               <Row label="Division" value={DIVISION_LABELS[order.division]} />
               <Row label="Teams / kits" value={String(order.team_count)} />
               <Row
@@ -228,10 +228,10 @@ const OrderStatus: React.FC = () => {
                   </span>
                 }
               />
-            </GlassCard>
+            </Panel>
 
             {order.line_items && order.line_items.length > 0 && (
-              <GlassCard className="mb-4">
+              <Panel className="mb-4">
                 <h2 className="text-base font-semibold text-foreground mb-2">
                   Kit contents (per team)
                 </h2>
@@ -258,11 +258,11 @@ const OrderStatus: React.FC = () => {
                     Struck-through items were not ordered.
                   </p>
                 )}
-              </GlassCard>
+              </Panel>
             )}
 
             {(order.status === 'registered' || order.status === 'payment_pending') && (
-              <GlassCard>
+              <Panel>
                 <h2 className="text-base font-semibold text-foreground mb-2">
                   Payment instructions
                 </h2>
@@ -322,11 +322,11 @@ const OrderStatus: React.FC = () => {
                     Proof of payment received — awaiting organizer confirmation.
                   </p>
                 )}
-              </GlassCard>
+              </Panel>
             )}
 
             {order.status === 'paid' && (
-              <GlassCard>
+              <Panel>
                 <p className="flex items-start gap-2 text-emerald-400">
                   <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
                   <span>
@@ -336,14 +336,14 @@ const OrderStatus: React.FC = () => {
                     A receipt has been emailed to you.
                   </span>
                 </p>
-              </GlassCard>
+              </Panel>
             )}
             {order.status === 'dispatched' && (
-              <GlassCard>
+              <Panel>
                 <p className="flex items-center gap-2 text-sky-400">
                   <Truck className="w-5 h-5" /> Your kit has been dispatched. 🎉
                 </p>
-              </GlassCard>
+              </Panel>
             )}
           </>
         ) : null}

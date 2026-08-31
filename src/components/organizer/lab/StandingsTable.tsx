@@ -1,4 +1,4 @@
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import { DIVISION_LABELS, type Division } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import type { LabData } from './LabConsole';
@@ -14,12 +14,12 @@ const StandingsTable: React.FC<{ data: LabData }> = ({ data }) => {
 
   if (!anyScored) {
     return (
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-sm text-muted-foreground">
           Standings appear once at least one submission has been fully scored. Scores roll up
           automatically — per-criterion average across judges, then weighted by stage.
         </p>
-      </GlassCard>
+      </Panel>
     );
   }
 
@@ -36,7 +36,7 @@ const StandingsTable: React.FC<{ data: LabData }> = ({ data }) => {
             <h3 className="text-sm font-semibold text-foreground mb-2">
               {DIVISION_LABELS[div]}
             </h3>
-            <GlassCard className="p-0 overflow-x-auto" hover={false}>
+            <Panel className="p-0 overflow-x-auto" hover={false}>
               <table className="w-full text-sm min-w-[560px]">
                 <thead>
                   <tr className="text-left text-muted-foreground border-b border-white/10">
@@ -90,7 +90,7 @@ const StandingsTable: React.FC<{ data: LabData }> = ({ data }) => {
                   ))}
                 </tbody>
               </table>
-            </GlassCard>
+            </Panel>
           </div>
         );
       })}

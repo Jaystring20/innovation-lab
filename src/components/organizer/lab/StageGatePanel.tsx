@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertTriangle, Loader2, Play, Save } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import { runStageGate, updateStage, type GateResult } from '@/lib/lab';
 import { DIVISION_LABELS } from '@/lib/store';
@@ -64,7 +64,7 @@ const StageGatePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
 
   return (
     <div className="space-y-4">
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <div className="flex items-center gap-3 flex-wrap mb-4">
           <span className="text-sm text-muted-foreground">Gate after</span>
           {data.stages
@@ -122,12 +122,12 @@ const StageGatePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
           Teams are ranked within their division on every stage scored so far. Preview is
           read-only; nothing changes until you confirm.
         </p>
-      </GlassCard>
+      </Panel>
 
       {error && (
-        <GlassCard hover={false}>
+        <Panel hover={false}>
           <p className="text-sm text-red-400">{error}</p>
-        </GlassCard>
+        </Panel>
       )}
 
       {preview && (
@@ -143,7 +143,7 @@ const StageGatePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
                   </span>
                 )}
               </h3>
-              <GlassCard className="p-0 overflow-x-auto" hover={false}>
+              <Panel className="p-0 overflow-x-auto" hover={false}>
                 <table className="w-full text-sm min-w-[420px]">
                   <thead>
                     <tr className="text-left text-muted-foreground border-b border-white/10">
@@ -173,12 +173,12 @@ const StageGatePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
                     ))}
                   </tbody>
                 </table>
-              </GlassCard>
+              </Panel>
             </div>
           ))}
 
           {preview.dry_run && (
-            <GlassCard hover={false}>
+            <Panel hover={false}>
               {confirming ? (
                 <div className="space-y-3">
                   <p className="flex items-start gap-2 text-sm text-amber-400">
@@ -209,15 +209,15 @@ const StageGatePanel: React.FC<{ data: LabData; onChanged: () => void }> = ({
                   Apply this cut…
                 </button>
               )}
-            </GlassCard>
+            </Panel>
           )}
 
           {!preview.dry_run && (
-            <GlassCard hover={false}>
+            <Panel hover={false}>
               <p className="text-sm text-emerald-400">
                 Gate applied. Advancing teams now have Stage 3 and Stage 4 open.
               </p>
-            </GlassCard>
+            </Panel>
           )}
         </>
       )}

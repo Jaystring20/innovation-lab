@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, FlaskConical, ShieldCheck, PackageSearch, ArrowRight } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import Wordmark from '@/components/Wordmark';
 import HeroImagePlate from '@/components/HeroImagePlate';
@@ -18,7 +18,7 @@ const FUNNEL = [
 const Landing: React.FC = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <GlassOrbs />
+      <Backdrop />
 
       <div className="relative z-10 max-w-5xl mx-auto px-5 py-16">
         <motion.header
@@ -57,7 +57,7 @@ const Landing: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <GlassCard className="h-full flex flex-col">
+            <Panel className="h-full flex flex-col">
               <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
                 <ShoppingCart className="w-6 h-6 text-primary" />
               </div>
@@ -78,7 +78,7 @@ const Landing: React.FC = () => {
                   </GlowButton>
                 </Link>
               </div>
-            </GlassCard>
+            </Panel>
           </motion.div>
 
           <motion.div
@@ -86,7 +86,7 @@ const Landing: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <GlassCard className="h-full flex flex-col">
+            <Panel className="h-full flex flex-col">
               <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
                 <FlaskConical className="w-6 h-6 text-primary" />
               </div>
@@ -114,7 +114,7 @@ const Landing: React.FC = () => {
                   Enter the Lab <ArrowRight className="w-4 h-4" />
                 </GlowButton>
               </Link>
-            </GlassCard>
+            </Panel>
           </motion.div>
         </div>
 

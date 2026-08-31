@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import Wordmark from '@/components/Wordmark';
 import { useAuth } from '@/contexts/AuthContext';
@@ -56,7 +56,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      <GlassOrbs />
+      <Backdrop />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.92, y: 30 }}
@@ -64,7 +64,7 @@ const Login: React.FC = () => {
         transition={{ duration: 0.7, ease: 'easeOut' }}
         className="w-full max-w-md relative z-10"
       >
-        <GlassCard className="p-8 overflow-hidden" hover={false}>
+        <Panel className="p-8 overflow-hidden" hover={false}>
           {/* Wordmark header */}
           <motion.div
             className="mb-8"
@@ -189,7 +189,7 @@ const Login: React.FC = () => {
           <p className="text-center text-xs text-muted-foreground/60 mt-4">
             Judges and organizers sign in here too.
           </p>
-        </GlassCard>
+        </Panel>
       </motion.div>
     </div>
   );

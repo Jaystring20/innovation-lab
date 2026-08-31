@@ -10,7 +10,7 @@ import {
   RefreshCw,
   MessageCircle,
 } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -213,12 +213,12 @@ const OrganizerDashboard: React.FC = () => {
               </div>
 
               {error && (
-                <GlassCard className="mb-4">
+                <Panel className="mb-4">
                   <p className="text-sm text-red-400">{error}</p>
-                </GlassCard>
+                </Panel>
               )}
 
-              <GlassCard className="p-0 overflow-x-auto">
+              <Panel className="p-0 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-left text-muted-foreground border-b border-white/10">
@@ -308,7 +308,7 @@ const OrganizerDashboard: React.FC = () => {
                     )}
                   </tbody>
                 </table>
-              </GlassCard>
+              </Panel>
             </>
           ) : (
             <LabConsole />

@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Lock, Package, Truck } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import {
   listKits,
@@ -118,7 +118,7 @@ const Store: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#020617] relative overflow-hidden">
-      <GlassOrbs />
+      <Backdrop />
       <div className="relative z-10 max-w-2xl mx-auto px-5 py-12">
         <Link
           to="/"
@@ -143,9 +143,9 @@ const Store: React.FC = () => {
             <Loader2 className="w-4 h-4 animate-spin" /> Loading kits…
           </div>
         ) : loadError ? (
-          <GlassCard>
+          <Panel>
             <p className="text-destructive-foreground text-sm">{loadError}</p>
-          </GlassCard>
+          </Panel>
         ) : (
           <>
             {/* Division picker */}
@@ -182,7 +182,7 @@ const Store: React.FC = () => {
                 className="space-y-6"
               >
                 {/* Components */}
-                <GlassCard>
+                <Panel>
                   <h2 className="text-lg font-semibold text-foreground mb-1">Components</h2>
                   <p className="text-sm text-muted-foreground mb-4">
                     The controller board is always included so every team builds the same
@@ -240,10 +240,10 @@ const Store: React.FC = () => {
                       {naira.format(perTeam)}
                     </span>
                   </div>
-                </GlassCard>
+                </Panel>
 
                 {/* Fulfilment */}
-                <GlassCard>
+                <Panel>
                   <h2 className="text-lg font-semibold text-foreground mb-3">Delivery</h2>
                   <div className="space-y-2">
                     <FulfilmentOption
@@ -282,7 +282,7 @@ const Store: React.FC = () => {
                       />
                     )}
                   </div>
-                </GlassCard>
+                </Panel>
 
                 {/* School details + summary */}
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -340,7 +340,7 @@ const Store: React.FC = () => {
                     />
                   </Field>
 
-                  <GlassCard hover={false} className="space-y-1.5">
+                  <Panel hover={false} className="space-y-1.5">
                     <SummaryRow
                       label={`Kit × ${teams} team${teams === 1 ? '' : 's'}`}
                       value={naira.format(perTeam * teams)}
@@ -362,7 +362,7 @@ const Store: React.FC = () => {
                     <p className="text-xs text-muted-foreground pt-1">
                       Every registered school receives a kit. Dispatched {DISPATCH_NOTES[fulfilment]}.
                     </p>
-                  </GlassCard>
+                  </Panel>
 
                   {error && <p className="text-sm text-red-400">{error}</p>}
 
