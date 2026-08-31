@@ -6,6 +6,7 @@ import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import Wordmark from '@/components/Wordmark';
+import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
@@ -59,7 +60,21 @@ const OrganizerLogin: React.FC = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
-        <Panel className="p-8" hover={false}>
+        <Panel className="p-8 overflow-hidden" hover={false}>
+          {/* Logo hero image */}
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <HeroImagePlate
+              src={steamFoundryLogo}
+              alt="STEAM Foundry"
+              className="mx-auto"
+            />
+          </motion.div>
+
           <div className="text-center mb-8">
             <Wordmark size="md" className="justify-center mb-4" />
             <h1 className="text-xl font-semibold text-foreground mb-1 font-display">Organizer Sign In</h1>

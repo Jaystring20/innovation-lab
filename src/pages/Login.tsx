@@ -6,6 +6,7 @@ import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import Wordmark from '@/components/Wordmark';
+import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
@@ -65,12 +66,26 @@ const Login: React.FC = () => {
         className="w-full max-w-md relative z-10"
       >
         <Panel className="p-8 overflow-hidden" hover={false}>
+          {/* Logo hero image */}
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <HeroImagePlate
+              src={steamFoundryLogo}
+              alt="STEAM Foundry"
+              className="mx-auto"
+            />
+          </motion.div>
+
           {/* Wordmark header */}
           <motion.div
             className="mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
           >
             <Wordmark size="lg" className="justify-center" />
           </motion.div>
