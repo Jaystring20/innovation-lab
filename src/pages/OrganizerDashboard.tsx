@@ -11,6 +11,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import Panel from '@/components/Panel';
+import Wordmark from '@/components/Wordmark';
 import GlowButton from '@/components/GlowButton';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -26,7 +27,6 @@ import {
   type OrderStatus,
 } from '@/lib/store';
 import LabConsole from '@/components/organizer/lab/LabConsole';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 type Section = 'store' | 'lab';
 
@@ -37,11 +37,11 @@ const nextActions: Partial<Record<OrderStatus, { to: OrderStatus; label: string 
 };
 
 const badgeCls: Record<string, string> = {
-  registered: 'bg-amber-500/15 text-amber-400',
-  payment_pending: 'bg-amber-500/15 text-amber-400',
-  paid: 'bg-emerald-500/15 text-emerald-400',
-  dispatched: 'bg-sky-500/15 text-sky-400',
-  cancelled: 'bg-red-500/15 text-red-400',
+  registered: 'bg-warn/15 text-warn',
+  payment_pending: 'bg-warn/15 text-warn',
+  paid: 'bg-ok/15 text-ok',
+  dispatched: 'bg-info/15 text-info',
+  cancelled: 'bg-danger/15 text-danger',
 };
 
 const OrganizerDashboard: React.FC = () => {
@@ -126,13 +126,10 @@ const OrganizerDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex w-full">
       {/* Sidebar */}
-      <aside className="glass-sidebar w-60 hidden md:flex flex-col">
-        <div className="p-4 border-b border-white/10 flex items-center gap-3">
-          <img src={steamFoundryLogo} alt="" className="w-9 h-9 object-contain" />
-          <div>
-            <p className="font-bold text-foreground leading-tight">STEAM Foundry</p>
-            <p className="text-xs text-muted-foreground">Organizer console</p>
-          </div>
+      <aside className="w-60 hidden md:flex flex-col bg-surface border-r border-border overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <Wordmark size="sm" />
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground ml-2 flex-shrink-0">Org</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">
           <SideItem
@@ -148,10 +145,10 @@ const OrganizerDashboard: React.FC = () => {
             onClick={() => setSection('lab')}
           />
         </nav>
-        <div className="p-3 border-t border-white/10">
+        <div className="p-3 border-t border-border">
           <button
             onClick={() => signOut().then(() => navigate('/'))}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-white/10 transition-all"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-surface/50 transition-all"
           >
             <LogOut className="w-5 h-5" /> Sign out
           </button>
@@ -159,7 +156,7 @@ const OrganizerDashboard: React.FC = () => {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 glass-card rounded-none border-x-0 border-t-0 flex items-center justify-between px-6">
+        <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6">
           <div>
             <h1 className="text-lg font-semibold text-foreground">
               {section === 'store' ? 'Store — Orders' : 'Lab — Competition'}
@@ -221,7 +218,7 @@ const OrganizerDashboard: React.FC = () => {
               <Panel className="p-0 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-muted-foreground border-b border-white/10">
+                    <tr className="text-left text-muted-foreground border-b border-border">
                       <th className="p-3 font-medium">Reference</th>
                       <th className="p-3 font-medium">School</th>
                       <th className="p-3 font-medium">Division</th>
@@ -237,7 +234,7 @@ const OrganizerDashboard: React.FC = () => {
                     {orders.map((o) => {
                       const action = nextActions[o.status];
                       return (
-                        <tr key={o.id} className="border-b border-white/5 last:border-0">
+                        <tr key={o.id} className="border-b border-border/30 last:border-0">
                           <td className="p-3 font-mono text-foreground">{o.order_reference}</td>
                           <td className="p-3">
                             <div className="text-foreground">{o.schools?.name ?? '—'}</div>
@@ -261,7 +258,7 @@ const OrganizerDashboard: React.FC = () => {
                               {STATUS_LABELS[o.status]}
                             </span>
                             {o.receipt_sent_at && (
-                              <span className="block text-[11px] text-emerald-400/80 mt-1">
+                              <span className="block text-[11px] text-ok/80 mt-1">
                                 receipt sent
                               </span>
                             )}
@@ -279,7 +276,7 @@ const OrganizerDashboard: React.FC = () => {
                                 <span className="text-muted-foreground">—</span>
                               )}
                               {o.whatsapp_pinged_at && (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#25d366]">
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-ok">
                                   <MessageCircle className="w-3 h-3" /> WhatsApp
                                 </span>
                               )}
@@ -328,7 +325,7 @@ const SideItem: React.FC<{
   <button
     onClick={onClick}
     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-      active ? 'bg-primary/20 text-primary border border-primary/30' : 'text-muted-foreground hover:bg-white/10'
+      active ? 'bg-primary/20 text-primary border border-primary/30' : 'text-muted-foreground hover:bg-surface/50'
     }`}
   >
     {icon}
@@ -337,10 +334,10 @@ const SideItem: React.FC<{
 );
 
 const Stat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="glass-card p-3">
+  <Panel className="p-3" hover={false}>
     <p className="text-xs text-muted-foreground">{label}</p>
     <p className="text-xl font-bold text-foreground mt-0.5">{value}</p>
-  </div>
+  </Panel>
 );
 
 export default OrganizerDashboard;
