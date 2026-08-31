@@ -4,7 +4,6 @@ import { ShoppingCart, FlaskConical, ShieldCheck, PackageSearch, ArrowRight } fr
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import Wordmark from '@/components/Wordmark';
 import HeroImagePlate from '@/components/HeroImagePlate';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
@@ -27,8 +26,6 @@ const Landing: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <Wordmark size="lg" className="justify-center mb-8" />
-
           {/* Hero image plate */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
