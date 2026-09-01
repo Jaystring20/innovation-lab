@@ -17,6 +17,7 @@ const Store = lazy(() => import("./pages/Store"));
 const OrderStatus = lazy(() => import("./pages/OrderStatus"));
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const TeamSetupPage = lazy(() => import("./pages/TeamSetupPage"));
 const JudgeDashboard = lazy(() => import("./pages/JudgeDashboard"));
 const OrganizerLogin = lazy(() => import("./pages/OrganizerLogin"));
 const OrganizerDashboard = lazy(() => import("./pages/OrganizerDashboard"));
@@ -62,6 +63,7 @@ const App = () => (
                       One sign-in for all three roles; each lands on its own view. */}
                   <Route path="/lab" element={<Login />} />
                   <Route path="/lab/dashboard" element={<Dashboard />} />
+                  <Route path="/lab/setup-teams" element={<TeamSetupPage />} />
                   <Route path="/lab/judge" element={<JudgeDashboard />} />
 
                   {/* Organizer console — Store + Lab admin, Supabase Auth gated */}

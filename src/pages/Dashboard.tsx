@@ -134,12 +134,21 @@ const Dashboard: React.FC = () => {
               BATTLE.
             </p>
           </div>
-          <button
-            onClick={load}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary"
-          >
-            <RefreshCw className="w-4 h-4" /> Refresh
-          </button>
+          <div className="flex items-center gap-3">
+            <GlowButton
+              onClick={() => navigate('/lab/setup-teams')}
+              size="sm"
+              variant="outline"
+            >
+              Setup teams
+            </GlowButton>
+            <button
+              onClick={load}
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary"
+            >
+              <RefreshCw className="w-4 h-4" /> Refresh
+            </button>
+          </div>
         </div>
 
         {error && (
