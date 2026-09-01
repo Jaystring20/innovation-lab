@@ -8,7 +8,7 @@ import React, {
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
-export type UserRole = 'organizer' | 'judge' | 'teacher';
+export type UserRole = 'organizer' | 'judge' | 'teacher' | 'student';
 
 export interface Profile {
   id: string;
@@ -27,6 +27,7 @@ interface AuthContextType {
   isOrganizer: boolean;
   isJudge: boolean;
   isTeacher: boolean;
+  isStudent: boolean;
   displayName: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
@@ -115,6 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isOrganizer: role === 'organizer',
     isJudge: role === 'judge',
     isTeacher: role === 'teacher',
+    isStudent: role === 'student',
     displayName:
       profile?.full_name ??
       (session?.user.user_metadata?.name as string | undefined) ??

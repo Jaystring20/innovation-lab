@@ -27,6 +27,7 @@ const Login: React.FC = () => {
     if (authLoading || !session || !role) return;
     if (role === 'organizer') navigate('/organizer', { replace: true });
     else if (role === 'judge') navigate('/lab/judge', { replace: true });
+    else if (role === 'student') navigate('/lab/student', { replace: true });
     else navigate('/lab/dashboard', { replace: true });
   }, [authLoading, session, role, navigate]);
 
