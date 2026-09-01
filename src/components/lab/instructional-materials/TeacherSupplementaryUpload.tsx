@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, Trash2, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { FileUploadField } from '../FileUploadField';
 
 interface SupplementaryMaterial {
@@ -28,56 +29,90 @@ export function TeacherSupplementaryUpload({
   stageId,
   onUploaded,
 }: TeacherSupplementaryUploadProps) {
-  const [materials, setMaterials] = useState<SupplementaryMaterial[]>([
-    {
-      id: 'mat-1',
-      name: 'My Design Template - Simplified.fig',
-      size: '4.2 MB',
-      type: 'Figma file',
-      uploadedDate: 'Oct 3',
-      syncStatus: 'synced',
-      studentsSynced: 28,
-      totalStudents: 28,
-    },
-    {
-      id: 'mat-2',
-      name: 'Extra Practice: 5 More Ideas.pdf',
-      size: '1.8 MB',
-      type: 'PDF',
-      uploadedDate: 'Oct 3',
-      syncStatus: 'synced',
-      studentsSynced: 28,
-      totalStudents: 28,
-    },
-  ]);
-
+  const [materials, setMaterials] = useState<SupplementaryMaterial[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Load existing materials from Supabase
+  useEffect(() => {
+    const loadMaterials = async () => {
+      const { data } = await supabase
+        .from('teacher_supplementary_materials')
+        .select('*')
+        .eq('teacher_id', teacherId)
+        .eq('stage_id', stageId)
+        .order('uploaded_date', { ascending: false });
+
+      if (data) {
+        setMaterials(
+          data.map((m) => ({
+            id: m.id,
+            name: m.file_name,
+            size: m.file_size || 'Unknown',
+            type: m.file_type || 'file',
+            uploadedDate: new Date(m.uploaded_date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            }),
+            syncStatus: (m.sync_status || 'synced') as 'synced' | 'syncing' | 'failed',
+            studentsSynced: m.students_synced || 0,
+            totalStudents: m.total_students || 0,
+          }))
+        );
+      }
+    };
+    loadMaterials();
+  }, [teacherId, stageId]);
 
   const handleFilesSelected = async (files: File[]) => {
     setIsUploading(true);
     try {
-      // Simulate upload delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Upload files and save to Supabase
+      const uploadedMaterials: SupplementaryMaterial[] = [];
 
-      // Add new materials (mock)
-      const newMaterials = files.map((file, index) => ({
-        id: `mat-${Date.now()}-${index}`,
-        name: file.name,
-        size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-        type: file.type.split('/')[1] || 'file',
-        uploadedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        syncStatus: 'syncing' as const,
-        studentsSynced: Math.floor(Math.random() * 20) + 8, // Random for demo
-        totalStudents: 28,
-      }));
+      for (const file of files) {
+        // Simulate file upload (in real implementation, upload to Google Drive)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      setMaterials((prev) => [newMaterials[0], ...prev]); // Add first one for demo
+        const newMaterial: SupplementaryMaterial = {
+          id: `mat-${Date.now()}-${Math.random()}`,
+          name: file.name,
+          size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+          type: file.type.split('/')[1] || 'file',
+          uploadedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          syncStatus: 'syncing',
+          studentsSynced: 0,
+          totalStudents: 0,
+        };
+
+        // Save to Supabase
+        const { data } = await supabase
+          .from('teacher_supplementary_materials')
+          .insert({
+            school_id: schoolId,
+            teacher_id: teacherId,
+            stage_id: stageId,
+            file_name: file.name,
+            file_size: newMaterial.size,
+            file_type: newMaterial.type,
+            sync_status: 'pending',
+          })
+          .select()
+          .single();
+
+        if (data) {
+          newMaterial.id = data.id;
+          uploadedMaterials.push(newMaterial);
+        }
+      }
+
+      setMaterials((prev) => [...uploadedMaterials, ...prev]);
+      onUploaded?.();
 
       // Simulate sync completion
       setTimeout(() => {
         setMaterials((prev) =>
           prev.map((m) =>
-            newMaterials.some((nm) => nm.id === m.id)
+            uploadedMaterials.some((nm) => nm.id === m.id)
               ? { ...m, syncStatus: 'synced' as const, studentsSynced: 28 }
               : m
           )
