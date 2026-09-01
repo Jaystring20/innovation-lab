@@ -190,6 +190,7 @@ export async function markWhatsappPinged(ref: string): Promise<void> {
 export interface RegisterInput {
   schoolName: string;
   state: string;
+  address: string;
   contactName: string;
   contactEmail: string;
   contactPhone: string;

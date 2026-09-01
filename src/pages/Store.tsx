@@ -39,6 +39,7 @@ const Store: React.FC = () => {
   const [form, setForm] = useState({
     schoolName: '',
     state: '',
+    address: '',
     contactName: '',
     contactEmail: '',
     contactPhone: '',
@@ -95,8 +96,8 @@ const Store: React.FC = () => {
     e.preventDefault();
     setError(null);
     if (!kit) return setError('Please select your division first.');
-    if (!form.schoolName || !form.contactName || !form.contactEmail || !form.contactPhone) {
-      return setError('Please fill in all school and contact details.');
+    if (!form.schoolName || !form.address || !form.contactName || !form.contactEmail || !form.contactPhone) {
+      return setError('Please fill in all school, address, and contact details.');
     }
     setSubmitting(true);
     try {
@@ -302,6 +303,16 @@ const Store: React.FC = () => {
                       value={form.state}
                       onChange={(e) => setForm({ ...form, state: e.target.value })}
                       placeholder="e.g. Lagos"
+                    />
+                  </Field>
+                  <Field label="Full delivery address">
+                    <textarea
+                      className={`${inputCls} resize-none`}
+                      rows={3}
+                      required
+                      value={form.address}
+                      onChange={(e) => setForm({ ...form, address: e.target.value })}
+                      placeholder="Street address, building, landmark&#10;City/Town&#10;Postal code (if applicable)"
                     />
                   </Field>
                   <Field label="STEM teacher / contact name">
