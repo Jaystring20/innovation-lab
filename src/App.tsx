@@ -12,6 +12,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 // split: a school ordering a kit should not download the Lab and the organizer
 // console to do it.
 import Landing from "./pages/Landing";
+import LegacyDashboard from "./__legacy_preview/LegacyDashboard";
 
 const Store = lazy(() => import("./pages/Store"));
 const OrderStatus = lazy(() => import("./pages/OrderStatus"));
@@ -52,6 +53,7 @@ const App = () => (
                 <Routes>
                   {/* Shared entry */}
                   <Route path="/" element={<Landing />} />
+                  <Route path="/__legacy" element={<LegacyDashboard />} />
 
                   {/* Store — public, no account needed */}
                   <Route path="/store" element={<Store />} />
