@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDown, Plus, Trash2, Edit2, Check, X, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface RoleTemplate {
   id: string;
