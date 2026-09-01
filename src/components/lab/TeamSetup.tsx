@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronDown, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, Edit2, Check, X, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RoleTemplate {
   id: string;
-  templateName: string;
+  template_name: string;
   description: string;
   roles: Array<{ name: string; description: string }>;
 }
@@ -37,43 +38,6 @@ interface TeamSetupProps {
   onSave?: (config: TeamSetup) => void;
 }
 
-// Role templates (predefined)
-const ROLE_TEMPLATES: RoleTemplate[] = [
-  {
-    id: 'template-1',
-    templateName: 'Classic 4-Role',
-    description: 'Standard team structure: Designer, Developer, Project Manager, Communicator',
-    roles: [
-      { name: 'Designer', description: 'UX/UI and design decisions' },
-      { name: 'Developer', description: 'Hardware/software implementation' },
-      { name: 'Project Manager', description: 'Coordination and timeline' },
-      { name: 'Communicator', description: 'Documentation and presentation' },
-    ],
-  },
-  {
-    id: 'template-2',
-    templateName: 'Tech-Heavy',
-    description: 'Focus on technical roles',
-    roles: [
-      { name: 'Lead Developer', description: 'Software architecture' },
-      { name: 'Hardware Engineer', description: 'Physical build' },
-      { name: 'AI Specialist', description: 'Machine learning integration' },
-      { name: 'QA Tester', description: 'Testing and validation' },
-    ],
-  },
-  {
-    id: 'template-3',
-    templateName: 'Leadership',
-    description: 'Leadership-focused team structure',
-    roles: [
-      { name: 'Project Lead', description: 'Overall project management' },
-      { name: 'Technical Lead', description: 'Technical decision-making' },
-      { name: 'Business Lead', description: 'Market research and strategy' },
-      { name: 'Communications Lead', description: 'Stakeholder communication' },
-    ],
-  },
-];
-
 export function TeamSetup({
   schoolId,
   teacherId,
@@ -83,15 +47,52 @@ export function TeamSetup({
   onSave,
 }: TeamSetupProps) {
   const [step, setStep] = useState<'template' | 'assign-roles' | 'assign-members'>('template');
-  const [selectedTemplate, setSelectedTemplate] = useState<RoleTemplate | null>(ROLE_TEMPLATES[0]);
+  const [roleTemplates, setRoleTemplates] = useState<RoleTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<RoleTemplate | null>(null);
   const [isCustomRoles, setIsCustomRoles] = useState(false);
   const [customRoles, setCustomRoles] = useState<Array<{ name: string; description: string }>>([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [newRoleDesc, setNewRoleDesc] = useState('');
   const [assignments, setAssignments] = useState<TeamMember[]>([]);
   const [editingMember, setEditingMember] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const currentRoles = isCustomRoles ? customRoles : selectedTemplate?.roles || [];
+
+  // Load role templates from Supabase
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        setLoading(true);
+        const { data, error: fetchError } = await supabase
+          .from('role_templates')
+          .select('*')
+          .order('is_default', { ascending: false });
+
+        if (fetchError) throw fetchError;
+
+        const templates: RoleTemplate[] = (data || []).map((t) => ({
+          id: t.id,
+          template_name: t.template_name,
+          description: t.description,
+          roles: t.roles,
+        }));
+
+        setRoleTemplates(templates);
+        if (templates.length > 0) {
+          setSelectedTemplate(templates[0]);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load templates');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTemplates();
+  }, []);
 
   // Initialize assignments
   useEffect(() => {
@@ -152,8 +153,99 @@ export function TeamSetup({
     }
   };
 
+  const handleSaveConfiguration = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+
+      // 1. Save team configuration
+      const { error: configError } = await supabase
+        .from('team_configurations')
+        .upsert({
+          team_id: teamId,
+          template_id: selectedTemplate?.id || null,
+          is_custom: isCustomRoles,
+          roles_count: currentRoles.length,
+          configured_by: teacherId,
+        }, { onConflict: 'team_id' });
+
+      if (configError) throw configError;
+
+      // 2. If custom roles, save them to custom_team_roles
+      if (isCustomRoles) {
+        for (const role of customRoles) {
+          const { error: roleError } = await supabase
+            .from('custom_team_roles')
+            .upsert({
+              team_id: teamId,
+              role_name: role.name,
+              role_description: role.description,
+              created_by: teacherId,
+            }, { onConflict: 'team_id,role_name' });
+
+          if (roleError) throw roleError;
+        }
+      }
+
+      // 3. Save team member profiles (assignments)
+      for (const member of assignments) {
+        if (member.assignedRole) {
+          const { error: memberError } = await supabase
+            .from('team_member_profiles')
+            .upsert({
+              team_id: teamId,
+              student_id: member.studentId,
+              assigned_role: member.assignedRole,
+              full_name: member.fullName,
+              bio: member.roleDescription,
+              assigned_by: teacherId,
+            }, { onConflict: 'team_id,student_id,assigned_role' });
+
+          if (memberError) throw memberError;
+        }
+      }
+
+      // Call the onSave callback with the configuration
+      const config: TeamSetup = {
+        teamId,
+        teamName,
+        templateId: selectedTemplate?.id || null,
+        isCustom: isCustomRoles,
+        roles: currentRoles,
+        members: assignments,
+      };
+
+      onSave?.(config);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save configuration');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="border border-zinc-300 dark:border-zinc-700 rounded-lg p-6 text-center">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">Loading role templates...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Error Alert */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg p-4 flex gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-500 text-red-900 dark:text-red-100">Error</p>
+            <p className="text-xs text-red-800 dark:text-red-200 mt-1">{error}</p>
+          </div>
+        </div>
+      )}
+
       {/* Progress Indicator */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-600 text-zinc-900 dark:text-zinc-100">
@@ -202,7 +294,7 @@ export function TeamSetup({
 
           {/* Template Options */}
           <div className="space-y-2">
-            {ROLE_TEMPLATES.map((template) => (
+            {roleTemplates.map((template) => (
               <button
                 key={template.id}
                 onClick={() => {
@@ -218,7 +310,7 @@ export function TeamSetup({
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="font-500 text-zinc-900 dark:text-zinc-100">
-                      {template.templateName}
+                      {template.template_name}
                     </p>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
                       {template.description}
@@ -482,19 +574,11 @@ export function TeamSetup({
               Back
             </button>
             <button
-              onClick={() => {
-                onSave?.({
-                  teamId,
-                  teamName,
-                  templateId: selectedTemplate?.id || null,
-                  isCustom: isCustomRoles,
-                  roles: currentRoles,
-                  members: assignments,
-                });
-              }}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-500"
+              onClick={handleSaveConfiguration}
+              disabled={saving}
+              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition font-500"
             >
-              ✅ Save Team Configuration
+              {saving ? 'Saving...' : '✅ Save Team Configuration'}
             </button>
           </div>
         </div>
