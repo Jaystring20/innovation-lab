@@ -30,6 +30,7 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [checkingLink, setCheckingLink] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -85,6 +86,17 @@ const Dashboard: React.FC = () => {
 
   // Registered, but no organizer has linked the account to a school yet.
   if (!profile?.school_id) {
+    async function handleCheckLink() {
+      setCheckingLink(true);
+      try {
+        // Refresh the page to check if the profile has been updated
+        await new Promise(resolve => setTimeout(resolve, 500));
+        window.location.reload();
+      } finally {
+        setCheckingLink(false);
+      }
+    }
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
         <Backdrop />
@@ -95,11 +107,27 @@ const Dashboard: React.FC = () => {
           <h1 className="text-xl font-bold text-foreground mb-2">
             Waiting to be linked to your school
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mb-6">
             Your account ({displayName}) is registered. The APEN 2026 team links it to your
             school once your kit order is confirmed — then your teams and the Innovation
             Funnel appear here.
           </p>
+          <GlowButton
+            onClick={handleCheckLink}
+            disabled={checkingLink}
+            size="sm"
+            className="w-full"
+          >
+            {checkingLink ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Checking...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" /> Check if linked
+              </>
+            )}
+          </GlowButton>
         </Panel>
       </div>
     );
