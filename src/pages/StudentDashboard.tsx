@@ -1,29 +1,35 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, LogOut, Zap, Trophy, Award, Target } from 'lucide-react';
+import { Loader2, LogOut, Zap, Trophy, Award, Target, Users, BookOpen } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import AppShell from '@/components/AppShell';
 import GlowButton from '@/components/GlowButton';
-import StatusPill from '@/components/lab/StatusPill';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type TierType } from '@/contexts/ThemeContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { supabase } from '@/lib/supabase';
-import type { Team, Stage, Submission, Feedback } from '@/lib/lab';
+import { listStages, listMyTeams, type Stage, type Team } from '@/lib/lab';
+import {
+  getStudentProgress,
+  getLeaderboard,
+  getStudentBadges,
+  type StudentProgress,
+  type LeaderboardEntry,
+  type Badge,
+} from '@/lib/student';
+import MissionBrowser from '@/components/student/MissionBrowser';
+import TeamCollaboration from '@/components/student/TeamCollaboration';
+import Leaderboard from '@/components/student/Leaderboard';
+import Portfolio from '@/components/student/Portfolio';
+import Achievements from '@/components/student/Achievements';
 
-interface StudentTeamData {
-  team: Team;
-  currentStage: Stage | null;
-  submission: Submission | null;
-  feedback: Feedback | null;
-  ranking: { position: number; totalTeams: number } | null;
-}
+type TabName = 'overview' | 'missions' | 'team' | 'leaderboard' | 'achievements' | 'portfolio';
 
 /**
- * Student view of the Lab: their assigned team, current mission progress,
- * leaderboard standings, and achievements. Access gated by role='student'.
+ * Student Dashboard: The complete learning platform experience.
+ * Students experience their innovation journey through 4 stages: Design → Build → Intelligize → Battle.
+ * Features: missions, team collaboration, submissions, feedback, XP/badges, leaderboard, portfolio.
  */
 const StudentDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -31,7 +37,13 @@ const StudentDashboard: React.FC = () => {
   const { setTier } = useTheme();
   const reduceMotion = useReducedMotion();
 
-  const [teamData, setTeamData] = useState<StudentTeamData | null>(null);
+  const [currentTab, setCurrentTab] = useState<TabName>('overview');
+  const [team, setTeam] = useState<Team | null>(null);
+  const [stages, setStages] = useState<Stage[]>([]);
+  const [currentStage, setCurrentStage] = useState<Stage | null>(null);
+  const [progress, setProgress] = useState<StudentProgress | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,70 +60,38 @@ const StudentDashboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch teams for this school where student is assigned
-      const { data: teams, error: teamsError } = await supabase
-        .from('teams')
-        .select('*')
-        .eq('school_id', profile.school_id)
-        .limit(1);
+      // Fetch stages
+      const stagesData = await listStages();
+      setStages(stagesData);
+      if (stagesData.length > 0) setCurrentStage(stagesData[0]);
 
-      if (teamsError) throw teamsError;
-      if (!teams || teams.length === 0) {
-        setError('No team assigned yet.');
+      // Fetch user's team
+      const teamsData = await listMyTeams();
+      if (teamsData.length === 0) {
+        setError('You are not assigned to a team yet.');
         setLoading(false);
         return;
       }
 
-      const team = teams[0] as Team;
-      setTier(team.division as TierType);
+      const userTeam = teamsData[0] as Team;
+      setTeam(userTeam);
+      setTier(userTeam.division as TierType);
 
-      // Fetch current stage
-      const { data: stages, error: stagesError } = await supabase
-        .from('stages')
-        .select('*')
-        .order('ord', { ascending: true })
-        .limit(1);
+      // Fetch progress
+      const progressData = await getStudentProgress(
+        profile.id,
+        userTeam.id,
+        profile.school_id,
+      );
+      if (progressData) setProgress(progressData);
 
-      if (stagesError) throw stagesError;
-      const currentStage = stages?.[0] as Stage | null;
+      // Fetch leaderboard
+      const leaderboardData = await getLeaderboard(profile.school_id, userTeam.division);
+      setLeaderboard(leaderboardData);
 
-      // Fetch submission for current stage
-      let submission: Submission | null = null;
-      let feedback: Feedback | null = null;
-      if (currentStage) {
-        const { data: subs, error: subsError } = await supabase
-          .from('submissions')
-          .select('*')
-          .eq('team_id', team.id)
-          .eq('stage_id', currentStage.id)
-          .maybeSingle();
-
-        if (subsError && subsError.code !== 'PGRST116') throw subsError;
-        submission = (subs as Submission | null) ?? null;
-
-        // Fetch feedback if submission exists
-        if (submission) {
-          const { data: fb, error: fbError } = await supabase
-            .rpc('get_submission_feedback', { submission_id: submission.id });
-          if (!fbError) feedback = fb as Feedback | null;
-        }
-      }
-
-      // Fetch team rankings (simplified: count teams in same division)
-      const { count: totalTeams, error: countError } = await supabase
-        .from('teams')
-        .select('*', { count: 'exact', head: true })
-        .eq('school_id', profile.school_id);
-
-      const ranking = totalTeams ? { position: 1, totalTeams } : null;
-
-      setTeamData({
-        team,
-        currentStage,
-        submission,
-        feedback,
-        ranking,
-      });
+      // Fetch badges
+      const badgesData = await getStudentBadges(profile.id);
+      setBadges(badgesData);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -130,6 +110,8 @@ const StudentDashboard: React.FC = () => {
       </div>
     );
   }
+
+  const unlockedBadgeCount = badges.filter((b) => b.unlocked_at).length;
 
   return (
     <AppShell
@@ -153,14 +135,15 @@ const StudentDashboard: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={reduceMotion ? {} : { delay: 0.1 }}
       >
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-1">
             Welcome back, {displayName || 'Student'}
           </h1>
-          {teamData?.team && (
+          {team && (
             <p className="text-sm text-muted-foreground">
-              {teamData.team.division.charAt(0).toUpperCase() + teamData.team.division.slice(1).replace(/_/g, ' ')} •{' '}
-              {teamData.team.name}
+              {team.division.charAt(0).toUpperCase() + team.division.slice(1).replace(/_/g, ' ')} •{' '}
+              {team.name}
             </p>
           )}
         </div>
@@ -174,125 +157,173 @@ const StudentDashboard: React.FC = () => {
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
-            <p className="text-muted-foreground">Loading your mission…</p>
+            <p className="text-muted-foreground">Loading your dashboard…</p>
           </div>
-        ) : teamData ? (
-          <div className="space-y-6">
-            {/* Current Mission */}
-            {teamData.currentStage && (
+        ) : team && progress ? (
+          <>
+            {/* Quick Stats */}
+            {currentTab === 'overview' && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduceMotion ? {} : { delay: 0.2 }}
+                className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
               >
-                <Panel className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground">
-                        Current Mission
-                      </h2>
-                      <h3 className="text-lg font-semibold text-primary mt-2">
-                        {teamData.currentStage.name}
-                      </h3>
-                    </div>
-                    <div className="text-right">
-                      {teamData.submission && (
-                        <StatusPill status={teamData.submission.status} />
-                      )}
-                    </div>
+                <Panel hover={false} className="text-center">
+                  <div className="flex items-center justify-center mb-3">
+                    <Zap className="w-5 h-5 text-primary" />
                   </div>
+                  <p className="text-3xl font-bold text-primary">{progress.overall_xp}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Innovation Points</p>
+                </Panel>
 
-                  <p className="text-sm text-muted-foreground">
-                    {teamData.currentStage.key === 'design' &&
-                      'Design your solution to the challenge.'}
-                    {teamData.currentStage.key === 'build' &&
-                      'Build and test your prototype.'}
-                    {teamData.currentStage.key === 'intelligize' &&
-                      'Integrate AI into your solution.'}
-                    {teamData.currentStage.key === 'battle' &&
-                      'Showcase your work at the BATTLE.'}
-                  </p>
+                <Panel hover={false} className="text-center">
+                  <div className="flex items-center justify-center mb-3">
+                    <Trophy className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-3xl font-bold text-primary">#{progress.rank}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Leaderboard Rank</p>
+                </Panel>
 
-                  {teamData.currentStage.due_at && (
-                    <p className="text-sm text-muted-foreground">
-                      Due: {new Date(teamData.currentStage.due_at).toLocaleDateString()}
-                    </p>
-                  )}
+                <Panel hover={false} className="text-center">
+                  <div className="flex items-center justify-center mb-3">
+                    <Award className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-3xl font-bold text-primary">{unlockedBadgeCount}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Badges Earned</p>
+                </Panel>
 
-                  {!teamData.submission && (
-                    <GlowButton
-                      onClick={() => {
-                        /* Link to submission form when ready */
-                      }}
-                      size="sm"
-                    >
-                      Start Mission
-                    </GlowButton>
-                  )}
+                <Panel hover={false} className="text-center">
+                  <div className="flex items-center justify-center mb-3">
+                    <Target className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-3xl font-bold text-primary">{progress.completion_percent}%</p>
+                  <p className="text-xs text-muted-foreground mt-1">Journey Complete</p>
                 </Panel>
               </motion.div>
             )}
 
-            {/* Stats Grid */}
+            {/* Navigation Tabs */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={reduceMotion ? {} : { delay: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              className="flex flex-wrap gap-2 mb-8 pb-4 border-b border-border overflow-x-auto"
             >
-              <Panel hover={false} className="text-center">
-                <div className="flex items-center justify-center mb-3">
-                  <Zap className="w-5 h-5 text-primary" />
-                </div>
-                <p className="text-3xl font-bold text-primary">2,540</p>
-                <p className="text-xs text-muted-foreground mt-1">Innovation Points</p>
-              </Panel>
-
-              <Panel hover={false} className="text-center">
-                <div className="flex items-center justify-center mb-3">
-                  <Trophy className="w-5 h-5 text-primary" />
-                </div>
-                <p className="text-3xl font-bold text-primary">4</p>
-                <p className="text-xs text-muted-foreground mt-1">Leaderboard Rank</p>
-              </Panel>
-
-              <Panel hover={false} className="text-center">
-                <div className="flex items-center justify-center mb-3">
-                  <Award className="w-5 h-5 text-primary" />
-                </div>
-                <p className="text-3xl font-bold text-primary">8</p>
-                <p className="text-xs text-muted-foreground mt-1">Badges Earned</p>
-              </Panel>
+              {[
+                { id: 'overview' as TabName, label: 'Overview', icon: Target },
+                { id: 'missions' as TabName, label: 'Missions', icon: BookOpen },
+                { id: 'team' as TabName, label: 'Team', icon: Users },
+                { id: 'leaderboard' as TabName, label: 'Leaderboard', icon: Trophy },
+                { id: 'achievements' as TabName, label: 'Achievements', icon: Award },
+                { id: 'portfolio' as TabName, label: 'Portfolio', icon: Zap },
+              ].map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setCurrentTab(id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium ${
+                    currentTab === id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-surface'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </button>
+              ))}
             </motion.div>
 
-            {/* Navigation Cards */}
+            {/* Tab Content */}
             <motion.div
+              key={currentTab}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={reduceMotion ? {} : { delay: 0.4 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              transition={reduceMotion ? {} : { duration: 0.3 }}
             >
-              <Panel hover className="flex items-center gap-3 cursor-pointer">
-                <div className="flex-shrink-0">
-                  <Target className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">Missions</p>
-                  <p className="text-xs text-muted-foreground">View all tasks</p>
-                </div>
-              </Panel>
+              {/* Overview Tab */}
+              {currentTab === 'overview' && currentStage && (
+                <div className="space-y-6">
+                  <Panel className="space-y-4">
+                    <div>
+                      <h2 className="text-2xl font-bold text-foreground">{currentStage.name}</h2>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {currentStage.key === 'design' && 'Design your solution to the challenge.'}
+                        {currentStage.key === 'build' && 'Build and test your prototype.'}
+                        {currentStage.key === 'intelligize' && 'Integrate AI into your solution.'}
+                        {currentStage.key === 'battle' && 'Showcase your work at the BATTLE.'}
+                      </p>
+                    </div>
+                    {currentStage.due_at && (
+                      <p className="text-sm text-muted-foreground">
+                        Due: {new Date(currentStage.due_at).toLocaleDateString()}
+                      </p>
+                    )}
+                    <GlowButton size="sm" onClick={() => setCurrentTab('missions')}>
+                      View Missions
+                    </GlowButton>
+                  </Panel>
 
-              <Panel hover className="flex items-center gap-3 cursor-pointer">
-                <div className="flex-shrink-0">
-                  <Award className="w-6 h-6 text-primary" />
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Top Teams</h3>
+                      <Leaderboard
+                        schoolId={team.school_id}
+                        division={team.division}
+                        currentTeamId={team.id}
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Recent Badges</h3>
+                      <div className="grid grid-cols-3 gap-2">
+                        {badges
+                          .filter((b) => b.unlocked_at)
+                          .slice(0, 6)
+                          .map((badge) => (
+                            <div key={badge.id} className="text-center">
+                              <div className="text-3xl mb-1">{badge.icon_emoji}</div>
+                              <p className="text-xs text-muted-foreground truncate">{badge.title}</p>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              )}
+
+              {/* Missions Tab */}
+              {currentTab === 'missions' && currentStage && (
+                <MissionBrowser stage={currentStage} division={team.division} />
+              )}
+
+              {/* Team Tab */}
+              {currentTab === 'team' && <TeamCollaboration teamId={team.id} />}
+
+              {/* Leaderboard Tab */}
+              {currentTab === 'leaderboard' && (
                 <div>
-                  <p className="font-semibold text-foreground">Badges</p>
-                  <p className="text-xs text-muted-foreground">Achievements unlocked</p>
+                  <h2 className="text-xl font-semibold text-foreground mb-4">Leaderboard</h2>
+                  <Leaderboard
+                    schoolId={team.school_id}
+                    division={team.division}
+                    currentTeamId={team.id}
+                  />
                 </div>
-              </Panel>
+              )}
+
+              {/* Achievements Tab */}
+              {currentTab === 'achievements' && (
+                <Achievements studentId={profile.id} />
+              )}
+
+              {/* Portfolio Tab */}
+              {currentTab === 'portfolio' && (
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground mb-6">Your Portfolio</h2>
+                  <Portfolio teamId={team.id} />
+                </div>
+              )}
             </motion.div>
-          </div>
+          </>
         ) : null}
       </motion.div>
     </AppShell>
