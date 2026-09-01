@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Play, Copy, Calendar, Share2, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Copy, Calendar, Share2, ChevronDown, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LiveSession {
   id: string;
@@ -93,7 +94,47 @@ const PAST_SESSIONS: LiveSession[] = [
 export function OrganizerLiveSessionsCard({ stageId }: OrganizerLiveSessionsCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const upcomingSessions = LIVE_SESSIONS[stageId] || [];
+  const [sessions, setSessions] = useState<LiveSession[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load live sessions from Supabase
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const { data, error: fetchError } = await supabase
+          .from('live_sessions')
+          .select('*')
+          .eq('stage_id', stageId)
+          .order('scheduled_date', { ascending: true });
+        if (fetchError) throw fetchError;
+        setSessions(
+          data?.map((s) => ({
+            id: s.id,
+            title: s.title,
+            description: s.description,
+            scheduledDate: s.scheduled_date || '',
+            scheduledTime: `${s.scheduled_time_start} - ${s.scheduled_time_end} ${s.timezone}`,
+            hostedBy: s.hosted_by || 'STEAM Foundry',
+            meetingUrl: s.meeting_url,
+            status: s.status as 'upcoming' | 'recording',
+            recordingUrl: s.recording_url,
+            duration: s.recording_duration,
+          })) || []
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load sessions');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSessions();
+  }, [stageId]);
+
+  const upcomingSessions = sessions.filter((s) => s.status === 'upcoming');
+  const pastSessions = sessions.filter((s) => s.status === 'recording');
 
   const handleCopyLink = (url: string, sessionId: string) => {
     navigator.clipboard.writeText(url);
@@ -135,7 +176,16 @@ export function OrganizerLiveSessionsCard({ stageId }: OrganizerLiveSessionsCard
               Upcoming Sessions
             </p>
 
-            {upcomingSessions.length > 0 ? (
+            {loading ? (
+            <div className="text-center py-4">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">Loading sessions...</p>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded p-3 flex gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-red-700 dark:text-red-200">{error}</p>
+            </div>
+          ) : upcomingSessions.length > 0 ? (
               <div className="space-y-2">
                 {upcomingSessions.map((session) => (
                   <div
@@ -194,13 +244,13 @@ export function OrganizerLiveSessionsCard({ stageId }: OrganizerLiveSessionsCard
           </div>
 
           {/* Past Recordings */}
-          {PAST_SESSIONS.length > 0 && (
+          {pastSessions.length > 0 && (
             <div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
               <p className="text-xs font-600 uppercase text-zinc-600 dark:text-zinc-400 mb-3">
                 Past Recordings
               </p>
               <div className="space-y-2">
-                {PAST_SESSIONS.map((session) => (
+                {pastSessions.map((session) => (
                   <div
                     key={session.id}
                     className="flex gap-3 p-3 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition"
