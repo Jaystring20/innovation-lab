@@ -28,6 +28,10 @@ const Login: React.FC = () => {
     if (role === 'organizer') navigate('/organizer', { replace: true });
     else if (role === 'judge') navigate('/lab/judge', { replace: true });
     else if (role === 'student') navigate('/lab/student', { replace: true });
+    // Team accounts (shared student accounts) also go to student dashboard
+    else if (role === 'student' || session?.user?.user_metadata?.is_team_account) {
+      navigate('/lab/student', { replace: true });
+    }
     else navigate('/lab/dashboard', { replace: true });
   }, [authLoading, session, role, navigate]);
 

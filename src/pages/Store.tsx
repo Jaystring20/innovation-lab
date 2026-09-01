@@ -44,7 +44,12 @@ const Store: React.FC = () => {
     contactEmail: '',
     contactPhone: '',
     teamCount: 1,
+    teacherName: '',
+    teacherEmail: '',
   });
+  const [teams, setTeams] = useState<Array<{ name: string; students: string[] }>>([
+    { name: '', students: ['', '', '', ''] },
+  ]);
 
   useEffect(() => {
     Promise.all([listKits(), getStoreSettings()])
@@ -95,18 +100,37 @@ const Store: React.FC = () => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    // Validation
     if (!kit) return setError('Please select your division first.');
     if (!form.schoolName || !form.address || !form.contactName || !form.contactEmail || !form.contactPhone) {
       return setError('Please fill in all school, address, and contact details.');
     }
+    if (!form.teacherName || !form.teacherEmail) {
+      return setError('Please provide teacher name and email.');
+    }
+
+    // Validate teams
+    const validTeams = teams.filter(t => t.name.trim());
+    if (validTeams.length === 0) {
+      return setError('Please create at least one team.');
+    }
+    for (const team of validTeams) {
+      const validStudents = team.students.filter(s => s.trim());
+      if (validStudents.length === 0) {
+        return setError(`Team "${team.name}" needs at least one student name.`);
+      }
+    }
+
     setSubmitting(true);
     try {
       const ref = await registerOrder({
         ...form,
-        teamCount: teams,
+        teamCount: validTeams.length,
         division: kit.division,
         fulfilment,
         excludedComponents: [...excluded],
+        teams: validTeams,
       });
       void sendOrderConfirmation(ref);
       navigate(`/order/${ref}`);
@@ -340,16 +364,96 @@ const Store: React.FC = () => {
                       onChange={(e) => setForm({ ...form, contactPhone: e.target.value })}
                     />
                   </Field>
-                  <Field label="Number of teams (1 kit per team)">
-                    <input
-                      className={inputCls}
-                      type="number"
-                      min={1}
-                      required
-                      value={form.teamCount}
-                      onChange={(e) => setForm({ ...form, teamCount: Number(e.target.value) })}
-                    />
-                  </Field>
+
+                  {/* Teacher Information */}
+                  <div className="border-t border-border pt-4 mt-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-3">Primary Teacher</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      This teacher will set up the teams and students. An account will be created automatically.
+                    </p>
+                    <Field label="Teacher name">
+                      <input
+                        className={inputCls}
+                        required
+                        value={form.teacherName}
+                        onChange={(e) => setForm({ ...form, teacherName: e.target.value })}
+                        placeholder="Full name"
+                      />
+                    </Field>
+                    <Field label="Teacher email">
+                      <input
+                        className={inputCls}
+                        type="email"
+                        required
+                        value={form.teacherEmail}
+                        onChange={(e) => setForm({ ...form, teacherEmail: e.target.value })}
+                        placeholder="teacher@school.edu.ng"
+                      />
+                    </Field>
+                  </div>
+
+                  {/* Teams & Students */}
+                  <div className="border-t border-border pt-4 mt-4">
+                    <h3 className="text-lg font-semibold text-foreground mb-3">Teams & Students</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Each team gets one kit. All students on a team share one login account for collaboration.
+                    </p>
+                    <div className="space-y-4">
+                      {teams.map((team, teamIdx) => (
+                        <Panel key={teamIdx} className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Field label={`Team ${teamIdx + 1} name`}>
+                              <input
+                                className={inputCls}
+                                placeholder="e.g., Innovation Builders"
+                                value={team.name}
+                                onChange={(e) => {
+                                  const newTeams = [...teams];
+                                  newTeams[teamIdx].name = e.target.value;
+                                  setTeams(newTeams);
+                                }}
+                              />
+                            </Field>
+                            {teams.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => setTeams(teams.filter((_, i) => i !== teamIdx))}
+                                className="text-sm text-danger hover:text-danger/80 ml-2 mt-6"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-2">Student names (all share one account)</p>
+                            <div className="space-y-2">
+                              {team.students.map((student, studentIdx) => (
+                                <input
+                                  key={studentIdx}
+                                  className={inputCls}
+                                  placeholder={`Student ${studentIdx + 1}`}
+                                  value={student}
+                                  onChange={(e) => {
+                                    const newTeams = [...teams];
+                                    newTeams[teamIdx].students[studentIdx] = e.target.value;
+                                    setTeams(newTeams);
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </Panel>
+                      ))}
+                      <GlowButton
+                        type="button"
+                        variant="outline"
+                        onClick={() => setTeams([...teams, { name: '', students: ['', '', '', ''] }])}
+                        className="w-full"
+                      >
+                        + Add another team
+                      </GlowButton>
+                    </div>
+                  </div>
 
                   <Panel hover={false} className="space-y-1.5">
                     <SummaryRow

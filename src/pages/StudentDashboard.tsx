@@ -138,12 +138,11 @@ const StudentDashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-1">
-            Welcome back, {displayName || 'Student'}
+            {team?.name || 'Team Dashboard'}
           </h1>
           {team && (
             <p className="text-sm text-muted-foreground">
-              {team.division.charAt(0).toUpperCase() + team.division.slice(1).replace(/_/g, ' ')} •{' '}
-              {team.name}
+              {team.division.charAt(0).toUpperCase() + team.division.slice(1).replace(/_/g, ' ')} • Shared Team Account
             </p>
           )}
         </div>

@@ -194,11 +194,15 @@ export interface RegisterInput {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  teacherName: string;
+  teacherEmail: string;
   division: Division;
   teamCount: number;
   fulfilment: Fulfilment;
   /** Optional components the school chose not to buy (by exact component name). */
   excludedComponents: string[];
+  /** Teams with student names - each team gets a shared account */
+  teams?: Array<{ name: string; students: string[] }>;
 }
 
 /**

@@ -16,6 +16,8 @@ export interface Profile {
   full_name: string | null;
   email: string | null;
   school_id: string | null;
+  team_id?: string | null;
+  is_team_account?: boolean;
 }
 
 interface AuthContextType {
@@ -45,7 +47,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 async function fetchProfile(userId: string): Promise<Profile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, role, full_name, email, school_id')
+    .select('id, role, full_name, email, school_id, team_id, is_team_account')
     .eq('id', userId)
     .maybeSingle();
   if (error) {
