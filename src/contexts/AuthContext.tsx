@@ -8,7 +8,7 @@ import React, {
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
-export type UserRole = 'organizer' | 'judge' | 'teacher';
+export type UserRole = 'organizer' | 'judge' | 'teacher' | 'student';
 
 export interface Profile {
   id: string;
@@ -16,6 +16,8 @@ export interface Profile {
   full_name: string | null;
   email: string | null;
   school_id: string | null;
+  team_id?: string | null;
+  is_team_account?: boolean;
 }
 
 interface AuthContextType {
@@ -27,6 +29,7 @@ interface AuthContextType {
   isOrganizer: boolean;
   isJudge: boolean;
   isTeacher: boolean;
+  isStudent: boolean;
   displayName: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
@@ -44,7 +47,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 async function fetchProfile(userId: string): Promise<Profile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, role, full_name, email, school_id')
+    .select('id, role, full_name, email, school_id, team_id, is_team_account')
     .eq('id', userId)
     .maybeSingle();
   if (error) {
@@ -115,6 +118,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isOrganizer: role === 'organizer',
     isJudge: role === 'judge',
     isTeacher: role === 'teacher',
+    isStudent: role === 'student',
     displayName:
       profile?.full_name ??
       (session?.user.user_metadata?.name as string | undefined) ??

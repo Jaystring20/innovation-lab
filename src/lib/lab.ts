@@ -32,11 +32,27 @@ export interface Stage {
   auto_release_feedback: boolean;
 }
 
+export interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: 'video' | 'code' | 'doc' | 'image' | 'other';
+  gdrive_id?: string;
+  gdrive_url?: string;
+  thumbnail_url?: string;
+  preview_metadata?: Record<string, any>;
+  status: 'pending' | 'uploading' | 'completed' | 'failed';
+}
+
 export interface SubmissionPayload {
+  // Optional URL fields (legacy)
   video_url?: string;
   repo_url?: string;
   doc_url?: string;
   notes?: string;
+
+  // New: uploaded files
+  uploaded_files?: UploadedFile[];
 }
 
 export interface Team {
@@ -226,11 +242,51 @@ export async function saveSubmission(
 ): Promise<Submission> {
   const { data, error } = await supabase
     .from('submissions')
-    .update({ payload })
+    .update({ payload, updated_at: new Date().toISOString() })
     .eq('id', submissionId)
     .select('*')
     .single();
+
   if (error) throw new Error(error.message);
+
+  // Trigger automations (async, non-blocking)
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && anonKey) {
+    Promise.all([
+      // 1. Sync to Google Drive
+      fetch(`${supabaseUrl}/functions/v1/sync-submission-to-gdrive`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ submission_id: submissionId }),
+      }).catch((e) => console.error('Sync failed:', e)),
+
+      // 2. Extract link previews
+      fetch(`${supabaseUrl}/functions/v1/extract-link-previews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ submission_id: submissionId }),
+      }).catch((e) => console.error('Preview extraction failed:', e)),
+
+      // 3. Run auto-analysis
+      fetch(`${supabaseUrl}/functions/v1/analyze-submission`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ submission_id: submissionId }),
+      }).catch((e) => console.error('Analysis failed:', e)),
+    ]).catch((e) => console.error('Automation error:', e));
+  }
+
   return data as Submission;
 }
 

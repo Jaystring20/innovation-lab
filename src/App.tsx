@@ -17,6 +17,8 @@ const Store = lazy(() => import("./pages/Store"));
 const OrderStatus = lazy(() => import("./pages/OrderStatus"));
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
+const TeamSetupPage = lazy(() => import("./pages/TeamSetupPage"));
 const JudgeDashboard = lazy(() => import("./pages/JudgeDashboard"));
 const OrganizerLogin = lazy(() => import("./pages/OrganizerLogin"));
 const OrganizerDashboard = lazy(() => import("./pages/OrganizerDashboard"));
@@ -34,7 +36,7 @@ const queryClient = new QueryClient({
 });
 
 const RouteFallback = () => (
-  <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+  <div className="min-h-screen bg-background flex items-center justify-center">
     <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
   </div>
 );
@@ -59,9 +61,11 @@ const App = () => (
                   <Route path="/order/:reference" element={<OrderStatus />} />
 
                   {/* Lab — the competition: submissions, judging, feedback.
-                      One sign-in for all three roles; each lands on its own view. */}
+                      One sign-in for all four roles; each lands on its own view. */}
                   <Route path="/lab" element={<Login />} />
                   <Route path="/lab/dashboard" element={<Dashboard />} />
+                  <Route path="/lab/student" element={<StudentDashboard />} />
+                  <Route path="/lab/setup-teams" element={<TeamSetupPage />} />
                   <Route path="/lab/judge" element={<JudgeDashboard />} />
 
                   {/* Organizer console — Store + Lab admin, Supabase Auth gated */}

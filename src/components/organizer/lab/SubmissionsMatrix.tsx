@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ExternalLink, Undo2, Unlock } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import { Undo2, Unlock } from 'lucide-react';
+import Panel from '@/components/Panel';
 import StatusPill from '@/components/lab/StatusPill';
+import { SubmissionFileBrowser } from '@/components/organizer/SubmissionFileBrowser';
 import { releaseFeedback, returnSubmission, type AdminSubmission } from '@/lib/lab';
 import { DIVISION_SHORT } from '@/lib/store';
 import { cn } from '@/lib/utils';
@@ -39,24 +40,24 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
 
   if (data.teams.length === 0) {
     return (
-      <GlassCard hover={false}>
+      <Panel hover={false}>
         <p className="text-sm text-muted-foreground">
           No teams yet. Teams appear once a school's teacher account is linked and they add
           their teams.
         </p>
-      </GlassCard>
+      </Panel>
     );
   }
 
   return (
     <>
       {error && (
-        <GlassCard className="mb-3" hover={false}>
+        <Panel className="mb-3" hover={false}>
           <p className="text-sm text-red-400">{error}</p>
-        </GlassCard>
+        </Panel>
       )}
 
-      <GlassCard className="p-0 overflow-x-auto" hover={false}>
+      <Panel className="p-0 overflow-x-auto" hover={false}>
         <table className="w-full text-sm min-w-[720px]">
           <thead>
             <tr className="text-left text-muted-foreground border-b border-white/10">
@@ -122,10 +123,10 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
             })}
           </tbody>
         </table>
-      </GlassCard>
+      </Panel>
 
       {open && (
-        <GlassCard className="mt-4" hover={false}>
+        <Panel className="mt-4" hover={false}>
           <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
             <div>
               <p className="font-semibold text-foreground">
@@ -140,39 +141,14 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
             <StatusPill status={open.status} />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                Deliverable
-              </p>
-              <ul className="space-y-1.5">
-                {[
-                  { label: 'Video / demo', url: open.payload?.video_url },
-                  { label: 'Docs / prompt log', url: open.payload?.doc_url },
-                  { label: 'Repository', url: open.payload?.repo_url },
-                ]
-                  .filter((l) => l.url)
-                  .map((l) => (
-                    <li key={l.label}>
-                      <a
-                        href={l.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline break-all"
-                      >
-                        {l.label} <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                      </a>
-                    </li>
-                  ))}
-                {!open.payload?.video_url && !open.payload?.doc_url && !open.payload?.repo_url && (
-                  <li className="text-sm text-muted-foreground">Nothing submitted yet.</li>
-                )}
-              </ul>
-              {open.payload?.notes && (
-                <p className="text-sm text-foreground/90 bg-white/5 rounded-lg p-3 border border-white/5 mt-3">
-                  {open.payload.notes}
-                </p>
-              )}
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <SubmissionFileBrowser
+                payload={open.payload ?? {}}
+                uploadedFiles={open.payload?.uploaded_files}
+                teamName={open.teams?.name ?? 'Unknown'}
+                stageName={open.stages?.name ?? 'Unknown'}
+              />
             </div>
 
             <div>
@@ -225,7 +201,7 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
               )}
             </div>
           </div>
-        </GlassCard>
+        </Panel>
       )}
     </>
   );

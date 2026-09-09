@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
+import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
@@ -44,8 +45,8 @@ const OrganizerLogin: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
-      <GlassOrbs />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      <Backdrop />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -58,14 +59,23 @@ const OrganizerLogin: React.FC = () => {
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
-        <GlassCard className="p-8" hover={false}>
-          <div className="text-center mb-8">
-            <img
+        <Panel className="p-8 overflow-hidden" hover={false}>
+          {/* Logo hero image */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <HeroImagePlate
               src={steamFoundryLogo}
               alt="STEAM Foundry"
-              className="w-16 h-16 mx-auto mb-4 object-contain"
+              className="mx-auto"
             />
-            <h1 className="text-2xl font-bold text-foreground mb-1">Organizer Sign In</h1>
+          </motion.div>
+
+          <div className="text-center mb-8">
+            <h1 className="text-xl font-semibold text-foreground mb-1 font-display">Organizer Sign In</h1>
             <p className="text-muted-foreground text-sm">
               APEN 2026 Innovation Store — operations console
             </p>
@@ -101,7 +111,7 @@ const OrganizerLogin: React.FC = () => {
 
             {error && <p className="text-sm text-red-400">{error}</p>}
 
-            <GlowButton type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 mt-2">
+            <GlowButton type="submit" disabled={loading} className="w-full mt-2">
               {loading ? 'Signing in…' : 'Sign in'}
               <ArrowRight className="w-4 h-4" />
             </GlowButton>
@@ -111,7 +121,7 @@ const OrganizerLogin: React.FC = () => {
             Organizer accounts are provisioned in Supabase Auth. Contact the APEN 2026
             team if you need access.
           </p>
-        </GlassCard>
+        </Panel>
       </motion.div>
     </div>
   );

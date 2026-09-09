@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
+import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
@@ -26,6 +27,11 @@ const Login: React.FC = () => {
     if (authLoading || !session || !role) return;
     if (role === 'organizer') navigate('/organizer', { replace: true });
     else if (role === 'judge') navigate('/lab/judge', { replace: true });
+    else if (role === 'student') navigate('/lab/student', { replace: true });
+    // Team accounts (shared student accounts) also go to student dashboard
+    else if (role === 'student' || session?.user?.user_metadata?.is_team_account) {
+      navigate('/lab/student', { replace: true });
+    }
     else navigate('/lab/dashboard', { replace: true });
   }, [authLoading, session, role, navigate]);
 
@@ -54,8 +60,8 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
-      <GlassOrbs />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      <Backdrop />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.92, y: 30 }}
@@ -63,23 +69,19 @@ const Login: React.FC = () => {
         transition={{ duration: 0.7, ease: 'easeOut' }}
         className="w-full max-w-md relative z-10"
       >
-        <GlassCard className="p-8 overflow-hidden" hover={false}>
-          {/* Logo banner — full-bleed hero */}
+        <Panel className="p-8 overflow-hidden" hover={false}>
+          {/* Logo hero image */}
           <motion.div
-            className="-mx-8 -mt-8 mb-8 h-32 overflow-hidden relative"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            className="mb-8"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
           >
-            <motion.img
+            <HeroImagePlate
               src={steamFoundryLogo}
               alt="STEAM Foundry"
-              className="w-full h-full object-cover object-center"
-              initial={{ scale: 1.12 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.1, duration: 1.2, ease: 'easeOut' }}
+              className="mx-auto"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/80" />
           </motion.div>
 
           <div className="mb-8">
@@ -173,11 +175,9 @@ const Login: React.FC = () => {
               disabled={busy}
               className="w-full mt-6 py-3 font-semibold text-base"
             >
-              <span className="flex items-center justify-center gap-2">
-                {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-                {mode === 'signin' ? 'Sign in' : 'Create account'}
-                {!busy && <ArrowRight className="w-5 h-5" />}
-              </span>
+              {busy && <Loader2 className="w-4 h-4 animate-spin" />}
+              {mode === 'signin' ? 'Sign in' : 'Create account'}
+              {!busy && <ArrowRight className="w-5 h-5" />}
             </GlowButton>
           </form>
 
@@ -198,7 +198,7 @@ const Login: React.FC = () => {
           <p className="text-center text-xs text-muted-foreground/60 mt-4">
             Judges and organizers sign in here too.
           </p>
-        </GlassCard>
+        </Panel>
       </motion.div>
     </div>
   );

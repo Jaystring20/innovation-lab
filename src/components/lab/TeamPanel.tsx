@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import StageTracker from './StageTracker';
 import SubmissionForm from './SubmissionForm';
 import FeedbackPanel from './FeedbackPanel';
 import StatusPill from './StatusPill';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import {
   listTeamSubmissions,
   type Stage,
@@ -15,6 +16,7 @@ import {
 
 /** One team's run through the funnel: stepper → deliverable → feedback. */
 const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) => {
+  const reduceMotion = useReducedMotion();
   const [subs, setSubs] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,31 +48,31 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
 
   if (loading) {
     return (
-      <GlassCard>
+      <Panel>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" /> Loading {team.name}…
         </div>
-      </GlassCard>
+      </Panel>
     );
   }
 
   return (
-    <GlassCard className="space-y-5" hover={false}>
+    <Panel className="space-y-5" hover={false}>
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h3 className="text-lg font-bold text-foreground">{team.name}</h3>
           {team.eliminated_after_stage ? (
-            <p className="text-sm text-red-400 mt-0.5">
+            <p className="text-sm text-danger mt-0.5">
               Not advanced past Stage {team.eliminated_after_stage}
             </p>
           ) : team.advanced_at ? (
-            <p className="text-sm text-emerald-400 mt-0.5">Advanced to the finals</p>
+            <p className="text-sm text-ok mt-0.5">Advanced to the finals</p>
           ) : null}
         </div>
         {activeSub && <StatusPill status={activeSub.status} />}
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <StageTracker
         stages={stages}
@@ -84,7 +86,7 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
           key={activeStage.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={reduceMotion ? {} : { duration: 0.2 }}
           className="grid lg:grid-cols-2 gap-6 pt-2 border-t border-white/5"
         >
           <div className="pt-4">
@@ -107,7 +109,7 @@ const TeamPanel: React.FC<{ team: Team; stages: Stage[] }> = ({ team, stages }) 
           </div>
         </motion.div>
       )}
-    </GlassCard>
+    </Panel>
   );
 };
 

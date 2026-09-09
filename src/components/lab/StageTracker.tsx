@@ -35,7 +35,7 @@ const StageTracker: React.FC<{
               className={cn(
                 'w-full text-left p-3 rounded-xl border-2 transition-all',
                 locked && 'opacity-45 cursor-not-allowed',
-                !locked && !active && 'border-white/10 hover:bg-white/5',
+                !locked && !active && 'border-border hover:bg-white/5',
                 active && 'bg-white/[0.06]',
               )}
               style={active ? { borderColor: tierConfig.color } : undefined}

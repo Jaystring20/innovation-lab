@@ -1,13 +1,15 @@
 # Turning on order emails
 
-Two Supabase Edge Functions are deployed and working, but they will refuse to
-send until `RESEND_API_KEY` is set. Until then a registration still succeeds and
-the reference still shows on screen — only the email is skipped.
+The Supabase Edge Functions are deployed but refuse to send until
+`RESEND_API_KEY` is set. Until then a registration still succeeds and the
+reference still shows on screen — only the email is skipped.
 
 | Function | What it does |
 |---|---|
 | `send-order-confirmation` | Emails the reference + payment instructions right after registration |
+| `send-payment-receipt` | Emails an official receipt when an organizer confirms payment (auto-fires on "Confirm payment") |
 | `recover-order-references` | Emails a school its references when it has lost them |
+| `lab-notifications` | The Lab's daily mailer (stage opens, deadline reminders, feedback, gate results) — see `LAB_SETUP.md` |
 
 ## 1. Get a Resend API key
 
@@ -29,11 +31,25 @@ supabase secrets set --project-ref sctsrxuquhzdjjnlsqbm RESEND_API_KEY=re_xxxxxx
 | Secret | Required | Notes |
 |---|---|---|
 | `RESEND_API_KEY` | **Yes** | Nothing sends without it |
-| `ORDER_EMAIL_FROM` | Recommended | e.g. `APEN 2026 <noreply@yourdomain.ng>`. Defaults to Resend's test sender, which only reaches your own address |
-| `SITE_URL` | Recommended | e.g. `https://apen2026.ng` — makes the "Track your order" button appear |
+| `ORDER_EMAIL_FROM` | Recommended | e.g. `APEN 2026 <apen@digitalcreativeshubltd.com>`. Defaults to that address; must be on a Resend-verified domain |
+| `ORDER_EMAIL_REPLY_TO` | Optional | A monitored mailbox for replies. Defaults to the `ORDER_EMAIL_FROM` address |
+| `SITE_URL` | Recommended | e.g. `https://apen.digitalcreativeshubltd.com` — makes the "Track your order" / "Open the Lab" buttons appear |
+| `CRON_SECRET` | **Yes, for the Lab mailer** | Shared secret for the `lab-notifications` cron — see `LAB_SETUP.md` |
 | `BANK_NAME` | **Yes, before launch** | Shown in the payment instructions |
 | `BANK_ACCOUNT_NAME` | **Yes, before launch** | |
 | `BANK_ACCOUNT_NUMBER` | **Yes, before launch** | |
+
+The **WhatsApp confirmation number** and the **dispatch-timing wording** are not
+secrets — they live in `store_settings` (row `id = 1`) and an organizer can
+change them with SQL:
+
+```sql
+update public.store_settings set
+  whatsapp_number       = '2348038838094',
+  dispatch_note_lagos   = '3–5 working days after payment is confirmed',
+  dispatch_note_outside = '5–7 working days after payment is confirmed'
+where id = 1;
+```
 
 > The email bank details (`BANK_*` Edge Function secrets, above) and the ones
 > shown on the order page (`src/config/bank.ts`, a plain constant) are separate

@@ -60,7 +60,9 @@ Deno.serve(async (req: Request) => {
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const fromAddress = Deno.env.get("ORDER_EMAIL_FROM") ??
-    "APEN 2026 <onboarding@resend.dev>";
+    "APEN 2026 <apen@digitalcreativeshubltd.com>";
+  const replyTo = Deno.env.get("ORDER_EMAIL_REPLY_TO") ||
+    (fromAddress.match(/<([^>]+)>/)?.[1] ?? fromAddress);
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
 
   if (!apiKey) {
@@ -77,13 +79,27 @@ Deno.serve(async (req: Request) => {
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      "order_reference, division, team_count, total_amount, confirmation_sent_at, schools ( name, contact_name, contact_email )",
+      "order_reference, division, team_count, kit_unit_price, delivery_fee, fulfilment, line_items, total_amount, confirmation_sent_at, schools ( name, contact_name, contact_email )",
     )
     .eq("order_reference", orderReference)
     .maybeSingle();
 
   // Never disclose whether a reference exists.
   if (error || !order) return json({ ok: true });
+
+  const { data: settings } = await supabase
+    .from("store_settings")
+    .select("whatsapp_number, dispatch_note_lagos, dispatch_note_outside")
+    .eq("id", 1)
+    .maybeSingle();
+
+  const waNumber = (settings?.whatsapp_number ?? "2348038838094").replace(/\D/g, "");
+  const dispatchNote =
+    order.fulfilment === "delivery_outside"
+      ? settings?.dispatch_note_outside ?? "5–7 working days after payment is confirmed"
+      : order.fulfilment === "pickup"
+        ? "ready to collect 2–3 working days after payment is confirmed"
+        : settings?.dispatch_note_lagos ?? "3–5 working days after payment is confirmed";
 
   const school = order.schools as {
     name: string;
@@ -105,6 +121,44 @@ Deno.serve(async (req: Request) => {
 
   const statusLink = siteUrl ? `${siteUrl}/order/${orderReference}` : "";
   const ref = escapeHtml(orderReference);
+  const waText = encodeURIComponent(
+    `I have paid for APEN 2026 order ${orderReference} (${order.schools ? (order.schools as { name: string }).name : ""}) — ${naira(order.total_amount)}. Proof of payment attached.`,
+  );
+  const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : "";
+
+  const FULFILMENT: Record<string, string> = {
+    delivery_lagos: "Delivery within Lagos",
+    delivery_outside: "Delivery outside Lagos (estimate — confirmed by location)",
+    pickup: "Pickup — collect in Lagos",
+  };
+  const lineItems = Array.isArray(order.line_items)
+    ? (order.line_items as { component: string; qty: number; unit_price: number; included: boolean }[])
+    : [];
+  const includedItems = lineItems.filter((i) => i.included);
+  const kitPerTeam = Number(order.kit_unit_price ?? 0);
+  const deliveryFee = Number(order.delivery_fee ?? 0);
+
+  const itemsHtml = includedItems.length
+    ? `<h2 style="margin:0 0 8px;font-size:16px">Kit contents (per team)</h2>
+       <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px">
+       ${includedItems
+         .map(
+           (i) =>
+             `<tr><td style="padding:4px 0;color:#47586b">${escapeHtml(i.component)}${i.qty > 1 ? ` &times; ${i.qty}` : ""}</td><td style="padding:4px 0;text-align:right">${naira(i.qty * i.unit_price)}</td></tr>`,
+         )
+         .join("")}
+       </table>`
+    : "";
+
+  const itemsText = includedItems.length
+    ? [
+        "",
+        "KIT CONTENTS (per team)",
+        ...includedItems.map(
+          (i) => `  ${i.component}${i.qty > 1 ? ` x${i.qty}` : ""} - ${naira(i.qty * i.unit_price)}`,
+        ),
+      ]
+    : [];
 
   const html = `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
@@ -121,21 +175,31 @@ Deno.serve(async (req: Request) => {
 
     <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:14px">
       <tr><td style="padding:6px 0;color:#47586b">Division</td><td style="padding:6px 0;text-align:right">${escapeHtml(DIVISIONS[order.division] ?? order.division)}</td></tr>
-      <tr><td style="padding:6px 0;color:#47586b">Teams / kits</td><td style="padding:6px 0;text-align:right">${order.team_count}</td></tr>
+      <tr><td style="padding:6px 0;color:#47586b">Kit &times; ${order.team_count} team${order.team_count === 1 ? "" : "s"}</td><td style="padding:6px 0;text-align:right">${naira(kitPerTeam * order.team_count)}</td></tr>
+      <tr><td style="padding:6px 0;color:#47586b">${escapeHtml(FULFILMENT[order.fulfilment as string] ?? "Delivery")}</td><td style="padding:6px 0;text-align:right">${deliveryFee === 0 ? "Free" : naira(deliveryFee)}</td></tr>
       <tr><td style="padding:10px 0;border-top:1px solid #dce3e8;font-weight:700">Total due</td><td style="padding:10px 0;border-top:1px solid #dce3e8;text-align:right;font-weight:700">${naira(order.total_amount)}</td></tr>
     </table>
 
+    ${itemsHtml}
+
     <h2 style="margin:0 0 8px;font-size:16px">How to pay</h2>
-    <p style="margin:0 0 12px;font-size:14px">Transfer <strong>${naira(order.total_amount)}</strong> to the account below, using <strong>${ref}</strong> as the transfer narration, then upload your proof of payment.</p>
-    <div style="background:#f4f6f7;border:1px solid #e9eef1;border-radius:4px;padding:14px;font-size:14px;margin:0 0 20px">
+    <p style="margin:0 0 12px;font-size:14px">Transfer <strong>${naira(order.total_amount)}</strong> to the account below, using <strong>${ref}</strong> as the transfer narration.</p>
+    <div style="background:#f4f6f7;border:1px solid #e9eef1;border-radius:4px;padding:14px;font-size:14px;margin:0 0 16px">
       <div>Bank: ${escapeHtml(bank.name)}</div>
       ${bank.accountName ? `<div>Account name: ${escapeHtml(bank.accountName)}</div>` : ""}
       ${bank.accountNumber ? `<div>Account number: ${escapeHtml(bank.accountNumber)}</div>` : ""}
     </div>
 
+    <p style="margin:0 0 16px;font-size:14px">Then confirm your payment one of two ways:</p>
+    <ul style="margin:0 0 20px;padding-left:18px;font-size:14px">
+      ${statusLink ? `<li style="margin:0 0 6px">Upload your proof on your <a href="${statusLink}" style="color:#1a3b8b">order page</a>, or</li>` : ""}
+      ${waLink ? `<li>Send your proof on WhatsApp to <strong>+234 803 883 8094</strong>, quoting <strong>${ref}</strong></li>` : ""}
+    </ul>
+
+    ${waLink ? `<p style="margin:0 0 20px;text-align:center"><a href="${waLink}" style="display:inline-block;background:#25d366;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">Confirm payment on WhatsApp</a></p>` : ""}
     ${statusLink ? `<p style="margin:0 0 20px;text-align:center"><a href="${statusLink}" style="display:inline-block;background:#1a3b8b;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">Track your order &amp; upload proof</a></p>` : ""}
 
-    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Registration closes 25 September 2026. Kits are dispatched 14–30 September 2026.</p>
+    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Every registered school receives a kit. Once your payment is confirmed, your kit is dispatched — ${escapeHtml(dispatchNote)}. Registration closes 25 September 2026.</p>
   </div>
 </body></html>`;
 
@@ -148,19 +212,24 @@ Deno.serve(async (req: Request) => {
     ``,
     `ORDER REFERENCE: ${orderReference}`,
     `Division: ${DIVISIONS[order.division] ?? order.division}`,
-    `Teams / kits: ${order.team_count}`,
+    `Kit x ${order.team_count} team(s): ${naira(kitPerTeam * order.team_count)}`,
+    `${FULFILMENT[order.fulfilment as string] ?? "Delivery"}: ${deliveryFee === 0 ? "Free" : naira(deliveryFee)}`,
     `Total due: ${naira(order.total_amount)}`,
+    ...itemsText,
     ``,
     `HOW TO PAY`,
     `Transfer ${naira(order.total_amount)} to:`,
     `  Bank: ${bank.name}`,
     bank.accountName ? `  Account name: ${bank.accountName}` : "",
     bank.accountNumber ? `  Account number: ${bank.accountNumber}` : "",
-    `Use ${orderReference} as the transfer narration, then upload your proof.`,
+    `Use ${orderReference} as the transfer narration.`,
     ``,
-    statusLink ? `Track your order: ${statusLink}` : "",
+    `Then confirm your payment:`,
+    statusLink ? `  - Upload proof on your order page: ${statusLink}` : "",
+    waLink ? `  - Or send proof on WhatsApp to +234 803 883 8094, quoting ${orderReference}` : "",
     ``,
-    `Registration closes 25 September 2026.`,
+    `Every registered school receives a kit. Once payment is confirmed, your kit`,
+    `is dispatched - ${dispatchNote}. Registration closes 25 September 2026.`,
   ].filter(Boolean).join("\n");
 
   const res = await fetch("https://api.resend.com/emails", {
@@ -171,6 +240,7 @@ Deno.serve(async (req: Request) => {
     },
     body: JSON.stringify({
       from: fromAddress,
+      reply_to: replyTo,
       to: [school.contact_email],
       subject: `APEN 2026 registration — ${orderReference}`,
       html,

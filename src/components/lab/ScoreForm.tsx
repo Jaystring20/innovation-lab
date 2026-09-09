@@ -80,13 +80,13 @@ const ScoreForm: React.FC<{
                 setScore((s) => ({ ...s, [c.key]: v }));
                 setSaved(false);
               }}
-              className="w-16 bg-secondary/40 border-2 border-white/10 rounded-lg py-1.5 px-2 text-sm text-foreground text-center tabular-nums focus:outline-none focus:border-primary/60"
+              className="w-16 bg-secondary/40 border-2 border-border rounded-lg py-1.5 px-2 text-sm text-foreground text-center tabular-nums focus:outline-none focus:border-primary/60"
             />
           </div>
         </div>
       ))}
 
-      <div className="flex items-baseline justify-between pt-2 border-t border-white/10">
+      <div className="flex items-baseline justify-between pt-2 border-t border-border">
         <span className="text-sm text-muted-foreground">Total</span>
         <span className="text-2xl font-bold text-foreground tabular-nums">
           {total}
@@ -106,14 +106,14 @@ const ScoreForm: React.FC<{
             setSaved(false);
           }}
           placeholder="What worked, and what would make this stronger."
-          className="w-full bg-secondary/40 border-2 border-white/10 rounded-lg py-2.5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+          className="w-full bg-secondary/40 border-2 border-border rounded-lg py-2.5 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
         />
         <p className="text-xs text-muted-foreground/70 mt-1.5">
           Shown to the school without your name once the stage is released.
         </p>
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <GlowButton type="submit" size="sm" disabled={busy}>
         <span className="flex items-center gap-2">

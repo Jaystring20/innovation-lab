@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2, RefreshCw } from 'lucide-react';
-import GlassCard from '@/components/GlassCard';
+import Panel from '@/components/Panel';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -157,9 +157,9 @@ const LabConsole: React.FC = () => {
       </div>
 
       {error && (
-        <GlassCard hover={false}>
+        <Panel hover={false}>
           <p className="text-sm text-red-400">{error}</p>
-        </GlassCard>
+        </Panel>
       )}
 
       {data && (

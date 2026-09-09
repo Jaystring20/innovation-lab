@@ -81,7 +81,9 @@ Deno.serve(async (req: Request) => {
   );
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
-  const from = Deno.env.get("ORDER_EMAIL_FROM") ?? "APEN 2026 <onboarding@resend.dev>";
+  const from = Deno.env.get("ORDER_EMAIL_FROM") ?? "APEN 2026 <apen@digitalcreativeshubltd.com>";
+  const replyTo = Deno.env.get("ORDER_EMAIL_REPLY_TO") ||
+    (from.match(/<([^>]+)>/)?.[1] ?? from);
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
   const dryRun = !apiKey;
 
@@ -247,7 +249,7 @@ Deno.serve(async (req: Request) => {
       continue;
     }
 
-    const ok = await send(apiKey!, from, rec, n);
+    const ok = await send(apiKey!, from, replyTo, rec, n);
     if (ok) sent++;
     else {
       failures.push(`${n.kind}/${n.teamId}: send failed`);
@@ -283,6 +285,7 @@ function fmtDate(d: string | null): string {
 async function send(
   apiKey: string,
   from: string,
+  replyTo: string,
   rec: Recipient,
   n: Notice,
 ): Promise<boolean> {
@@ -321,7 +324,7 @@ async function send(
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from, to: [rec.email], subject: n.subject, html, text }),
+    body: JSON.stringify({ from, reply_to: replyTo, to: [rec.email], subject: n.subject, html, text }),
   });
 
   if (!res.ok) {

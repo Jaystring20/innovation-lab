@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, FlaskConical, ShieldCheck, PackageSearch, ArrowRight } from 'lucide-react';
-import GlassOrbs from '@/components/GlassOrbs';
-import GlassCard from '@/components/GlassCard';
+import Backdrop from '@/components/Backdrop';
+import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
+import HeroImagePlate from '@/components/HeroImagePlate';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 const FUNNEL = [
@@ -15,66 +16,68 @@ const FUNNEL = [
 
 const Landing: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#020617] relative overflow-hidden">
-      <GlassOrbs />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <Backdrop />
 
       <div className="relative z-10 max-w-5xl mx-auto px-5 py-16">
         <motion.header
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          className="text-center mb-16"
         >
-          <img
-            src={steamFoundryLogo}
-            alt="STEAM Foundry"
-            className="w-20 h-20 mx-auto mb-5 object-contain"
-          />
-          <p className="text-sm font-semibold tracking-wider text-primary mb-2">
-            APEN 2026 · STEAM FOUNDRY
-          </p>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+          {/* Hero image plate */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+          >
+            <HeroImagePlate
+              src={steamFoundryLogo}
+              alt="STEAM Foundry"
+              className="mb-8"
+            />
+          </motion.div>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 font-display">
             Innovation Store &amp; Lab
           </h1>
-          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-            Order your division&rsquo;s kit, then run your team through the 4-Stage
-            Innovation Funnel &mdash; Design, Build, Intelligize &mdash; to the
-            Grand Finale BATTLE.
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Order your division&rsquo;s kit and run your team through the 4-Stage Innovation Funnel
+            to compete at the Grand BATTLE in Lagos.
           </p>
         </motion.header>
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <GlassCard className="h-full flex flex-col">
-              <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
-                <ShoppingCart className="w-6 h-6 text-primary" />
+            <Panel className="h-full flex flex-col overflow-hidden border-l-4 border-l-primary p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-lg bg-primary/15">
+                  <ShoppingCart className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground">The Store</h2>
               </div>
-              <h2 className="text-xl font-bold text-foreground mb-2">The Store</h2>
-              <p className="text-sm text-muted-foreground flex-1 mb-5">
+              <p className="text-sm text-muted-foreground flex-1 mb-6 leading-relaxed">
                 Browse the official kit for your division, register your school and
                 teams, pay by bank transfer, and track dispatch — no account needed.
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <Link to="/store">
-                  <GlowButton className="w-full flex items-center justify-center gap-2">
+                  <GlowButton className="w-full">
                     Order a kit <ArrowRight className="w-4 h-4" />
                   </GlowButton>
                 </Link>
                 <Link to="/order">
-                  <GlowButton
-                    variant="secondary"
-                    size="sm"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
+                  <GlowButton variant="secondary" size="sm" className="w-full">
                     <PackageSearch className="w-4 h-4" /> Track an existing order
                   </GlowButton>
                 </Link>
               </div>
-            </GlassCard>
+            </Panel>
           </motion.div>
 
           <motion.div
@@ -82,35 +85,37 @@ const Landing: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <GlassCard className="h-full flex flex-col">
-              <div className="p-3 rounded-lg bg-primary/15 w-fit mb-4">
-                <FlaskConical className="w-6 h-6 text-primary" />
+            <Panel className="h-full flex flex-col overflow-hidden border-l-4 border-l-primary p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-lg bg-primary/15">
+                  <FlaskConical className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground">The Lab</h2>
               </div>
-              <h2 className="text-xl font-bold text-foreground mb-2">The Lab</h2>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                 Where your teams run the competition &mdash; submit each stage,
                 read judge feedback, and track aggregated scores through to the
                 BATTLE.
               </p>
-              <ol className="space-y-2 mb-5 flex-1">
+              <ol className="space-y-3 mb-6 flex-1">
                 {FUNNEL.map((s) => (
                   <li key={s.n} className="flex gap-3 text-sm">
-                    <span className="font-mono text-xs text-primary/80 pt-0.5 tabular-nums">
+                    <span className="font-mono text-xs font-semibold text-primary/80 pt-0.5 tabular-nums">
                       {s.n}
                     </span>
-                    <span>
+                    <span className="flex-1">
                       <span className="font-semibold text-foreground">{s.name}</span>
-                      <span className="text-muted-foreground"> &mdash; {s.note}</span>
+                      <span className="text-muted-foreground"> — {s.note}</span>
                     </span>
                   </li>
                 ))}
               </ol>
               <Link to="/lab" className="mt-auto">
-                <GlowButton className="w-full flex items-center justify-center gap-2">
+                <GlowButton className="w-full">
                   Enter the Lab <ArrowRight className="w-4 h-4" />
                 </GlowButton>
               </Link>
-            </GlassCard>
+            </Panel>
           </motion.div>
         </div>
 

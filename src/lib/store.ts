@@ -16,7 +16,19 @@ export type OrderStatus =
 export interface BomItem {
   component: string;
   qty: number;
+  unit_price: number;
+  required: boolean;
 }
+
+/** A line on an order — the component snapshot at the time it was placed. */
+export interface OrderLineItem {
+  component: string;
+  qty: number;
+  unit_price: number;
+  included: boolean;
+}
+
+export type Fulfilment = 'delivery_lagos' | 'delivery_outside' | 'pickup';
 
 export interface Kit {
   id: string;
@@ -27,16 +39,42 @@ export interface Kit {
   created_at: string;
 }
 
+export interface StoreSettings {
+  lagos_delivery_fee: number;
+  outside_lagos_delivery_fee: number;
+  pickup_enabled: boolean;
+  pickup_location: string;
+  whatsapp_number: string;
+  dispatch_note_lagos: string;
+  dispatch_note_outside: string;
+}
+
 export interface OrderStatusRow {
   order_reference: string;
   division: Division;
   team_count: number;
+  kit_unit_price: number;
+  delivery_fee: number;
   total_amount: number;
+  fulfilment: Fulfilment | null;
+  line_items: OrderLineItem[] | null;
   status: OrderStatus;
   created_at: string;
   paid_at: string | null;
   dispatched_at: string | null;
+  whatsapp_pinged_at: string | null;
 }
+
+/** WhatsApp number that schools message to confirm payment (digits only, E.164 without +). */
+export const WHATSAPP_NUMBER = '2348038838094';
+export const WHATSAPP_DISPLAY = '+234 803 883 8094';
+
+/** Dispatch timing shown across the store — every registered school gets a kit. */
+export const DISPATCH_NOTES: Record<Fulfilment, string> = {
+  delivery_lagos: '3–5 working days after payment is confirmed',
+  delivery_outside: '5–7 working days after payment is confirmed',
+  pickup: 'ready to collect 2–3 working days after payment is confirmed',
+};
 
 /** Full order row joined with school — organizer view only (RLS gated). */
 export interface AdminOrder {
@@ -45,12 +83,17 @@ export interface AdminOrder {
   division: Division;
   team_count: number;
   kit_unit_price: number;
+  delivery_fee: number;
+  fulfilment: Fulfilment | null;
+  line_items: OrderLineItem[] | null;
   total_amount: number;
   status: OrderStatus;
   proof_of_payment_url: string | null;
   created_at: string;
   paid_at: string | null;
   dispatched_at: string | null;
+  whatsapp_pinged_at: string | null;
+  receipt_sent_at: string | null;
   schools: {
     name: string;
     state: string | null;
@@ -80,6 +123,19 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
   cancelled: 'Cancelled',
 };
 
+export const FULFILMENT_LABELS: Record<Fulfilment, string> = {
+  delivery_lagos: 'Delivery within Lagos',
+  delivery_outside: 'Delivery outside Lagos',
+  pickup: 'Pickup (collect in Lagos)',
+};
+
+/** Per-team kit price for a given exclusion set — mirrors the Edge Function. */
+export function kitPriceFor(bom: BomItem[], excluded: Set<string>): number {
+  return bom
+    .filter((item) => item.required || !excluded.has(item.component))
+    .reduce((sum, item) => sum + Number(item.qty) * Number(item.unit_price), 0);
+}
+
 export const naira = new Intl.NumberFormat('en-NG', {
   style: 'currency',
   currency: 'NGN',
@@ -99,14 +155,54 @@ export async function listKits(): Promise<Kit[]> {
   return (data ?? []) as Kit[];
 }
 
+export async function getStoreSettings(): Promise<StoreSettings> {
+  const { data, error } = await supabase
+    .from('store_settings')
+    .select(
+      'lagos_delivery_fee, outside_lagos_delivery_fee, pickup_enabled, pickup_location, whatsapp_number, dispatch_note_lagos, dispatch_note_outside',
+    )
+    .eq('id', 1)
+    .single();
+  if (error) throw new Error(error.message);
+  return data as StoreSettings;
+}
+
+/**
+ * Builds the "I've paid" WhatsApp deep link for an order. Opens WhatsApp with a
+ * message pre-filled with the reference so the organizer can match it.
+ */
+export function whatsappPayLink(
+  ref: string,
+  total: number,
+  schoolName = '',
+  numberDigits = WHATSAPP_NUMBER,
+): string {
+  const who = schoolName ? ` (${schoolName})` : '';
+  const msg = `I have paid for APEN 2026 order ${ref}${who} — ${naira.format(total)}. Proof of payment attached.`;
+  return `https://wa.me/${numberDigits.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+}
+
+/** School-side: flag that the order was confirmed over WhatsApp (account-less page). */
+export async function markWhatsappPinged(ref: string): Promise<void> {
+  await supabase.rpc('mark_whatsapp_pinged', { ref });
+}
+
 export interface RegisterInput {
   schoolName: string;
   state: string;
+  address: string;
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  teacherName: string;
+  teacherEmail: string;
   division: Division;
   teamCount: number;
+  fulfilment: Fulfilment;
+  /** Optional components the school chose not to buy (by exact component name). */
+  excludedComponents: string[];
+  /** Teams with student names - each team gets a shared account */
+  teams?: Array<{ name: string; students: string[] }>;
 }
 
 /**
@@ -214,7 +310,7 @@ export async function listAllOrders(): Promise<AdminOrder[]> {
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, order_reference, division, team_count, kit_unit_price, total_amount, status, proof_of_payment_url, created_at, paid_at, dispatched_at, schools ( name, state, contact_name, contact_email, contact_phone )',
+      'id, order_reference, division, team_count, kit_unit_price, delivery_fee, fulfilment, line_items, total_amount, status, proof_of_payment_url, created_at, paid_at, dispatched_at, whatsapp_pinged_at, receipt_sent_at, schools ( name, state, contact_name, contact_email, contact_phone )',
     )
     .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);
@@ -231,6 +327,28 @@ export async function setOrderStatus(
 
   const { error } = await supabase.from('orders').update(patch).eq('id', orderId);
   if (error) throw new Error(error.message);
+}
+
+/**
+ * Emails the school an official payment receipt. Organizer-only (the Edge
+ * Function verifies the caller's role). Safe to call more than once — the
+ * function throttles repeat sends. Never throws: a receipt that fails to send
+ * must not undo the "mark paid" the organizer just did.
+ */
+export async function sendPaymentReceipt(orderReference: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.functions.invoke('send-payment-receipt', {
+      body: { orderReference },
+    });
+    if (error) {
+      console.error('Receipt email failed:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('Receipt email failed:', e);
+    return false;
+  }
 }
 
 /** Signed URL for a stored payment proof (organizers only). */
