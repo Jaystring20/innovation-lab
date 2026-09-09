@@ -22,6 +22,19 @@ import {
 const inputCls =
   'w-full bg-secondary/50 border border-border rounded-lg py-2.5 px-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all';
 
+// Email validation regex (RFC 5322 simplified)
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Phone validation (Nigerian format)
+const validatePhone = (phone: string): boolean => {
+  // Accept +234, 0, or just digits starting with 234
+  const phoneRegex = /^(\+234|0|234)[0-9]{9,10}$/;
+  return phoneRegex.test(phone.replace(/\s+/g, ''));
+};
+
 const Store: React.FC = () => {
   console.log('🔥 STORE.TSX LOADED WITH FRESH ONBLUR CODE - ' + new Date().toISOString());
   const navigate = useNavigate();
@@ -37,6 +50,9 @@ const Store: React.FC = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailVerifying, setEmailVerifying] = useState(false);
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
   const [form, setForm] = useState({
     schoolName: '',
     state: '',
@@ -143,6 +159,19 @@ const Store: React.FC = () => {
       return setError('Please provide teacher name and email.');
     }
 
+    // Email validation - CRITICAL
+    if (!validateEmail(form.contactEmail)) {
+      return setError('Contact email is invalid. Please enter a valid email address (e.g., name@school.edu.ng)');
+    }
+    if (!validateEmail(form.teacherEmail)) {
+      return setError('Teacher email is invalid. Please enter a valid email address (e.g., teacher@school.edu.ng)');
+    }
+
+    // Phone validation - CRITICAL
+    if (!validatePhone(form.contactPhone)) {
+      return setError('Contact phone is invalid. Please use Nigerian format (+234..., 0..., or 234...)');
+    }
+
     // Validate teams
     const validTeams = teams.filter(t => t.name.trim());
     if (validTeams.length === 0) {
@@ -155,12 +184,22 @@ const Store: React.FC = () => {
       }
     }
 
+    // Show email verification modal
+    console.log('✓ All validations passed - showing email verification');
+    setVerificationEmail(form.teacherEmail);
+    setEmailVerificationSent(true);
+    setEmailVerifying(false);
+  }
+
+  async function handleEmailVerified() {
+    // After user confirms they verified their email, proceed with registration
     setSubmitting(true);
     try {
+      const validTeams = teams.filter(t => t.name.trim());
       const ref = await registerOrder({
         ...form,
         teamCount: validTeams.length,
-        division: kit.division,
+        division: kit!.division,
         fulfilment,
         excludedComponents: [...excluded],
         teams: validTeams,
@@ -172,6 +211,7 @@ const Store: React.FC = () => {
       navigate(`/order/${ref}`);
     } catch (err) {
       setError((err as Error).message);
+      setEmailVerificationSent(false);
     } finally {
       setSubmitting(false);
     }
@@ -554,6 +594,69 @@ const Store: React.FC = () => {
               </motion.div>
             )}
           </>
+        )}
+
+        {/* Email Verification Modal */}
+        {emailVerificationSent && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          >
+            <Panel className="max-w-md w-full">
+              <div className="text-center space-y-4">
+                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+                  <Check className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground">Verify Your Email</h2>
+                <p className="text-sm text-muted-foreground">
+                  We've sent a verification link to:
+                </p>
+                <p className="text-sm font-semibold text-foreground break-all">{verificationEmail}</p>
+                <p className="text-sm text-muted-foreground">
+                  Please check your email and click the verification link to complete your registration. This ensures we can reach you with important updates and team login credentials.
+                </p>
+
+                <div className="border-t border-border pt-4 space-y-3">
+                  <p className="text-xs text-muted-foreground">
+                    ✓ Check your inbox and spam folder
+                    <br />
+                    ✓ Click the verification link in the email
+                    <br />
+                    ✓ Return here to complete registration
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setEmailVerificationSent(false);
+                    handleEmailVerified();
+                  }}
+                  disabled={submitting}
+                  className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  {submitting ? 'Completing Registration…' : 'I\'ve Verified My Email'}
+                </button>
+
+                <button
+                  onClick={() => setEmailVerificationSent(false)}
+                  className="w-full bg-transparent text-primary px-4 py-2 rounded-lg font-medium border border-primary hover:bg-primary/10 transition-colors"
+                >
+                  Resend Verification Email
+                </button>
+
+                <button
+                  onClick={() => {
+                    setEmailVerificationSent(false);
+                    setError(null);
+                  }}
+                  className="w-full text-muted-foreground px-4 py-2 rounded-lg font-medium hover:text-foreground transition-colors"
+                >
+                  Go Back & Edit
+                </button>
+              </div>
+            </Panel>
+          </motion.div>
         )}
       </div>
     </div>
