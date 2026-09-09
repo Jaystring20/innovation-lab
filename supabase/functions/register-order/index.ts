@@ -248,7 +248,7 @@ function generateOrderReference(): string {
   for (let i = 0; i < 7; i++) {
     ref += chars[randomBytes[i] % chars.length];
   }
-  return APEN-+ref;
+  return `APEN-${ref}`;
 }
 
 function generateSecurePassword(): string {
