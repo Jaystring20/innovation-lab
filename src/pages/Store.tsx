@@ -44,6 +44,10 @@ const Store: React.FC = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [division, setDivision] = useState<Kit['division'] | null>(null);
+  // Every registration goes through this one form (ADR-001): a school either
+  // orders a kit, or registers for lab access only. Both submit to the same
+  // register-order Edge Function — there is no separate signup path.
+  const [wantsKit, setWantsKit] = useState<boolean | null>(null);
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const [fulfilment, setFulfilment] = useState<Fulfilment>('delivery_lagos');
   const [fulfilmentTouched, setFulfilmentTouched] = useState(false);
@@ -85,13 +89,23 @@ const Store: React.FC = () => {
     setExcluded(new Set());
   }, [division]);
 
+  // Lab-only registrations have nothing to deliver or pick up. Kit orders
+  // fall back to the state-nudged delivery guess below.
+  useEffect(() => {
+    if (wantsKit === false) setFulfilment('none');
+    else if (wantsKit === true && fulfilment === 'none') {
+      setFulfilment('delivery_lagos');
+      setFulfilmentTouched(false);
+    }
+  }, [wantsKit]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Nudge the fulfilment choice from the state field, until the user picks one.
   useEffect(() => {
-    if (fulfilmentTouched) return;
+    if (!wantsKit || fulfilmentTouched) return;
     const s = form.state.trim().toLowerCase();
     if (s === 'lagos') setFulfilment('delivery_lagos');
     else if (s.length > 2) setFulfilment('delivery_outside');
-  }, [form.state, fulfilmentTouched]);
+  }, [form.state, fulfilmentTouched, wantsKit]);
 
   // Load form data from localStorage on mount
   useEffect(() => {
@@ -126,14 +140,14 @@ const Store: React.FC = () => {
   }, [teams]);
 
   const deliveryFee = useMemo(() => {
-    if (!settings) return 0;
+    if (!settings || !wantsKit) return 0;
     if (fulfilment === 'pickup') return 0;
     return fulfilment === 'delivery_lagos'
       ? Number(settings.lagos_delivery_fee)
       : Number(settings.outside_lagos_delivery_fee);
-  }, [settings, fulfilment]);
+  }, [settings, fulfilment, wantsKit]);
 
-  const perTeam = kit ? kitPriceFor(kit.bom, excluded) : 0;
+  const perTeam = wantsKit && kit ? kitPriceFor(kit.bom, excluded) : 0;
   const teamCount = Math.max(1, Number(form.teamCount) || 1);
   const total = perTeam * teamCount + deliveryFee;
 
@@ -151,7 +165,8 @@ const Store: React.FC = () => {
     setError(null);
 
     // Validation
-    if (!kit) return setError('Please select your division first.');
+    if (!division) return setError('Please select your division first.');
+    if (wantsKit === null) return setError('Please choose whether you are ordering a kit.');
     if (!form.schoolName || !form.address || !form.contactName || !form.contactEmail || !form.contactPhone) {
       return setError('Please fill in all school, address, and contact details.');
     }
@@ -199,9 +214,10 @@ const Store: React.FC = () => {
       const ref = await registerOrder({
         ...form,
         teamCount: validTeams.length,
-        division: kit!.division,
+        division: division!,
         fulfilment,
-        excludedComponents: [...excluded],
+        // No kit means nothing was excluded from a kit that was never priced.
+        excludedComponents: wantsKit ? [...excluded] : [],
         teams: validTeams,
       });
       // Clear cache on successful submission
@@ -230,11 +246,15 @@ const Store: React.FC = () => {
 
         <header className="mb-8">
           <p className="text-sm font-semibold tracking-wider text-primary">
-            APEN 2026 · INNOVATION STORE
+            APEN 2026 · REGISTRATION
           </p>
-          <h1 className="text-2xl font-bold text-foreground mt-1">Order your division kit</h1>
+          <h1 className="text-2xl font-bold text-foreground mt-1">
+            {wantsKit === false ? 'Register for lab access' : 'Register your school'}
+          </h1>
           <p className="text-muted-foreground text-sm mt-2">
-            Pick your division, choose the components you need, and see your total.
+            {wantsKit === false
+              ? 'Pick your division, add your teacher and teams, and get lab access — no kit purchase needed.'
+              : 'Pick your division, choose the components you need, and see your total.'}{' '}
             Registration closes September 25, 2026.
           </p>
         </header>
@@ -276,13 +296,50 @@ const Store: React.FC = () => {
               })}
             </div>
 
-            {kit && (
+            {/* Kit vs. lab-only choice — both paths submit through the same
+                registration flow below, so there is only one place a school
+                ever has to fill this in. */}
+            {division && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid gap-3 mb-7"
+              >
+                <button
+                  type="button"
+                  onClick={() => setWantsKit(true)}
+                  className={`text-left glass-card p-4 transition-all ${
+                    wantsKit === true ? 'border-primary/60 bg-slate-800/60' : 'hover:bg-slate-800/50'
+                  }`}
+                >
+                  <strong className="text-foreground">Order a kit</strong>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    Buy the official kit for your division and pay for delivery or pickup.
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWantsKit(false)}
+                  className={`text-left glass-card p-4 transition-all ${
+                    wantsKit === false ? 'border-primary/60 bg-slate-800/60' : 'hover:bg-slate-800/50'
+                  }`}
+                >
+                  <strong className="text-foreground">Register for lab access only</strong>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    Already have a kit, or just need Lab accounts for your teams? Skip the kit — free.
+                  </div>
+                </button>
+              </motion.div>
+            )}
+
+            {division && wantsKit !== null && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
               >
                 {/* Components */}
+                {wantsKit && kit && (
                 <Panel>
                   <h2 className="text-lg font-semibold text-foreground mb-1">Components</h2>
                   <p className="text-sm text-muted-foreground mb-4">
@@ -342,8 +399,10 @@ const Store: React.FC = () => {
                     </span>
                   </div>
                 </Panel>
+                )}
 
                 {/* Fulfilment */}
+                {wantsKit && (
                 <Panel>
                   <h2 className="text-lg font-semibold text-foreground mb-3">Delivery</h2>
                   <div className="space-y-2">
@@ -384,6 +443,7 @@ const Store: React.FC = () => {
                     )}
                   </div>
                 </Panel>
+                )}
 
                 {/* School details + summary */}
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -415,7 +475,7 @@ const Store: React.FC = () => {
                       placeholder="e.g. Lagos"
                     />
                   </Field>
-                  <Field label="Full delivery address">
+                  <Field label={wantsKit ? 'Full delivery address' : 'School address'}>
                     <textarea
                       className={`${inputCls} resize-none`}
                       rows={3}
@@ -562,33 +622,55 @@ const Store: React.FC = () => {
                   </div>
 
                   <Panel hover={false} className="space-y-1.5">
-                    <SummaryRow
-                      label={`Kit × ${teams} team${teams === 1 ? '' : 's'}`}
-                      value={naira.format(perTeam * teams)}
-                    />
-                    <SummaryRow
-                      label={
-                        fulfilment === 'pickup'
-                          ? 'Pickup'
-                          : fulfilment === 'delivery_lagos'
-                            ? 'Delivery (within Lagos)'
-                            : 'Delivery (outside Lagos, estimate)'
-                      }
-                      value={deliveryFee === 0 ? 'Free' : naira.format(deliveryFee)}
-                    />
-                    <div className="flex justify-between pt-2 border-t border-border text-lg font-bold text-foreground">
-                      <span>Total</span>
-                      <span className="tabular-nums">{naira.format(total)}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground pt-1">
-                      Every registered school receives a kit. Dispatched {DISPATCH_NOTES[fulfilment]}.
-                    </p>
+                    {wantsKit ? (
+                      <>
+                        <SummaryRow
+                          label={`Kit × ${teamCount} team${teamCount === 1 ? '' : 's'}`}
+                          value={naira.format(perTeam * teamCount)}
+                        />
+                        <SummaryRow
+                          label={
+                            fulfilment === 'pickup'
+                              ? 'Pickup'
+                              : fulfilment === 'delivery_lagos'
+                                ? 'Delivery (within Lagos)'
+                                : 'Delivery (outside Lagos, estimate)'
+                          }
+                          value={deliveryFee === 0 ? 'Free' : naira.format(deliveryFee)}
+                        />
+                        <div className="flex justify-between pt-2 border-t border-border text-lg font-bold text-foreground">
+                          <span>Total</span>
+                          <span className="tabular-nums">{naira.format(total)}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground pt-1">
+                          Dispatched {DISPATCH_NOTES[fulfilment]}.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <SummaryRow
+                          label={`Lab access × ${teamCount} team${teamCount === 1 ? '' : 's'}`}
+                          value="Free"
+                        />
+                        <div className="flex justify-between pt-2 border-t border-border text-lg font-bold text-foreground">
+                          <span>Total</span>
+                          <span className="tabular-nums">{naira.format(0)}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground pt-1">
+                          No kit is ordered. Your teacher and team logins are ready as soon as you register.
+                        </p>
+                      </>
+                    )}
                   </Panel>
 
                   {error && <p className="text-sm text-red-400">{error}</p>}
 
                   <GlowButton type="submit" disabled={submitting} className="w-full">
-                    {submitting ? 'Submitting…' : 'Register & get payment instructions'}
+                    {submitting
+                      ? 'Submitting…'
+                      : wantsKit
+                        ? 'Register & get payment instructions'
+                        : 'Register for lab access'}
                   </GlowButton>
                 </form>
               </motion.div>

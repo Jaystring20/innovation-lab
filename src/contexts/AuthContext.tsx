@@ -32,7 +32,6 @@ interface AuthContextType {
   isStudent: boolean;
   displayName: string | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -90,15 +89,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (error) throw new Error(error.message);
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name: fullName } },
-    });
-    if (error) throw new Error(error.message);
-  };
-
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
@@ -125,7 +115,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       session?.user.email ??
       null,
     signIn,
-    signUp,
     signOut,
     refresh,
   };

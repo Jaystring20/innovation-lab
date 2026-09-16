@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
@@ -9,18 +9,20 @@ import HeroImagePlate from '@/components/HeroImagePlate';
 import { useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
-type Mode = 'signin' | 'register';
-
+/**
+ * Sign-in only (ADR-001). New schools do not self-serve an account here —
+ * every account (teacher and team) is created atomically by the register-order
+ * Edge Function via /store, which always links it to a school. A separate
+ * self-serve signUp() here used to create orphaned teacher profiles with no
+ * school_id and no way to attach one after the fact.
+ */
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { session, role, loading: authLoading, signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<Mode>('signin');
-  const [fullName, setFullName] = useState('');
+  const { session, role, loading: authLoading, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   // Route by role once it resolves after sign-in.
   useEffect(() => {
@@ -39,19 +41,9 @@ const Login: React.FC = () => {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    setNotice(null);
     try {
-      if (mode === 'register') {
-        await signUp(email.trim(), password, fullName.trim());
-        // With email confirmation on there is no session yet, so say what happens next.
-        setNotice(
-          'Account created. Confirm your email if you receive one, then sign in. The APEN 2026 team links your account to your school.',
-        );
-        setMode('signin');
-      } else {
-        await signIn(email.trim(), password);
-        // Redirect is handled by the effect above, once the role resolves.
-      }
+      await signIn(email.trim(), password);
+      // Redirect is handled by the effect above, once the role resolves.
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -99,39 +91,11 @@ const Login: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              {mode === 'signin'
-                ? 'Sign in to run your teams through the Innovation Funnel.'
-                : 'Register your teacher account, then the APEN 2026 team links it to your school.'}
+              Sign in to run your teams through the Innovation Funnel.
             </motion.p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <AnimatePresence initial={false}>
-              {mode === 'register' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden"
-                >
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                    Your name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                    <input
-                      type="text"
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full bg-secondary/40 border-2 border-white/10 rounded-lg py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:bg-secondary/60 transition-all"
-                      placeholder="Jane Okafor"
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
                 Email
@@ -162,13 +126,12 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-secondary/40 border-2 border-white/10 rounded-lg py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:bg-secondary/60 transition-all"
-                  placeholder={mode === 'register' ? 'At least 8 characters' : '••••••••'}
+                  placeholder="••••••••"
                 />
               </div>
             </div>
 
             {error && <p className="text-sm text-red-400">{error}</p>}
-            {notice && <p className="text-sm text-emerald-400">{notice}</p>}
 
             <GlowButton
               type="submit"
@@ -176,24 +139,17 @@ const Login: React.FC = () => {
               className="w-full mt-6 py-3 font-semibold text-base"
             >
               {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-              {mode === 'signin' ? 'Sign in' : 'Create account'}
+              Sign in
               {!busy && <ArrowRight className="w-5 h-5" />}
             </GlowButton>
           </form>
 
-          <button
-            type="button"
-            onClick={() => {
-              setMode((m) => (m === 'signin' ? 'register' : 'signin'));
-              setError(null);
-              setNotice(null);
-            }}
-            className="w-full text-center text-sm text-muted-foreground hover:text-primary mt-6 transition-colors"
+          <Link
+            to="/store"
+            className="block w-full text-center text-sm text-muted-foreground hover:text-primary mt-6 transition-colors"
           >
-            {mode === 'signin'
-              ? 'New school? Register a teacher account'
-              : 'Already registered? Sign in'}
-          </button>
+            New school? Register here
+          </Link>
 
           <p className="text-center text-xs text-muted-foreground/60 mt-4">
             Judges and organizers sign in here too.

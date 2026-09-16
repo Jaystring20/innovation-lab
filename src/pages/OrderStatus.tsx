@@ -261,7 +261,20 @@ const OrderStatus: React.FC = () => {
               </Panel>
             )}
 
-            {(order.status === 'registered' || order.status === 'payment_pending') && (
+            {order.fulfilment === 'none' && order.status === 'registered' && (
+              <Panel>
+                <p className="flex items-start gap-2 text-emerald-400">
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                  <span>
+                    You&apos;re all set — no kit was ordered, so there&apos;s nothing to pay.
+                    Your teacher and team login details have been emailed to you.
+                  </span>
+                </p>
+              </Panel>
+            )}
+
+            {order.fulfilment !== 'none' &&
+              (order.status === 'registered' || order.status === 'payment_pending') && (
               <Panel>
                 <h2 className="text-base font-semibold text-foreground mb-2">
                   Payment instructions

@@ -62,13 +62,14 @@ const Landing: React.FC = () => {
                 <h2 className="text-2xl font-bold text-foreground">The Store</h2>
               </div>
               <p className="text-sm text-muted-foreground flex-1 mb-6 leading-relaxed">
-                Browse the official kit for your division, register your school and
-                teams, pay by bank transfer, and track dispatch — no account needed.
+                Register your school and teams — order the official kit for your
+                division, or skip it and register for lab access only. No account
+                needed to start.
               </p>
               <div className="flex flex-col gap-3">
                 <Link to="/store">
                   <GlowButton className="w-full">
-                    Order a kit <ArrowRight className="w-4 h-4" />
+                    Register your school <ArrowRight className="w-4 h-4" />
                   </GlowButton>
                 </Link>
                 <Link to="/order">

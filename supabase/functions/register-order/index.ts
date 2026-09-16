@@ -17,7 +17,7 @@ interface RegisterInput {
   teacherEmail: string;
   division: 'primary' | 'secondary' | 'sixth_form';
   teamCount: number;
-  fulfilment: 'delivery_lagos' | 'delivery_outside' | 'pickup';
+  fulfilment: 'delivery_lagos' | 'delivery_outside' | 'pickup' | 'none';
   excludedComponents: string[];
   teams?: Array<{ name: string; students: string[] }>;
 }

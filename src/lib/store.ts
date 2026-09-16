@@ -28,7 +28,8 @@ export interface OrderLineItem {
   included: boolean;
 }
 
-export type Fulfilment = 'delivery_lagos' | 'delivery_outside' | 'pickup';
+/** 'none' = no kit was ordered, so nothing is delivered or picked up. */
+export type Fulfilment = 'delivery_lagos' | 'delivery_outside' | 'pickup' | 'none';
 
 export interface Kit {
   id: string;
@@ -74,6 +75,7 @@ export const DISPATCH_NOTES: Record<Fulfilment, string> = {
   delivery_lagos: '3–5 working days after payment is confirmed',
   delivery_outside: '5–7 working days after payment is confirmed',
   pickup: 'ready to collect 2–3 working days after payment is confirmed',
+  none: 'no kit was ordered — nothing to dispatch',
 };
 
 /** Full order row joined with school — organizer view only (RLS gated). */
@@ -127,6 +129,7 @@ export const FULFILMENT_LABELS: Record<Fulfilment, string> = {
   delivery_lagos: 'Delivery within Lagos',
   delivery_outside: 'Delivery outside Lagos',
   pickup: 'Pickup (collect in Lagos)',
+  none: 'No kit (lab access only)',
 };
 
 /** Per-team kit price for a given exclusion set — mirrors the Edge Function. */
