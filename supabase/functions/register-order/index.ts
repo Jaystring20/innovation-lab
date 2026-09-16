@@ -90,13 +90,16 @@ serve(async (req: Request) => {
 
     const teacherId = teacherAuthData.user.id;
 
-    const { error: teacherProfileError } = await supabase.from('profiles').insert({
-      id: teacherId,
-      role: 'teacher',
-      full_name: input.teacherName,
-      email: input.teacherEmail,
-      school_id: schoolId,
-    });
+    // The handle_new_user trigger already created a basic profile when the auth user was created.
+    // Update it with the teacher role and school_id instead of inserting a duplicate.
+    const { error: teacherProfileError } = await supabase
+      .from('profiles')
+      .update({
+        role: 'teacher',
+        full_name: input.teacherName,
+        school_id: schoolId,
+      })
+      .eq('id', teacherId);
 
     if (teacherProfileError) {
       console.error('Teacher profile creation error:', teacherProfileError);
