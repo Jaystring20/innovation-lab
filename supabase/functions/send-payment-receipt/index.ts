@@ -140,6 +140,8 @@ Deno.serve(async (req: Request) => {
   const kitPerTeam = Number(order.kit_unit_price ?? 0);
   const deliveryFee = Number(order.delivery_fee ?? 0);
   const statusLink = siteUrl ? `${siteUrl}/order/${orderReference}` : "";
+  const issuerName = Deno.env.get("BANK_ACCOUNT_NAME") ?? "";
+  const issuerTin = Deno.env.get("BUSINESS_TIN") ?? "";
 
   const html = `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
@@ -169,6 +171,7 @@ Deno.serve(async (req: Request) => {
     ${statusLink ? `<p style="margin:0 0 20px;text-align:center"><a href="${statusLink}" style="display:inline-block;background:#1a3b8b;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">Track your kit</a></p>` : ""}
 
     <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Questions? Reply to this email or message us on WhatsApp at +234 803 883 8094.</p>
+    ${issuerName ? `<p style="margin:8px 0 0;font-size:12px;color:#9aa7b3">Issued by ${escapeHtml(issuerName)}${issuerTin ? ` &middot; TIN ${escapeHtml(issuerTin)}` : ""}</p>` : ""}
   </div>
 </body></html>`;
 
@@ -194,6 +197,7 @@ Deno.serve(async (req: Request) => {
     statusLink ? `Track your kit: ${statusLink}` : "",
     ``,
     `Questions? Reply to this email or WhatsApp +234 803 883 8094.`,
+    issuerName ? `Issued by ${issuerName}${issuerTin ? ` - TIN ${issuerTin}` : ""}` : "",
   ].filter(Boolean).join("\n");
 
   const res = await fetch("https://api.resend.com/emails", {

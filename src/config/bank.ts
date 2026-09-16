@@ -12,7 +12,7 @@
  * these two in sync with those.
  */
 export const BANK_DETAILS = {
-  name: 'Fill in before go-live',
-  accountName: 'Fill in before go-live',
-  accountNumber: 'Fill in before go-live',
+  name: 'Sterling Bank',
+  accountName: 'Imperial Educational Services Ltd',
+  accountNumber: '0087287663',
 };
