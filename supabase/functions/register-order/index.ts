@@ -28,6 +28,27 @@ interface OrderResponse {
   teamAccounts?: Array<{ teamName: string; email: string; tempPassword: string }>;
 }
 
+interface BomItem {
+  component: string;
+  qty: number;
+  unit_price: number;
+  required: boolean;
+}
+
+/**
+ * Per-team kit price for a given exclusion set — mirrors kitPriceFor in
+ * src/lib/store.ts, which the Store page uses to show the same total before
+ * submitting. Computed server-side from the bom stored on `kits`, never from
+ * client input: a past security finding closed exactly this hole (a
+ * client-supplied total_amount let anyone submit a ₦1 order).
+ */
+function kitPriceFor(bom: BomItem[], excludedComponents: string[]): number {
+  const excluded = new Set(excludedComponents);
+  return bom
+    .filter((item) => item.required || !excluded.has(item.component))
+    .reduce((sum, item) => sum + Number(item.qty) * Number(item.unit_price), 0);
+}
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -109,6 +130,59 @@ serve(async (req: Request) => {
       );
     }
 
+    // Price the order server-side. Nothing here comes from the client except
+    // which components it excluded and which fulfilment it picked — the
+    // prices themselves always come from the database.
+    let kitUnitPrice = 0;
+    let deliveryFee = 0;
+    let lineItems: Array<{ component: string; qty: number; unit_price: number; included: boolean }> | null = null;
+
+    if (input.fulfilment !== 'none') {
+      const { data: kitRows, error: kitError } = await supabase
+        .from('kits')
+        .select('bom')
+        .eq('division', input.division)
+        .order('unit_price')
+        .limit(1);
+
+      if (kitError || !kitRows || kitRows.length === 0) {
+        console.error('Kit lookup error:', kitError);
+        return new Response(
+          JSON.stringify({ error: 'Could not find a kit for the selected division' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+
+      const bom = kitRows[0].bom as BomItem[];
+      const excluded = new Set(input.excludedComponents ?? []);
+
+      kitUnitPrice = kitPriceFor(bom, input.excludedComponents ?? []);
+      lineItems = bom.map((item) => ({
+        component: item.component,
+        qty: item.qty,
+        unit_price: item.unit_price,
+        included: item.required || !excluded.has(item.component),
+      }));
+
+      if (input.fulfilment === 'delivery_lagos' || input.fulfilment === 'delivery_outside') {
+        const { data: settings } = await supabase
+          .from('store_settings')
+          .select('lagos_delivery_fee, outside_lagos_delivery_fee')
+          .eq('id', 1)
+          .single();
+
+        if (settings) {
+          deliveryFee =
+            input.fulfilment === 'delivery_lagos'
+              ? Number(settings.lagos_delivery_fee)
+              : Number(settings.outside_lagos_delivery_fee);
+        }
+      }
+      // pickup: deliveryFee stays 0
+    }
+
+    const totalAmount = kitUnitPrice * input.teams.length + deliveryFee;
+
     // Create the order BEFORE teams: the teams_before_insert trigger sums
     // team_count from non-cancelled orders for this school to decide how many
     // team slots are allowed. Creating teams first always sees allowed=0.
@@ -120,10 +194,11 @@ serve(async (req: Request) => {
         school_id: schoolId,
         division: input.division,
         team_count: input.teams.length,
-        kit_unit_price: 0,
-        delivery_fee: 0,
+        kit_unit_price: kitUnitPrice,
+        delivery_fee: deliveryFee,
+        total_amount: totalAmount,
         fulfilment: input.fulfilment,
-        line_items: null,
+        line_items: lineItems,
         status: 'registered',
         created_at: new Date().toISOString(),
       })
