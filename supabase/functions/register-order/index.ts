@@ -109,6 +109,35 @@ serve(async (req: Request) => {
       );
     }
 
+    // Create the order BEFORE teams: the teams_before_insert trigger sums
+    // team_count from non-cancelled orders for this school to decide how many
+    // team slots are allowed. Creating teams first always sees allowed=0.
+    const orderReference = generateOrderReference();
+    const { error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        order_reference: orderReference,
+        school_id: schoolId,
+        division: input.division,
+        team_count: input.teams.length,
+        kit_unit_price: 0,
+        delivery_fee: 0,
+        fulfilment: input.fulfilment,
+        line_items: null,
+        status: 'registered',
+        created_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (orderError) {
+      console.error('Order creation error:', orderError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to create order' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
     const teamAccounts: Array<{ teamName: string; email: string; tempPassword: string }> = [];
 
     for (const team of input.teams) {
@@ -151,15 +180,18 @@ serve(async (req: Request) => {
 
       const teamUserId = teamAuthData.user.id;
 
-      const { error: teamProfileError } = await supabase.from('profiles').insert({
-        id: teamUserId,
-        role: 'student',
-        full_name: team.name,
-        email: teamEmail,
-        school_id: schoolId,
-        team_id: teamId,
-        is_team_account: true,
-      });
+      // The handle_new_user trigger already created a basic profile when the
+      // auth user was created. Update it instead of inserting a duplicate.
+      const { error: teamProfileError } = await supabase
+        .from('profiles')
+        .update({
+          role: 'student',
+          full_name: team.name,
+          school_id: schoolId,
+          team_id: teamId,
+          is_team_account: true,
+        })
+        .eq('id', teamUserId);
 
       if (teamProfileError) {
         console.error(`Team profile creation error for ${team.name}:`, teamProfileError);
@@ -180,32 +212,6 @@ serve(async (req: Request) => {
         email: teamEmail,
         tempPassword: tempTeamPassword,
       });
-    }
-
-    const orderReference = generateOrderReference();
-    const { error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        order_reference: orderReference,
-        school_id: schoolId,
-        division: input.division,
-        team_count: input.teams.length,
-        kit_unit_price: 0,
-        delivery_fee: 0,
-        fulfilment: input.fulfilment,
-        line_items: null,
-        status: 'registered',
-        created_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (orderError) {
-      console.error('Order creation error:', orderError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to create order' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
     }
 
     try {
