@@ -22,6 +22,7 @@ const TeamSetupPage = lazy(() => import("./pages/TeamSetupPage"));
 const JudgeDashboard = lazy(() => import("./pages/JudgeDashboard"));
 const OrganizerLogin = lazy(() => import("./pages/OrganizerLogin"));
 const OrganizerDashboard = lazy(() => import("./pages/OrganizerDashboard"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -75,6 +76,9 @@ const App = () => (
                   {/* Legacy paths from the earlier shell */}
                   <Route path="/dashboard" element={<Navigate to="/lab/dashboard" replace />} />
                   <Route path="/admin" element={<Navigate to="/organizer" replace />} />
+
+                  {/* Legal */}
+                  <Route path="/privacy" element={<Privacy />} />
 
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
