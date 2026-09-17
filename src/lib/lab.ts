@@ -254,18 +254,13 @@ export async function saveSubmission(
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   if (supabaseUrl && anonKey) {
+    // Files are already in Drive by this point — they upload directly from
+    // SubmissionForm as soon as they're selected, not on save. There used
+    // to be a "sync to Drive" call here (sync-submission-to-gdrive); it was
+    // a stub that never actually called Drive, so it's removed rather than
+    // fixed twice.
     Promise.all([
-      // 1. Sync to Google Drive
-      fetch(`${supabaseUrl}/functions/v1/sync-submission-to-gdrive`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${anonKey}`,
-        },
-        body: JSON.stringify({ submission_id: submissionId }),
-      }).catch((e) => console.error('Sync failed:', e)),
-
-      // 2. Extract link previews
+      // 1. Extract link previews
       fetch(`${supabaseUrl}/functions/v1/extract-link-previews`, {
         method: 'POST',
         headers: {
@@ -275,7 +270,7 @@ export async function saveSubmission(
         body: JSON.stringify({ submission_id: submissionId }),
       }).catch((e) => console.error('Preview extraction failed:', e)),
 
-      // 3. Run auto-analysis
+      // 2. Run auto-analysis
       fetch(`${supabaseUrl}/functions/v1/analyze-submission`, {
         method: 'POST',
         headers: {

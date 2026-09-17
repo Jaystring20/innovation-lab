@@ -47,18 +47,14 @@ const SubmissionForm: React.FC<{
     return 'other';
   }
 
-  async function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const result = reader.result as string;
-        resolve(result.split(',')[1]);
-      };
-      reader.onerror = reject;
-    });
-  }
-
+  /**
+   * Uploads a file straight to Google Drive: the Edge Function only opens a
+   * resumable session (it needs the service account's credentials, which
+   * must never reach the browser) and hands back its URL; the raw file
+   * bytes go browser -> Google directly, never through Supabase. Proxying
+   * a multi-hundred-MB video through an Edge Function as base64 JSON does
+   * not work at any real video length or resolution.
+   */
   async function handleFilesSelected(files: File[]) {
     setUploading(true);
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -66,8 +62,6 @@ const SubmissionForm: React.FC<{
 
     for (const file of files) {
       const fileType = getFileType(file.name, file.type);
-
-      // Add to uploaded files list (pending)
       const fileId = crypto.randomUUID();
       const fileRecord: UploadedFile = {
         id: fileId,
@@ -76,90 +70,62 @@ const SubmissionForm: React.FC<{
         type: fileType,
         status: 'uploading',
       };
-
       setUploadedFiles((prev) => [...prev, fileRecord]);
 
       try {
-        const fileData = await fileToBase64(file);
-
-        // OPTION A: Client-Side Google Drive Upload (Recommended)
-        // When Google Drive MCP is properly configured, this will upload directly to Drive
-        // For now, this is handled by the Edge Function which acts as a proxy
-
-        // Step 1: Upload file via Edge Function
-        console.log(`Uploading ${file.name} to Edge Function...`);
-        const uploadResponse = await fetch(
-          `${supabaseUrl}/functions/v1/upload-submission-file`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${anonKey}`,
-            },
-            body: JSON.stringify({
-              submission_id: submission.id,
-              team_id: submission.team_id,
-              stage_id: submission.stage_id,
-              file_name: file.name,
-              file_size: file.size,
-              file_type: fileType,
-              mime_type: file.type,
-              file_data: fileData,
-            }),
-          }
-        );
-
-        if (!uploadResponse.ok) {
-          throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+        // Step 1: ask the Edge Function to open a Drive resumable upload session.
+        const prepareRes = await fetch(`${supabaseUrl}/functions/v1/upload-submission-file`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${anonKey}`,
+          },
+          body: JSON.stringify({
+            team_id: submission.team_id,
+            stage_id: submission.stage_id,
+            file_name: file.name,
+            mime_type: file.type || 'application/octet-stream',
+          }),
+        });
+        if (!prepareRes.ok) {
+          const err = await prepareRes.json().catch(() => ({}) as { error?: string });
+          throw new Error(err.error || `Could not start the upload (${prepareRes.status}).`);
         }
+        const { uploadUrl } = (await prepareRes.json()) as { uploadUrl: string };
 
-        const uploadResult = await uploadResponse.json();
-
-        if (!uploadResult.success) {
-          throw new Error(uploadResult.error || 'Upload failed');
+        // Step 2: PUT the raw file straight to Google. `body: file` streams
+        // the File object rather than loading it into memory as a string.
+        const driveRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          body: file,
+        });
+        if (!driveRes.ok) {
+          throw new Error(`Upload to Drive failed (${driveRes.status}).`);
         }
+        const driveFile = (await driveRes.json()) as {
+          id: string;
+          webViewLink?: string;
+          thumbnailLink?: string;
+        };
 
-        console.log(`File uploaded: ${uploadResult.gdrive_id}`);
-
-        // Step 2: Extract thumbnail preview (async, don't wait)
-        fetch(
-          `${supabaseUrl}/functions/v1/extract-file-preview`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${anonKey}`,
-            },
-            body: JSON.stringify({
-              file_id: uploadResult.file_id,
-              submission_id: submission.id,
-              file_type: fileType,
-              file_name: file.name,
-              gdrive_id: uploadResult.gdrive_id,
-            }),
-          }
-        ).catch((e) => console.error('Preview extraction failed:', e));
-
-        // Step 3: Update UI with successful upload
         setUploadedFiles((prev) =>
           prev.map((f) =>
             f.id === fileId
               ? {
                   ...f,
                   status: 'completed',
-                  gdrive_id: uploadResult.gdrive_id,
-                  gdrive_url: uploadResult.gdrive_url,
+                  gdrive_id: driveFile.id,
+                  gdrive_url: driveFile.webViewLink ?? `https://drive.google.com/file/d/${driveFile.id}/view`,
+                  thumbnail_url: driveFile.thumbnailLink,
                 }
-              : f
-          )
+              : f,
+          ),
         );
       } catch (error) {
         console.error('Upload error:', error);
-        setUploadedFiles((prev) =>
-          prev.map((f) =>
-            f.id === fileId ? { ...f, status: 'failed' } : f
-          )
-        );
+        setUploadedFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: 'failed' } : f)));
+        setError((error as Error).message);
       }
     }
 
