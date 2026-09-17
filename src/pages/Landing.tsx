@@ -1,107 +1,133 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Cpu, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
-import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import HeroImagePlate from '@/components/HeroImagePlate';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
-const PILLARS = [
-  {
-    icon: Cpu,
-    title: 'Hands-on kits',
-    note: 'Real hardware — sensors, boards, and actuators — not slideware.',
-  },
-  {
-    icon: Sparkles,
-    title: 'A structured funnel',
-    note: 'Design, Build, Intelligize, BATTLE — each stage judged, with feedback.',
-  },
-  {
-    icon: Trophy,
-    title: 'A real finale',
-    note: 'Teams that make it through compete live, in front of judges, in Lagos.',
-  },
-];
+const PARTICIPANTS = ['Learners', 'Educators', 'Judges', 'Kits & resources', 'Partner organizations'];
 
 const Landing: React.FC = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Backdrop />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-5 py-16">
-        <motion.header
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-          >
-            <HeroImagePlate src={steamFoundryLogo} alt="STEAM Foundry" className="mb-8" />
-          </motion.div>
+      <div className="relative z-10">
+        {/* Hero — asymmetric split, not centered */}
+        <section className="max-w-6xl mx-auto px-5 pt-16 pb-20 md:pt-20 md:pb-28">
+          <div className="grid md:grid-cols-[1.1fr_0.9fr] gap-12 md:gap-8 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <img
+                src={steamFoundryLogo}
+                alt="STEAM Foundry"
+                className="h-9 md:h-11 w-auto mb-9 opacity-95"
+              />
+              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05] tracking-tight mb-5">
+                The infrastructure African STEAM needs.
+              </h1>
+              <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-[46ch] mb-8">
+                We run real, judged competitions end to end, and connect learners, educators, and
+                the tools they need to build.
+              </p>
+              <Link to="/apen-2026">
+                <GlowButton className="px-7 py-3 text-base font-semibold">
+                  Register for a Competition <ArrowRight className="w-4 h-4" />
+                </GlowButton>
+              </Link>
+            </motion.div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 font-display">
-            STEAM Foundry
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            We build hands-on AI, coding &amp; robotics experiences for Nigerian schools — real
-            kits, a judged competition funnel, and a live finale, not a worksheet.
-          </p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="hidden md:block"
+            >
+              <EcosystemDiagram />
+            </motion.div>
+          </div>
+        </section>
 
-          <Link to="/apen-2026" className="inline-block mt-8">
-            <GlowButton className="px-8 py-3 text-base font-semibold">
-              Register for a Competition <ArrowRight className="w-4 h-4" />
-            </GlowButton>
-          </Link>
-        </motion.header>
+        {/* Who it connects — a diagram row, not icon cards */}
+        <section className="border-t border-border">
+          <div className="max-w-6xl mx-auto px-5 py-12 md:py-14">
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+              {PARTICIPANTS.map((label) => (
+                <span
+                  key={label}
+                  className="text-sm md:text-base font-semibold text-foreground whitespace-nowrap"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid gap-4 sm:grid-cols-3 mb-14"
-        >
-          {PILLARS.map((p) => (
-            <Panel key={p.title} className="p-5 text-center" hover={false}>
-              <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center mx-auto mb-3">
-                <p.icon className="w-5 h-5 text-primary" />
+        {/* Current program */}
+        <section className="border-t border-border">
+          <Link to="/apen-2026" className="block group">
+            <div className="max-w-6xl mx-auto px-5 py-16 md:py-20">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+                <div>
+                  <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+                    APEN 2026
+                  </h2>
+                  <p className="text-muted-foreground max-w-[52ch] leading-relaxed">
+                    The AI, Coding &amp; Robotics Competition running on The Lab right now, across
+                    Primary, Secondary, and Sixth Form divisions.
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-2 text-primary font-semibold whitespace-nowrap group-hover:gap-3 transition-[gap] flex-shrink-0">
+                  Register for a Competition <ArrowRight className="w-5 h-5" />
+                </span>
               </div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">{p.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{p.note}</p>
-            </Panel>
-          ))}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Link to="/apen-2026">
-            <Panel className="p-6 flex items-center justify-between gap-4 border-l-4 border-l-primary group">
-              <div>
-                <p className="text-xs font-semibold tracking-wider text-primary mb-1">
-                  CURRENTLY RUNNING
-                </p>
-                <h2 className="text-xl font-bold text-foreground mb-1">
-                  APEN 2026 — AI, Coding &amp; Robotics Competition
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Primary, Secondary &amp; Sixth Form divisions · 4-stage funnel · Grand BATTLE in
-                  Lagos
-                </p>
-              </div>
-              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" />
-            </Panel>
+            </div>
           </Link>
-        </motion.div>
+        </section>
       </div>
     </div>
+  );
+};
+
+/**
+ * A quiet geometric network diagram — the visual metaphor for "ecosystem":
+ * one hub (The Lab) connected to the people and resources around it, with a
+ * couple of peer-to-peer links to suggest a marketplace, not a strict
+ * hub-and-spoke hierarchy.
+ */
+const EcosystemDiagram: React.FC = () => {
+  const hub = { x: 200, y: 190, r: 15 };
+  const nodes = [
+    { x: 202, y: 46, r: 8 },
+    { x: 346, y: 132, r: 7 },
+    { x: 304, y: 322, r: 8 },
+    { x: 98, y: 330, r: 6 },
+    { x: 56, y: 140, r: 7 },
+  ];
+
+  return (
+    <svg
+      viewBox="0 0 400 400"
+      className="w-full h-auto text-primary"
+      role="img"
+      aria-label="Diagram of STEAM Foundry connecting learners, educators, judges, kits, and partner organizations around a central hub"
+    >
+      <g stroke="currentColor" strokeWidth="1.5" opacity="0.35">
+        {nodes.map((n, i) => (
+          <line key={i} x1={hub.x} y1={hub.y} x2={n.x} y2={n.y} />
+        ))}
+        <line x1={nodes[0].x} y1={nodes[0].y} x2={nodes[1].x} y2={nodes[1].y} />
+        <line x1={nodes[3].x} y1={nodes[3].y} x2={nodes[4].x} y2={nodes[4].y} />
+      </g>
+      <circle cx={hub.x} cy={hub.y} r={hub.r} fill="currentColor" opacity="0.9" />
+      {nodes.map((n, i) => (
+        <circle key={i} cx={n.x} cy={n.y} r={n.r} fill="currentColor" opacity="0.55" />
+      ))}
+    </svg>
   );
 };
 
