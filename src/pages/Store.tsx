@@ -238,7 +238,7 @@ const Store: React.FC = () => {
       <Backdrop />
       <div className="relative z-10 max-w-2xl mx-auto px-5 py-12">
         <Link
-          to="/"
+          to="/apen-2026"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back

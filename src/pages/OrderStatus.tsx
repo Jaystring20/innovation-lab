@@ -115,7 +115,7 @@ const OrderStatus: React.FC = () => {
       <div className={wrap}>
         <Backdrop />
         <div className={inner}>
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
+          <Link to="/apen-2026" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <h1 className="text-2xl font-bold text-foreground mb-4">Track your order</h1>
@@ -177,7 +177,7 @@ const OrderStatus: React.FC = () => {
     <div className={wrap}>
       <Backdrop />
       <div className={inner}>
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
+        <Link to="/apen-2026" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
 

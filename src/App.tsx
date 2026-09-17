@@ -13,6 +13,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 // console to do it.
 import Landing from "./pages/Landing";
 
+const Apen2026 = lazy(() => import("./pages/Apen2026"));
 const Store = lazy(() => import("./pages/Store"));
 const OrderStatus = lazy(() => import("./pages/OrderStatus"));
 const Login = lazy(() => import("./pages/Login"));
@@ -53,8 +54,12 @@ const App = () => (
             <BrowserRouter>
               <Suspense fallback={<RouteFallback />}>
                 <Routes>
-                  {/* Shared entry */}
+                  {/* Shared entry — the STEAM Foundry brand home */}
                   <Route path="/" element={<Landing />} />
+
+                  {/* This year's competition — Store + Lab entry, reached via
+                      "Register for a Competition" on the home page */}
+                  <Route path="/apen-2026" element={<Apen2026 />} />
 
                   {/* Store — public, no account needed */}
                   <Route path="/store" element={<Store />} />
