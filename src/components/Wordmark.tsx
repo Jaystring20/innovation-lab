@@ -56,7 +56,7 @@ export default function Wordmark({ size = 'md', className = '' }: WordmarkProps)
       </svg>
 
       {/* Text wordmark */}
-      <div className={`${text} font-display font-600 leading-none tracking-tight`}>
+      <div className={`${text} font-display font-semibold leading-none tracking-tight text-foreground`}>
         STEAM
         <br />
         <span className="text-primary">FOUNDRY</span>

@@ -2,20 +2,28 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
+import ThemeToggle from '@/components/ThemeToggle';
+import { usePublicTheme } from '@/hooks/usePublicTheme';
+import { cn } from '@/lib/utils';
 
 const LAST_UPDATED = 'September 17, 2026';
 
 const Privacy: React.FC = () => {
+  const { theme, toggle } = usePublicTheme();
+
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className={cn('min-h-screen bg-background relative overflow-hidden', theme === 'light' && 'light')}>
       <Backdrop />
       <div className="relative z-10 max-w-2xl mx-auto px-5 py-12">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </Link>
+          <ThemeToggle theme={theme} onToggle={toggle} />
+        </div>
 
         <header className="mb-8">
           <p className="text-sm font-semibold tracking-wider text-primary">

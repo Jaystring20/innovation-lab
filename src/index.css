@@ -165,6 +165,66 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Public-page light theme — unlayered so it overrides :root when
+   a .light class is set on a page wrapper by usePublicTheme.
+   Scoped to Landing / Apen2026 / Privacy; same warm-ink hue family
+   as the dark theme, luminance inverted. The Lab/Store/dashboards
+   never receive this class and stay on the fixed dark workspace
+   theme from ThemeContext.
+   ───────────────────────────────────────────────────────────── */
+.light {
+  --background: 38 35% 97%;
+  --surface: 36 30% 93%;
+  --foreground: 24 20% 12%;
+
+  --card: 36 30% 93%;
+  --card-foreground: 24 20% 12%;
+
+  --popover: 36 30% 93%;
+  --popover-foreground: 24 20% 12%;
+
+  /* Deepened amber/ochre — same hue as dark mode's brass accent. L=30
+     measured at 5.3-5.7:1 against both --background and --surface as
+     14px text (WCAG AA needs 4.5:1); L=40 measured 3.3-3.5:1 and failed. */
+  --primary: 36 78% 30%;
+  --primary-foreground: 24 15% 8%;
+
+  --secondary: 36 25% 90%;
+  --secondary-foreground: 24 20% 12%;
+
+  --muted: 36 22% 89%;
+  --muted-foreground: 30 10% 40%;
+
+  --accent: 36 78% 30%;
+  --accent-foreground: 24 15% 8%;
+
+  --destructive: 0 65% 42%;
+  --destructive-foreground: 40 20% 98%;
+
+  --border: 32 18% 82%;
+  --input: 36 25% 92%;
+  --ring: 36 78% 30%;
+
+  --ok: 132 45% 34%;
+  --ok-foreground: 40 20% 98%;
+  --warn: 38 90% 40%;
+  --warn-foreground: 24 15% 8%;
+  --info: 200 80% 38%;
+  --info-foreground: 40 20% 98%;
+  --danger: 0 70% 42%;
+  --danger-foreground: 40 20% 98%;
+
+  --sidebar-background: 36 28% 93%;
+  --sidebar-foreground: 24 20% 12%;
+  --sidebar-primary: 36 78% 30%;
+  --sidebar-primary-foreground: 24 15% 8%;
+  --sidebar-accent: 36 78% 30%;
+  --sidebar-accent-foreground: 24 15% 8%;
+  --sidebar-border: 32 18% 82%;
+  --sidebar-ring: 36 78% 30%;
+}
+
+/* ─────────────────────────────────────────────────────────────
    Division theming — unlayered so it ships and overrides :root
    when a .tier-* class is set on <html> by ThemeContext.
    Only remaps --primary (accent), --radius, and --font-display.
