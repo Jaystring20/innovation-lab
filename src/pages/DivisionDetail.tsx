@@ -1,6 +1,6 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertTriangle, ArrowLeft, ArrowRight, Cpu, Target } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, Cpu, Route, Target } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
@@ -103,6 +103,58 @@ const DivisionDetail: React.FC = () => {
                 </p>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* Your stage-by-stage plan — the same 4 official stages every
+            division runs, rewritten with concrete, division-specific
+            action: what to research, what to wire first, what "good AI
+            integration" looks like for this exact challenge. */}
+        <section className="border-t border-border">
+          <div className="max-w-5xl mx-auto px-5 py-14 md:py-16">
+            <div className="flex items-center gap-2.5 mb-2">
+              <Route className="w-4 h-4 text-primary" />
+              <p className="text-xs font-semibold tracking-wider text-primary">YOUR STAGE-BY-STAGE PLAN</p>
+            </div>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-10">
+              What to actually do, {division.niche} edition
+            </h2>
+
+            <ol className="space-y-0">
+              {division.stagePlan.map((s, i) => (
+                <motion.li
+                  key={s.stage}
+                  className="relative flex gap-5 pb-10 last:pb-0"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                >
+                  {i < division.stagePlan.length - 1 && (
+                    <motion.span
+                      className="absolute left-[15px] top-8 bottom-0 w-px bg-primary/40 origin-top"
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true, margin: '-60px' }}
+                      transition={{ duration: 0.5, delay: i * 0.06 + 0.15 }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface border border-primary/50 flex items-center justify-center text-xs font-mono font-semibold text-primary">
+                    {i + 1}
+                  </span>
+                  <div className="flex-1 pt-1">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 mb-1.5">
+                      <p className="font-display text-lg font-bold text-foreground">
+                        {s.stage}: {s.name}
+                      </p>
+                      <p className="text-xs font-mono text-muted-foreground tabular-nums">{s.dates}</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed max-w-[62ch]">{s.action}</p>
+                  </div>
+                </motion.li>
+              ))}
+            </ol>
           </div>
         </section>
 
