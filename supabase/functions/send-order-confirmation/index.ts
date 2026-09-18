@@ -11,7 +11,10 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
  * order, and a cooldown stops that being used to flood an inbox.
  */
 
-const REF_PATTERN = /^APEN-[A-Z0-9]{6}$/;
+// Accepts 6 (current) or 7 (references issued before the generator was
+// fixed to match the storage RLS policy) characters, so those orders stay
+// reachable rather than getting orphaned by the length change.
+const REF_PATTERN = /^APEN-[A-Z0-9]{6,7}$/;
 const RESEND_COOLDOWN_MS = 60_000;
 
 const cors = {
