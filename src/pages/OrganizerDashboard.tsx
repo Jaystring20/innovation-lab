@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
+import steamFoundryLogoHeader from '@/assets/steam-foundry-logo-header.webp';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   listAllOrders,
@@ -129,9 +129,9 @@ const OrganizerDashboard: React.FC = () => {
       <aside className="w-60 hidden md:flex flex-col bg-surface border-r border-border overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between gap-3">
           <img
-            src={steamFoundryLogo}
+            src={steamFoundryLogoHeader}
             alt="STEAM Foundry"
-            className="h-8 w-auto object-contain flex-1 min-w-0"
+            className="h-10 w-auto object-contain"
           />
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex-shrink-0">Org</p>
         </div>
