@@ -9,7 +9,7 @@ import { ForgeNetwork, RoleIcon } from '@/components/landing/ForgeGraphics';
 import { usePublicTheme } from '@/hooks/usePublicTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
+import steamFoundryLogoHeader from '@/assets/steam-foundry-logo-header.webp';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
 
@@ -67,9 +67,9 @@ const Landing: React.FC = () => {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <img
-                src={steamFoundryLogo}
+                src={steamFoundryLogoHeader}
                 alt="STEAM Foundry"
-                className="h-9 md:h-11 w-auto mb-9 opacity-95"
+                className="h-11 md:h-14 w-auto mb-9"
               />
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05] tracking-tight mb-5">
                 The infrastructure that turns African students into problem-solvers.
