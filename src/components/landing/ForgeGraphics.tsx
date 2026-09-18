@@ -256,3 +256,188 @@ export function SignalPulse({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/**
+ * Large hero "scene" for a division detail page — a technical-diagram
+ * treatment of what the kit actually does, one per division, sized for a
+ * page hero rather than an inline icon. Schematic rather than illustrative
+ * (circles, lines, simple shapes) to match the site's existing "engineering
+ * programme" line-art style instead of attempting cartoon illustration.
+ */
+export function DivisionScene({ niche, className }: { niche: string; className?: string }) {
+  const reduceMotion = useReducedMotion();
+  const key = niche.toLowerCase();
+
+  if (key === 'agriculture') {
+    return (
+      <svg viewBox="0 0 400 280" className={className} role="img" aria-label="Diagram of the Smart Farm Bot watering a plant based on soil sensor readings">
+        {/* soil bed */}
+        <rect x="40" y="220" width="320" height="40" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <motion.path
+            key={i}
+            d={`M ${60 + i * 60} 235 q 8 8 0 16`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            opacity="0.3"
+            animate={reduceMotion ? {} : { opacity: [0.15, 0.45, 0.15] }}
+            transition={reduceMotion ? {} : { duration: 2.4, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }}
+          />
+        ))}
+
+        {/* plant growing from the soil */}
+        <motion.g
+          initial={{ scaleY: 0.3, opacity: 0.6 }}
+          animate={reduceMotion ? { scaleY: 1 } : { scaleY: [0.75, 1, 0.75] }}
+          transition={reduceMotion ? {} : { duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ originX: '200px', originY: '220px' }}
+        >
+          <path d="M200 220 V150" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M200 190c-18-4-30-20-30-34 18 2 30 16 30 34Z" fill="currentColor" opacity="0.5" />
+          <path d="M200 170c18-4 30-20 30-34-18 2-30 16-30 34Z" fill="currentColor" opacity="0.5" />
+        </motion.g>
+
+        {/* water droplet cycling from the nozzle */}
+        {!reduceMotion && (
+          <motion.circle
+            r="3"
+            fill="currentColor"
+            initial={{ cx: 200, cy: 110, opacity: 0 }}
+            animate={{ cy: [110, 214], opacity: [0, 0.9, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 0.8, ease: 'easeIn' }}
+          />
+        )}
+        <path d="M180 100h40l-8 14h-24Z" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+
+        {/* controller + circuit trace to the nozzle */}
+        <rect x="286" y="86" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+        <text x="309" y="106" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor" opacity="0.7">MCU</text>
+        <path d="M286 101 H220 M220 101 L220 107" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+        <motion.circle
+          r="2.5"
+          fill="currentColor"
+          initial={{ cx: 286, cy: 101, opacity: 0 }}
+          animate={reduceMotion ? { opacity: 0.6 } : { cx: [286, 220], opacity: [0, 1, 0] }}
+          transition={reduceMotion ? {} : { duration: 1.4, repeat: Infinity, repeatDelay: 1.6, ease: 'linear' }}
+        />
+      </svg>
+    );
+  }
+
+  if (key === 'power') {
+    return (
+      <svg viewBox="0 0 400 280" className={className} role="img" aria-label="Diagram of the Smart Energy Bot monitoring current flow from the grid to a home">
+        {/* pylon */}
+        <path d="M70 240V100M50 240l20-140 20 140M58 130h24M62 160h16M66 190h8" stroke="currentColor" strokeWidth="1.5" opacity="0.5" fill="none" />
+
+        {/* transmission line with a traveling current pulse */}
+        <path d="M90 108h180" stroke="currentColor" strokeWidth="1.5" opacity="0.3" />
+        {!reduceMotion && (
+          <motion.circle
+            r="3"
+            fill="currentColor"
+            initial={{ cx: 90, cy: 108, opacity: 0 }}
+            animate={{ cx: [90, 270], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 0.6, ease: 'linear' }}
+          />
+        )}
+
+        {/* house */}
+        <path d="M270 240V150l40-30 40 30v90Z" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+        <motion.circle
+          cx="310"
+          cy="200"
+          r="14"
+          fill="currentColor"
+          initial={{ opacity: 0.35 }}
+          animate={reduceMotion ? { opacity: 0.6 } : { opacity: [0.3, 0.85, 0.3] }}
+          transition={reduceMotion ? {} : { duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <path d="M304 194l4 6 8-10" stroke="hsl(var(--background))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+        {/* current waveform read by the sensor */}
+        <path
+          d="M40 195c10-20 20 20 30 0s20 20 30 0 20 20 30 0 20 20 30 0"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          opacity="0.55"
+        />
+
+        {/* meter dial */}
+        <circle cx="70" cy="195" r="0" opacity="0" />
+        <g transform="translate(60 230)">
+          <circle r="26" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+          <motion.line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="-18"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            initial={{ rotate: -40 }}
+            animate={reduceMotion ? { rotate: 10 } : { rotate: [-40, 40, -10, -40] }}
+            transition={reduceMotion ? {} : { duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ originX: '0px', originY: '0px' }}
+          />
+        </g>
+      </svg>
+    );
+  }
+
+  // security
+  return (
+    <svg viewBox="0 0 400 280" className={className} role="img" aria-label="Diagram of the Smart Security Bot detecting motion and alerting a phone">
+      {/* camera body */}
+      <rect x="150" y="140" width="80" height="52" rx="8" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+      <circle cx="190" cy="166" r="18" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+      <circle cx="190" cy="166" r="8" fill="currentColor" opacity="0.5" />
+      <rect x="200" y="128" width="14" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.5" />
+
+      {/* motion detection rings pulsing outward */}
+      {[0, 1, 2].map((i) => (
+        <motion.circle
+          key={i}
+          cx="190"
+          cy="166"
+          r="18"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+          initial={{ opacity: 0, scale: 1 }}
+          animate={reduceMotion ? { opacity: 0 } : { opacity: [0.5, 0], scale: [1, 3.2] }}
+          transition={reduceMotion ? {} : { duration: 2.8, repeat: Infinity, delay: i * 0.9, ease: 'easeOut' }}
+          style={{ originX: '190px', originY: '166px' }}
+        />
+      ))}
+
+      {/* a "person" walking through the frame, triggering detection */}
+      {!reduceMotion && (
+        <motion.g
+          initial={{ x: 40, opacity: 0 }}
+          animate={{ x: [40, 190, 340], opacity: [0, 1, 1, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, repeatDelay: 1, ease: 'linear' }}
+        >
+          <circle cx="0" cy="230" r="6" fill="currentColor" opacity="0.55" />
+          <path d="M0 236v18M-7 254l7-4 7 4M-6 242l6 4 6-4" stroke="currentColor" strokeWidth="1.5" opacity="0.55" strokeLinecap="round" />
+        </motion.g>
+      )}
+
+      {/* alert traveling to a phone */}
+      <rect x="300" y="60" width="32" height="54" rx="5" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+      <motion.circle
+        cx="316"
+        cy="74"
+        r="4"
+        fill="currentColor"
+        initial={{ opacity: 0.3 }}
+        animate={reduceMotion ? { opacity: 0.7 } : { opacity: [0.2, 1, 0.2] }}
+        transition={reduceMotion ? {} : { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <path d="M226 148c30-30 50-50 70-64" stroke="currentColor" strokeWidth="1.2" strokeDasharray="3 4" opacity="0.35" fill="none" />
+    </svg>
+  );
+}

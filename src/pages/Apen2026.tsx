@@ -19,43 +19,11 @@ import { DivisionIcon, SignalPulse } from '@/components/landing/ForgeGraphics';
 import { usePublicTheme } from '@/hooks/usePublicTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
+import { DIVISIONS } from '@/data/divisions';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
 
 const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
-
-const DIVISIONS = [
-  {
-    tag: 'Primary · Ages 7–12',
-    niche: 'Agriculture',
-    project: 'Smart Farm Bot + LED Interface',
-    challenge:
-      "Design a Smart Farm Bot that helps a plant grow using less water, less space, and less human effort, then make it intelligent.",
-    sdg: 'SDG 2 · SDG 6',
-    price: '₦60,050',
-    hardware: 'ESP32-S3 · soil & water sensors · pump & relay · LED interface',
-  },
-  {
-    tag: 'Secondary · Ages 13–16',
-    niche: 'Power',
-    project: 'Smart Energy Bot',
-    challenge:
-      'Monitor electricity consumption, detect energy waste, and use AI to help homes and schools make smarter, greener energy decisions.',
-    sdg: 'SDG 7 · SDG 9 · SDG 12',
-    price: '₦63,100',
-    hardware: 'ESP32 · AC voltage & current sensors · LCD readout',
-  },
-  {
-    tag: 'Sixth Form · Ages 16–18',
-    niche: 'Security',
-    project: 'ESP32-CAM Smart Security Bot',
-    challenge:
-      'Build an affordable security system that detects movement, captures evidence, alerts a user remotely, and lets AI judge what matters.',
-    sdg: 'SDG 9 · SDG 11 · SDG 16',
-    price: '₦64,400',
-    hardware: 'ESP32-CAM · PIR motion sensor · Wi-Fi phone alerts',
-  },
-];
 
 const TIMELINE = [
   { phase: '01', name: 'Pre-registration & kit dispatch', dates: 'Aug 31 – Sep 30' },
@@ -205,26 +173,35 @@ const Apen2026: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ duration: 0.5, delay: i * 0.08 }}
-                  className="grid md:grid-cols-[auto_1fr_auto] gap-4 md:gap-8 items-start py-8"
                 >
-                  <div className="md:w-40 flex-shrink-0">
-                    <DivisionIcon niche={d.niche} className="w-7 h-7 text-primary mb-2" />
-                    <p className="text-xs font-semibold tracking-wider text-primary mb-1">{d.tag}</p>
-                    <p className="font-display text-xl font-bold text-foreground">{d.niche}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground mb-1.5">{d.project}</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-2 max-w-[58ch]">
-                      {d.challenge}
-                    </p>
-                    <p className="text-xs text-muted-foreground/80">
-                      {d.hardware} &middot; {d.sdg}
-                    </p>
-                  </div>
-                  <div className="md:text-right flex-shrink-0">
-                    <p className="text-xs text-muted-foreground mb-0.5">Kit price</p>
-                    <p className="font-display text-lg font-bold text-foreground tabular-nums">{d.price}</p>
-                  </div>
+                  <Link
+                    to={`/apen-2026/${d.slug}`}
+                    className="group grid md:grid-cols-[auto_1fr_auto] gap-4 md:gap-8 items-start py-8 -mx-4 px-4 rounded-lg transition-colors hover:bg-surface"
+                  >
+                    <div className="md:w-40 flex-shrink-0">
+                      <motion.div whileHover={reduceMotion ? {} : { scale: 1.1 }} className="inline-block">
+                        <DivisionIcon niche={d.niche} className="w-7 h-7 text-primary mb-2" />
+                      </motion.div>
+                      <p className="text-xs font-semibold tracking-wider text-primary mb-1">{d.tag}</p>
+                      <p className="font-display text-xl font-bold text-foreground">{d.niche}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground mb-1.5 inline-flex items-center gap-1.5">
+                        {d.project}
+                        <ArrowRight className="w-3.5 h-3.5 text-primary opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                      </p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-2 max-w-[58ch]">
+                        {d.challenge}
+                      </p>
+                      <p className="text-xs text-muted-foreground/80">
+                        {d.hardware} &middot; {d.sdg}
+                      </p>
+                    </div>
+                    <div className="md:text-right flex-shrink-0">
+                      <p className="text-xs text-muted-foreground mb-0.5">Kit price</p>
+                      <p className="font-display text-lg font-bold text-foreground tabular-nums">{d.price}</p>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
