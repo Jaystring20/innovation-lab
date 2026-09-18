@@ -13,7 +13,10 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
  * a double-click sending two receipts.
  */
 
-const REF_PATTERN = /^APEN-[A-Z0-9]{6}$/;
+// Accepts 6 (current) or 7 (references issued before the generator was
+// fixed to match the storage RLS policy) characters, so those orders stay
+// reachable rather than getting orphaned by the length change.
+const REF_PATTERN = /^APEN-[A-Z0-9]{6,7}$/;
 const COOLDOWN_MS = 60 * 60 * 1000;
 
 const cors = {
