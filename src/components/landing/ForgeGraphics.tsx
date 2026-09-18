@@ -163,3 +163,96 @@ export function RoleIcon({ role, className }: { role: string; className?: string
     </svg>
   );
 }
+
+/** One glyph per APEN division, tied to its challenge theme rather than a
+ * generic numbered badge. 24x24 viewBox, stroke-based, currentColor.
+ */
+const DIVISION_ICON_PATHS: Record<string, React.ReactNode> = {
+  agriculture: (
+    // leaf growing from a circuit trace — Smart Farm Bot
+    <>
+      <path d="M12 20V11" />
+      <path d="M12 11c0-3.5 2.2-6 6-6.5C17.6 8 15 11 12 11Z" />
+      <path d="M12 14c0-2.6-1.8-4.4-4.5-4.8C7.9 12 10 14 12 14Z" />
+      <circle cx="4" cy="20" r="1.2" />
+      <path d="M4 20h5" />
+    </>
+  ),
+  power: (
+    // bolt inside a monitoring ring — Smart Energy Bot
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M13 6.5 8.5 13h3.2l-.7 4.5L17 11h-3.2l.2-4.5Z" strokeLinejoin="round" />
+    </>
+  ),
+  security: (
+    // shield with a camera-eye aperture — Smart Security Bot
+    <>
+      <path d="M12 3.5 19 6.5v5c0 4.5-2.9 7.8-7 9-4.1-1.2-7-4.5-7-9v-5L12 3.5Z" />
+      <circle cx="12" cy="11.5" r="2.4" />
+      <path d="M12 9.4v.8M12 13.5v.8M9.9 11.5h.8M13.3 11.5h.8" strokeLinecap="round" />
+    </>
+  ),
+};
+
+export function DivisionIcon({ niche, className }: { niche: string; className?: string }) {
+  const path = DIVISION_ICON_PATHS[niche.toLowerCase()];
+  if (!path) return null;
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {path}
+    </svg>
+  );
+}
+
+/** A quiet "signal" accent for the APEN hero — a scanning arc that suggests
+ * sensing/detection (the through-line across all three divisions: sensors
+ * reading soil, current, and motion), rather than a literal illustration.
+ */
+const SIGNAL_PATH_POINTS = [
+  { x: 2, y: 30 },
+  { x: 26, y: 18 },
+  { x: 50, y: 6 },
+  { x: 66, y: 18 },
+  { x: 90, y: 30 },
+  { x: 118, y: 20 },
+];
+
+export function SignalPulse({ className }: { className?: string }) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <svg viewBox="0 0 120 40" className={className} aria-hidden="true">
+      <path
+        d="M2 30 Q 20 30 26 18 T 50 6 Q 60 6 66 18 T 90 30 Q 100 30 118 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        opacity="0.3"
+      />
+      {!reduceMotion && (
+        <motion.circle
+          r={2.5}
+          fill="currentColor"
+          initial={{ cx: SIGNAL_PATH_POINTS[0].x, cy: SIGNAL_PATH_POINTS[0].y, opacity: 0 }}
+          animate={{
+            cx: SIGNAL_PATH_POINTS.map((p) => p.x),
+            cy: SIGNAL_PATH_POINTS.map((p) => p.y),
+            opacity: [0, 1, 1, 1, 1, 0],
+          }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+        />
+      )}
+    </svg>
+  );
+}

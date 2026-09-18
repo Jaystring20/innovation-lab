@@ -15,7 +15,9 @@ import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import ThemeToggle from '@/components/ThemeToggle';
+import { DivisionIcon, SignalPulse } from '@/components/landing/ForgeGraphics';
 import { usePublicTheme } from '@/hooks/usePublicTheme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
@@ -73,6 +75,7 @@ const RUBRIC = [
 
 const Apen2026: React.FC = () => {
   const { theme, toggle } = usePublicTheme();
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className={cn('min-h-screen bg-background relative overflow-hidden', theme === 'light' && 'light')}>
@@ -98,7 +101,20 @@ const Apen2026: React.FC = () => {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="flex items-center gap-4 mb-8">
-                <img src={apenSeal} alt="APEN — Association of Private Educators in Nigeria" className="h-11 w-11 object-contain" />
+                <div className="relative">
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-primary blur-md"
+                    initial={{ opacity: 0.15 }}
+                    animate={reduceMotion ? { opacity: 0.15 } : { opacity: [0.1, 0.3, 0.1] }}
+                    transition={reduceMotion ? {} : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    aria-hidden="true"
+                  />
+                  <img
+                    src={apenSeal}
+                    alt="APEN — Association of Private Educators in Nigeria"
+                    className="relative h-11 w-11 object-contain"
+                  />
+                </div>
                 <div className="w-px h-8 bg-border" />
                 <img src={imperialEdtechLogo} alt="Imperial EdTech" className="h-6 w-auto object-contain" />
               </div>
@@ -106,6 +122,7 @@ const Apen2026: React.FC = () => {
               <p className="text-sm font-semibold tracking-wider text-primary mb-2">
                 AI, CODING &amp; ROBOTICS COMPETITION
               </p>
+              <SignalPulse className="w-28 h-9 text-primary mb-2 -ml-1" />
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05] tracking-tight mb-4">
                 APEN 2026
               </h1>
@@ -191,6 +208,7 @@ const Apen2026: React.FC = () => {
                   className="grid md:grid-cols-[auto_1fr_auto] gap-4 md:gap-8 items-start py-8"
                 >
                   <div className="md:w-40 flex-shrink-0">
+                    <DivisionIcon niche={d.niche} className="w-7 h-7 text-primary mb-2" />
                     <p className="text-xs font-semibold tracking-wider text-primary mb-1">{d.tag}</p>
                     <p className="font-display text-xl font-bold text-foreground">{d.niche}</p>
                   </div>
@@ -233,9 +251,23 @@ const Apen2026: React.FC = () => {
 
             <ol className="space-y-0">
               {TIMELINE.map((t, i) => (
-                <li key={t.phase} className="relative flex gap-5 pb-8 last:pb-0">
+                <motion.li
+                  key={t.phase}
+                  className="relative flex gap-5 pb-8 last:pb-0"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                >
                   {i < TIMELINE.length - 1 && (
-                    <span className="absolute left-[15px] top-8 bottom-0 w-px bg-border" aria-hidden="true" />
+                    <motion.span
+                      className="absolute left-[15px] top-8 bottom-0 w-px bg-primary/40 origin-top"
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true, margin: '-60px' }}
+                      transition={{ duration: 0.5, delay: i * 0.06 + 0.15 }}
+                      aria-hidden="true"
+                    />
                   )}
                   <span className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface border border-primary/50 flex items-center justify-center text-xs font-mono font-semibold text-primary">
                     {t.phase}
@@ -251,7 +283,7 @@ const Apen2026: React.FC = () => {
                       {t.dates}
                     </p>
                   </div>
-                </li>
+                </motion.li>
               ))}
             </ol>
           </div>
