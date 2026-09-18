@@ -1,6 +1,6 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Cpu, Target } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, Cpu, Target } from 'lucide-react';
 import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
@@ -9,7 +9,7 @@ import { DivisionIcon, DivisionScene } from '@/components/landing/ForgeGraphics'
 import { usePublicTheme } from '@/hooks/usePublicTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
-import { DIVISIONS, getDivisionBySlug } from '@/data/divisions';
+import { DELIVERABLES, DIVISIONS, getDivisionBySlug } from '@/data/divisions';
 
 const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
 
@@ -93,6 +93,16 @@ const DivisionDetail: React.FC = () => {
             <p className="text-foreground text-lg md:text-xl leading-relaxed max-w-[62ch] font-display font-semibold">
               {division.challenge}
             </p>
+
+            {division.safetyNote && (
+              <div className="mt-6 flex items-start gap-3 p-4 rounded-lg border border-warn/40 bg-warn/10 max-w-[62ch]">
+                <AlertTriangle className="w-4 h-4 text-warn mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-foreground leading-relaxed">
+                  <span className="font-semibold">Safety note: </span>
+                  {division.safetyNote}
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -124,7 +134,37 @@ const DivisionDetail: React.FC = () => {
               ))}
             </div>
 
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-lg border border-border bg-surface">
+            <div className="mt-10">
+              <p className="text-xs font-semibold tracking-wider text-muted-foreground mb-4">
+                FULL BILL OF MATERIALS
+              </p>
+              <div className="border border-border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-surface border-b border-border">
+                      <th className="text-left font-semibold text-muted-foreground py-2.5 pl-4 pr-2 w-10">#</th>
+                      <th className="text-left font-semibold text-muted-foreground py-2.5 px-2">Component</th>
+                      <th className="text-left font-semibold text-muted-foreground py-2.5 px-2 w-20">Qty</th>
+                      <th className="text-right font-semibold text-muted-foreground py-2.5 pl-2 pr-4 w-24">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {division.bom.map((line) => (
+                      <tr key={line.n}>
+                        <td className="py-2.5 pl-4 pr-2 text-muted-foreground tabular-nums">{line.n}</td>
+                        <td className="py-2.5 px-2 text-foreground">{line.component}</td>
+                        <td className="py-2.5 px-2 text-muted-foreground">{line.qty}</td>
+                        <td className="py-2.5 pl-2 pr-4 text-right font-semibold text-foreground tabular-nums">
+                          {line.price}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-lg border border-border bg-surface">
               <div>
                 <p className="text-xs text-muted-foreground mb-0.5">Kit price</p>
                 <p className="font-display text-2xl font-bold text-foreground tabular-nums">{division.price}</p>
@@ -163,21 +203,43 @@ const DivisionDetail: React.FC = () => {
           </div>
         </section>
 
-        {/* Field notes — placeholder for the deeper project brief, ready to
-            receive the organizer's fuller doc (build stages, mentor notes,
-            example submissions) without shipping a broken-looking gap. */}
+        {/* What you'll submit — the four required deliverables, straight
+            from the Competition Handbook. Same format across all divisions;
+            only the hardware and challenge above differ. */}
         <section className="border-t border-border">
           <div className="max-w-5xl mx-auto px-5 py-14 md:py-16">
-            <Panel className="p-8 text-center" hover={false}>
-              <p className="text-sm font-semibold text-foreground mb-1.5">
-                Full project brief coming soon
-              </p>
-              <p className="text-sm text-muted-foreground max-w-[48ch] mx-auto leading-relaxed">
-                Build stages, mentor notes, and example submissions for the {division.niche} division are
-                being finalized and will appear here. In the meantime, the Competition Handbook has the
-                full bill of materials and rubric.
-              </p>
-            </Panel>
+            <p className="text-xs font-semibold tracking-wider text-primary mb-2">WHAT YOU'LL SUBMIT</p>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-10">
+              Four deliverables, four deadlines
+            </h2>
+            <div className="space-y-4">
+              {DELIVERABLES.map((d, i) => (
+                <motion.div
+                  key={d.name}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                  className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6 p-5 rounded-lg border border-border bg-surface"
+                >
+                  <div className="sm:w-36 flex-shrink-0">
+                    <p className="text-xs font-semibold tracking-wider text-primary mb-0.5">{d.stage}</p>
+                    <p className="text-xs font-mono text-muted-foreground">{d.due}</p>
+                  </div>
+                  <div>
+                    <p className="font-display font-bold text-foreground mb-1">{d.name}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{d.detail}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-6">
+              Full judging weights and stage-by-stage details are in the{' '}
+              <a href={HANDBOOK_URL} download className="text-primary hover:underline">
+                Competition Handbook
+              </a>
+              .
+            </p>
           </div>
         </section>
 
