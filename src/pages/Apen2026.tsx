@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { DIVISIONS } from '@/data/divisions';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
+import apen2026Flier from '@/assets/apen-2026-flier.webp';
 
 const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
 
@@ -118,10 +119,19 @@ const Apen2026: React.FC = () => {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6"
             >
+              <Panel className="p-2 overflow-hidden">
+                <img
+                  src={apen2026Flier}
+                  alt="APEN AI, Coding & Robotics Competition — Smart Solutions for Tomorrow's Nigeria. Design. Build. Intelligize. Battle. Strictly for APEN schools. Levels: Primary, Secondary, Sixth Form divisions. Participation: Hybrid. Sept.–Nov. 2026."
+                  className="w-full h-auto rounded-[calc(var(--radius)-4px)]"
+                />
+              </Panel>
+
               <Panel className="p-6">
                 <p className="text-xs font-semibold tracking-wider text-muted-foreground mb-4">
                   KEY FACTS
