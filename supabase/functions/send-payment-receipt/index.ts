@@ -13,7 +13,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
  * a double-click sending two receipts.
  */
 
-const REF_PATTERN = /^APEN-[A-Z0-9]{6}$/;
+const REF_PATTERN = /^APEN-[A-Z0-9]{7}$/;
 const COOLDOWN_MS = 60 * 60 * 1000;
 
 const cors = {
