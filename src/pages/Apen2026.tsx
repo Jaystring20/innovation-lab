@@ -15,45 +15,16 @@ import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import ThemeToggle from '@/components/ThemeToggle';
+import { DivisionIcon, SignalPulse } from '@/components/landing/ForgeGraphics';
 import { usePublicTheme } from '@/hooks/usePublicTheme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
+import { DIVISIONS } from '@/data/divisions';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
+import apen2026Flier from '@/assets/apen-2026-flier.webp';
 
 const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
-
-const DIVISIONS = [
-  {
-    tag: 'Primary · Ages 7–12',
-    niche: 'Agriculture',
-    project: 'Smart Farm Bot + LED Interface',
-    challenge:
-      "Design a Smart Farm Bot that helps a plant grow using less water, less space, and less human effort, then make it intelligent.",
-    sdg: 'SDG 2 · SDG 6',
-    price: '₦60,050',
-    hardware: 'ESP32-S3 · soil & water sensors · pump & relay · LED interface',
-  },
-  {
-    tag: 'Secondary · Ages 13–16',
-    niche: 'Power',
-    project: 'Smart Energy Bot',
-    challenge:
-      'Monitor electricity consumption, detect energy waste, and use AI to help homes and schools make smarter, greener energy decisions.',
-    sdg: 'SDG 7 · SDG 9 · SDG 12',
-    price: '₦63,100',
-    hardware: 'ESP32 · AC voltage & current sensors · LCD readout',
-  },
-  {
-    tag: 'Sixth Form · Ages 16–18',
-    niche: 'Security',
-    project: 'ESP32-CAM Smart Security Bot',
-    challenge:
-      'Build an affordable security system that detects movement, captures evidence, alerts a user remotely, and lets AI judge what matters.',
-    sdg: 'SDG 9 · SDG 11 · SDG 16',
-    price: '₦64,400',
-    hardware: 'ESP32-CAM · PIR motion sensor · Wi-Fi phone alerts',
-  },
-];
 
 const TIMELINE = [
   { phase: '01', name: 'Pre-registration & kit dispatch', dates: 'Aug 31 – Sep 30' },
@@ -73,6 +44,7 @@ const RUBRIC = [
 
 const Apen2026: React.FC = () => {
   const { theme, toggle } = usePublicTheme();
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className={cn('min-h-screen bg-background relative overflow-hidden', theme === 'light' && 'light')}>
@@ -98,7 +70,20 @@ const Apen2026: React.FC = () => {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="flex items-center gap-4 mb-8">
-                <img src={apenSeal} alt="APEN — Association of Private Educators in Nigeria" className="h-11 w-11 object-contain" />
+                <div className="relative">
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-primary blur-md"
+                    initial={{ opacity: 0.15 }}
+                    animate={reduceMotion ? { opacity: 0.15 } : { opacity: [0.1, 0.3, 0.1] }}
+                    transition={reduceMotion ? {} : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    aria-hidden="true"
+                  />
+                  <img
+                    src={apenSeal}
+                    alt="APEN — Association of Private Educators in Nigeria"
+                    className="relative h-11 w-11 object-contain"
+                  />
+                </div>
                 <div className="w-px h-8 bg-border" />
                 <img src={imperialEdtechLogo} alt="Imperial EdTech" className="h-6 w-auto object-contain" />
               </div>
@@ -106,6 +91,7 @@ const Apen2026: React.FC = () => {
               <p className="text-sm font-semibold tracking-wider text-primary mb-2">
                 AI, CODING &amp; ROBOTICS COMPETITION
               </p>
+              <SignalPulse className="w-28 h-9 text-primary mb-2 -ml-1" />
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05] tracking-tight mb-4">
                 APEN 2026
               </h1>
@@ -133,10 +119,19 @@ const Apen2026: React.FC = () => {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6"
             >
+              <Panel className="p-2 overflow-hidden">
+                <img
+                  src={apen2026Flier}
+                  alt="APEN AI, Coding & Robotics Competition — Smart Solutions for Tomorrow's Nigeria. Design. Build. Intelligize. Battle. Strictly for APEN schools. Levels: Primary, Secondary, Sixth Form divisions. Participation: Hybrid. Sept.–Nov. 2026."
+                  className="w-full h-auto rounded-[calc(var(--radius)-4px)]"
+                />
+              </Panel>
+
               <Panel className="p-6">
                 <p className="text-xs font-semibold tracking-wider text-muted-foreground mb-4">
                   KEY FACTS
@@ -188,25 +183,35 @@ const Apen2026: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ duration: 0.5, delay: i * 0.08 }}
-                  className="grid md:grid-cols-[auto_1fr_auto] gap-4 md:gap-8 items-start py-8"
                 >
-                  <div className="md:w-40 flex-shrink-0">
-                    <p className="text-xs font-semibold tracking-wider text-primary mb-1">{d.tag}</p>
-                    <p className="font-display text-xl font-bold text-foreground">{d.niche}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground mb-1.5">{d.project}</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-2 max-w-[58ch]">
-                      {d.challenge}
-                    </p>
-                    <p className="text-xs text-muted-foreground/80">
-                      {d.hardware} &middot; {d.sdg}
-                    </p>
-                  </div>
-                  <div className="md:text-right flex-shrink-0">
-                    <p className="text-xs text-muted-foreground mb-0.5">Kit price</p>
-                    <p className="font-display text-lg font-bold text-foreground tabular-nums">{d.price}</p>
-                  </div>
+                  <Link
+                    to={`/apen-2026/${d.slug}`}
+                    className="group grid md:grid-cols-[auto_1fr_auto] gap-4 md:gap-8 items-start py-8 -mx-4 px-4 rounded-lg transition-colors hover:bg-surface"
+                  >
+                    <div className="md:w-40 flex-shrink-0">
+                      <motion.div whileHover={reduceMotion ? {} : { scale: 1.1 }} className="inline-block">
+                        <DivisionIcon niche={d.niche} className="w-7 h-7 text-primary mb-2" />
+                      </motion.div>
+                      <p className="text-xs font-semibold tracking-wider text-primary mb-1">{d.tag}</p>
+                      <p className="font-display text-xl font-bold text-foreground">{d.niche}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground mb-1.5 inline-flex items-center gap-1.5">
+                        {d.project}
+                        <ArrowRight className="w-3.5 h-3.5 text-primary opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                      </p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-2 max-w-[58ch]">
+                        {d.challenge}
+                      </p>
+                      <p className="text-xs text-muted-foreground/80">
+                        {d.hardware} &middot; {d.sdg}
+                      </p>
+                    </div>
+                    <div className="md:text-right flex-shrink-0">
+                      <p className="text-xs text-muted-foreground mb-0.5">Kit price</p>
+                      <p className="font-display text-lg font-bold text-foreground tabular-nums">{d.price}</p>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -233,9 +238,23 @@ const Apen2026: React.FC = () => {
 
             <ol className="space-y-0">
               {TIMELINE.map((t, i) => (
-                <li key={t.phase} className="relative flex gap-5 pb-8 last:pb-0">
+                <motion.li
+                  key={t.phase}
+                  className="relative flex gap-5 pb-8 last:pb-0"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                >
                   {i < TIMELINE.length - 1 && (
-                    <span className="absolute left-[15px] top-8 bottom-0 w-px bg-border" aria-hidden="true" />
+                    <motion.span
+                      className="absolute left-[15px] top-8 bottom-0 w-px bg-primary/40 origin-top"
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true, margin: '-60px' }}
+                      transition={{ duration: 0.5, delay: i * 0.06 + 0.15 }}
+                      aria-hidden="true"
+                    />
                   )}
                   <span className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-surface border border-primary/50 flex items-center justify-center text-xs font-mono font-semibold text-primary">
                     {t.phase}
@@ -251,7 +270,7 @@ const Apen2026: React.FC = () => {
                       {t.dates}
                     </p>
                   </div>
-                </li>
+                </motion.li>
               ))}
             </ol>
           </div>

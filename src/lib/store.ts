@@ -96,6 +96,7 @@ export interface AdminOrder {
   dispatched_at: string | null;
   whatsapp_pinged_at: string | null;
   receipt_sent_at: string | null;
+  confirmation_sent_at: string | null;
   schools: {
     name: string;
     state: string | null;
@@ -313,7 +314,7 @@ export async function listAllOrders(): Promise<AdminOrder[]> {
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, order_reference, division, team_count, kit_unit_price, delivery_fee, fulfilment, line_items, total_amount, status, proof_of_payment_url, created_at, paid_at, dispatched_at, whatsapp_pinged_at, receipt_sent_at, schools ( name, state, contact_name, contact_email, contact_phone )',
+      'id, order_reference, division, team_count, kit_unit_price, delivery_fee, fulfilment, line_items, total_amount, status, proof_of_payment_url, created_at, paid_at, dispatched_at, whatsapp_pinged_at, receipt_sent_at, confirmation_sent_at, schools ( name, state, contact_name, contact_email, contact_phone )',
     )
     .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);

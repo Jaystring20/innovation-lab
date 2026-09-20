@@ -5,9 +5,11 @@ import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import ThemeToggle from '@/components/ThemeToggle';
+import { ForgeNetwork, RoleIcon } from '@/components/landing/ForgeGraphics';
 import { usePublicTheme } from '@/hooks/usePublicTheme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
+import steamFoundryLogoHeader from '@/assets/steam-foundry-logo-header.webp';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
 
@@ -46,6 +48,7 @@ const ROLES = [
 
 const Landing: React.FC = () => {
   const { theme, toggle } = usePublicTheme();
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className={cn('min-h-screen bg-background relative overflow-hidden', theme === 'light' && 'light')}>
@@ -64,9 +67,9 @@ const Landing: React.FC = () => {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <img
-                src={steamFoundryLogo}
+                src={steamFoundryLogoHeader}
                 alt="STEAM Foundry"
-                className="h-9 md:h-11 w-auto mb-9 opacity-95"
+                className="h-11 md:h-14 w-auto mb-9"
               />
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05] tracking-tight mb-5">
                 The infrastructure that turns African students into problem-solvers.
@@ -88,7 +91,7 @@ const Landing: React.FC = () => {
               transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
               className="hidden md:block"
             >
-              <EcosystemDiagram />
+              <ForgeNetwork />
             </motion.div>
           </div>
         </section>
@@ -115,7 +118,10 @@ const Landing: React.FC = () => {
                   transition={{ duration: 0.5, delay: i * 0.06 }}
                   className="grid md:grid-cols-[0.28fr_1fr] gap-2 md:gap-8 items-start py-6"
                 >
-                  <p className="font-display text-lg font-bold text-foreground">{r.name}</p>
+                  <div className="flex items-center gap-2.5">
+                    <RoleIcon role={r.name} className="w-5 h-5 text-primary flex-shrink-0" />
+                    <p className="font-display text-lg font-bold text-foreground">{r.name}</p>
+                  </div>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-[60ch]">
                     {r.detail}
                   </p>
@@ -135,7 +141,16 @@ const Landing: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-5">
-                      <img src={apenSeal} alt="APEN" className="h-8 w-8 object-contain" />
+                      <div className="relative">
+                        <motion.div
+                          className="absolute inset-0 rounded-full bg-primary blur-md"
+                          initial={{ opacity: 0.15 }}
+                          animate={reduceMotion ? { opacity: 0.15 } : { opacity: [0.1, 0.3, 0.1] }}
+                          transition={reduceMotion ? {} : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                          aria-hidden="true"
+                        />
+                        <img src={apenSeal} alt="APEN" className="relative h-8 w-8 object-contain" />
+                      </div>
                       <div className="w-px h-6 bg-border" />
                       <img src={imperialEdtechLogo} alt="Imperial EdTech" className="h-4 w-auto object-contain" />
                     </div>
@@ -181,44 +196,6 @@ const Landing: React.FC = () => {
         </section>
       </div>
     </div>
-  );
-};
-
-/**
- * A quiet geometric network diagram — the visual metaphor for "ecosystem":
- * one hub (The Lab) connected to the people and resources around it, with a
- * couple of peer-to-peer links to suggest a marketplace, not a strict
- * hub-and-spoke hierarchy.
- */
-const EcosystemDiagram: React.FC = () => {
-  const hub = { x: 200, y: 190, r: 15 };
-  const nodes = [
-    { x: 202, y: 46, r: 8 },
-    { x: 346, y: 132, r: 7 },
-    { x: 304, y: 322, r: 8 },
-    { x: 98, y: 330, r: 6 },
-    { x: 56, y: 140, r: 7 },
-  ];
-
-  return (
-    <svg
-      viewBox="0 0 400 400"
-      className="w-full h-auto text-primary"
-      role="img"
-      aria-label="Diagram of STEAM Foundry connecting learners, educators, mentors, judges, kits, and partner organizations around a central hub"
-    >
-      <g stroke="currentColor" strokeWidth="1.5" opacity="0.35">
-        {nodes.map((n, i) => (
-          <line key={i} x1={hub.x} y1={hub.y} x2={n.x} y2={n.y} />
-        ))}
-        <line x1={nodes[0].x} y1={nodes[0].y} x2={nodes[1].x} y2={nodes[1].y} />
-        <line x1={nodes[3].x} y1={nodes[3].y} x2={nodes[4].x} y2={nodes[4].y} />
-      </g>
-      <circle cx={hub.x} cy={hub.y} r={hub.r} fill="currentColor" opacity="0.9" />
-      {nodes.map((n, i) => (
-        <circle key={i} cx={n.x} cy={n.y} r={n.r} fill="currentColor" opacity="0.55" />
-      ))}
-    </svg>
   );
 };
 

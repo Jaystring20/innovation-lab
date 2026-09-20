@@ -12,12 +12,13 @@ import {
 } from 'lucide-react';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
-import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
+import steamFoundryLogoHeader from '@/assets/steam-foundry-logo-header.webp';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   listAllOrders,
   setOrderStatus,
   sendPaymentReceipt,
+  sendOrderConfirmation,
   proofUrl,
   naira,
   DIVISION_SHORT,
@@ -52,6 +53,7 @@ const OrganizerDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   // Signed in is not enough — only organizers belong here. A teacher or judge
   // who reaches this URL is sent back to sign-in rather than shown empty tables.
@@ -109,6 +111,18 @@ const OrganizerDashboard: React.FC = () => {
     }
   }
 
+  async function resendConfirmation(o: AdminOrder) {
+    setResendingId(o.id);
+    setError(null);
+    try {
+      const ok = await sendOrderConfirmation(o.order_reference);
+      if (!ok) setError(`Confirmation email to ${o.order_reference} did not send.`);
+      await refresh();
+    } finally {
+      setResendingId(null);
+    }
+  }
+
   async function openProof(path: string) {
     const url = await proofUrl(path);
     if (url) window.open(url, '_blank');
@@ -129,9 +143,9 @@ const OrganizerDashboard: React.FC = () => {
       <aside className="w-60 hidden md:flex flex-col bg-surface border-r border-border overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between gap-3">
           <img
-            src={steamFoundryLogo}
+            src={steamFoundryLogoHeader}
             alt="STEAM Foundry"
-            className="h-8 w-auto object-contain flex-1 min-w-0"
+            className="h-10 w-auto object-contain"
           />
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground flex-shrink-0">Org</p>
         </div>
@@ -261,6 +275,11 @@ const OrganizerDashboard: React.FC = () => {
                             <span className={`px-2 py-1 rounded-md text-xs font-medium ${badgeCls[o.status]}`}>
                               {STATUS_LABELS[o.status]}
                             </span>
+                            {o.confirmation_sent_at && (
+                              <span className="block text-[11px] text-ok/80 mt-1">
+                                confirmation sent
+                              </span>
+                            )}
                             {o.receipt_sent_at && (
                               <span className="block text-[11px] text-ok/80 mt-1">
                                 receipt sent
@@ -287,15 +306,28 @@ const OrganizerDashboard: React.FC = () => {
                             </div>
                           </td>
                           <td className="p-3">
-                            {action && (
-                              <GlowButton
-                                size="sm"
-                                disabled={busyId === o.id}
-                                onClick={() => advance(o, action.to)}
+                            <div className="flex flex-col gap-1.5 items-start">
+                              {action && (
+                                <GlowButton
+                                  size="sm"
+                                  disabled={busyId === o.id}
+                                  onClick={() => advance(o, action.to)}
+                                >
+                                  {busyId === o.id ? '…' : action.label}
+                                </GlowButton>
+                              )}
+                              <button
+                                onClick={() => resendConfirmation(o)}
+                                disabled={resendingId === o.id}
+                                className="text-xs text-muted-foreground hover:text-primary hover:underline disabled:opacity-50"
                               >
-                                {busyId === o.id ? '…' : action.label}
-                              </GlowButton>
-                            )}
+                                {resendingId === o.id
+                                  ? 'Sending…'
+                                  : o.confirmation_sent_at
+                                    ? 'Resend confirmation'
+                                    : 'Send confirmation'}
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );

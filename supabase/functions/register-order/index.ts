@@ -328,8 +328,8 @@ serve(async (req: Request) => {
 function generateOrderReference(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let ref = '';
-  const randomBytes = crypto.getRandomValues(new Uint8Array(7));
-  for (let i = 0; i < 7; i++) {
+  const randomBytes = crypto.getRandomValues(new Uint8Array(6));
+  for (let i = 0; i < 6; i++) {
     ref += chars[randomBytes[i] % chars.length];
   }
   return `APEN-${ref}`;

@@ -14,6 +14,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Landing from "./pages/Landing";
 
 const Apen2026 = lazy(() => import("./pages/Apen2026"));
+const DivisionDetail = lazy(() => import("./pages/DivisionDetail"));
 const Store = lazy(() => import("./pages/Store"));
 const OrderStatus = lazy(() => import("./pages/OrderStatus"));
 const Login = lazy(() => import("./pages/Login"));
@@ -60,6 +61,7 @@ const App = () => (
                   {/* This year's competition — Store + Lab entry, reached via
                       "Register for a Competition" on the home page */}
                   <Route path="/apen-2026" element={<Apen2026 />} />
+                  <Route path="/apen-2026/:slug" element={<DivisionDetail />} />
 
                   {/* Store — public, no account needed */}
                   <Route path="/store" element={<Store />} />
