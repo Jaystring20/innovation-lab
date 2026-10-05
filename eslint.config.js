@@ -5,7 +5,9 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  // packages-admin/ and admin-dashboard/ are not part of the deployed app yet:
+  // their screens are being ported into src/, where they will be linted.
+  { ignores: ["dist", "packages-admin", "admin-dashboard"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
