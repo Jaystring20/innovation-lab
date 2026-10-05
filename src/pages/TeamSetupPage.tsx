@@ -8,7 +8,7 @@ import Panel from '@/components/Panel';
 import AppShell from '@/components/AppShell';
 import GlowButton from '@/components/GlowButton';
 import { TeamSetup } from '@/components/lab/TeamSetup';
-import { useAuth } from '@/contexts/AuthContext';
+import { hasOrganizerAccess, useAuth } from '@/contexts/AuthContext';
 import { useTheme, type TierType } from '@/contexts/ThemeContext';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { listMyTeams, type Team } from '@/lib/lab';
@@ -40,7 +40,7 @@ const TeamSetupPage: React.FC = () => {
   useEffect(() => {
     if (authLoading) return;
     if (!session) navigate('/lab', { replace: true });
-    else if (role === 'organizer') navigate('/organizer', { replace: true });
+    else if (hasOrganizerAccess(role)) navigate('/organizer', { replace: true });
     else if (role === 'judge') navigate('/lab/judge', { replace: true });
   }, [authLoading, session, role, navigate]);
 
