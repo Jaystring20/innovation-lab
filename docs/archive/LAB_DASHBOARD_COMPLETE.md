@@ -35,7 +35,7 @@ The Lab Dashboard is now **feature-complete** with all core interfaces built and
 
 **How to Test:**
 1. Go to https://innovation-lab-seven.vercel.app/lab
-2. Sign in: `jaydigitalstrategist@gmail.com` / `@Welcome2026&teacher`
+2. Sign in: `jaydigitalstrategist@gmail.com`: (password set by the organizer — not stored in the repo)
 3. You'll see `Test Team Alpha` in Design stage
 4. Click the team card to see the submission form
 
@@ -183,7 +183,7 @@ where email = 'digitalcreativeshubltd@gmail.com';
 **Test Sequence:**
 
 1. **Teacher Submits Design (✅ Ready)**
-   - Login: `jaydigitalstrategist@gmail.com` / `@Welcome2026&teacher`
+   - Login: `jaydigitalstrategist@gmail.com`: (password set by the organizer — not stored in the repo)
    - Go to `/lab/dashboard`
    - See `Test Team Alpha` in Design stage
    - Fill in deliverable: video URL, code URL, notes
@@ -203,7 +203,7 @@ where email = 'digitalcreativeshubltd@gmail.com';
    - Judge workload counter increments
 
 4. **Judge Reviews & Scores (✅ Ready once judge is promoted)**
-   - Judge login: `digitalcreativeshubltd@gmail.com` / `@Welcome2026&judge`
+   - Judge login: `digitalcreativeshubltd@gmail.com`: (password set by the organizer — not stored in the repo)
    - Go to `/lab/judge`
    - See review queue with `Test Team Alpha` submission
    - Expand to see deliverable links

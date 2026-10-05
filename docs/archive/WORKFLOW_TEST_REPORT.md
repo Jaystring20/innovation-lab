@@ -10,7 +10,7 @@
 **Status:** ✅ VERIFIED
 
 - Teacher Account Created: `jaydigitalstrategist@gmail.com`
-- Password: `@Welcome2026&teacher`
+- Password: (password set by the organizer — not stored in the repo)
 - Role: `teacher` (confirmed in database)
 - School Link: `APEN Test School — DELETE` (Primary Division)
 - Status: ✅ Linked to school successfully
@@ -80,7 +80,7 @@
 **Status:** ✅ VERIFIED
 
 - Organizer Account: `jerryadeyemi20@gmail.com`
-- Password: `@Welcome2026&`
+- Password: (password set by the organizer — not stored in the repo)
 - Role: `organizer` (confirmed)
 - Access Level: Full Lab console access
 
@@ -184,7 +184,7 @@ where email = 'digitalcreativeshubltd@gmail.com';
 **Status:** ❌ BLOCKED
 
 - Judge Account: `digitalcreativeshubltd@gmail.com`
-- Password: `@Welcome2026&judge`
+- Password: (password set by the organizer — not stored in the repo)
 - Currently shows as teacher account (role not yet 'judge')
 - Would be redirected to `/lab/judge` after promotion
 

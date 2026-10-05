@@ -55,7 +55,7 @@ The judge can now:
 1. Go to https://innovation-lab-seven.vercel.app/lab
 2. Sign in with credentials:
    - Email: `digitalcreativeshubltd@gmail.com`
-   - Password: `@Welcome2026&judge`
+   - Password: (password set by the organizer — not stored in the repo)
 3. They'll see the **Judge Dashboard** → "Review queue" page
 4. Once the organizer assigns them to submissions, they can:
    - View submitted deliverables (videos, docs, code)

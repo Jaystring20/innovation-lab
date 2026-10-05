@@ -2,7 +2,8 @@
 
 /**
  * Create test user accounts in Supabase
- * Usage: node scripts/create-test-users.mjs <SERVICE_ROLE_KEY>
+ * Usage: TEST_TEACHER_PASSWORD=... TEST_JUDGE_PASSWORD=... TEST_ORGANIZER_PASSWORD=... \
+ *        node scripts/create-test-users.mjs <SERVICE_ROLE_KEY>
  */
 
 import https from 'https';
@@ -13,23 +14,32 @@ const SUPABASE_URL = 'https://sctsrxuquhzdjjnlsqbm.supabase.co';
 const testUsers = [
   {
     email: 'jaydigitalstrategist@gmail.com',
-    password: '@Welcome2026&teacher',
+    password: process.env.TEST_TEACHER_PASSWORD,
     role: 'teacher',
     fullName: 'Test Teacher',
   },
   {
     email: 'digitalcreativeshubltd@gmail.com',
-    password: '@Welcome2026&judge',
+    password: process.env.TEST_JUDGE_PASSWORD,
     role: 'judge',
     fullName: 'Test Judge',
   },
   {
     email: 'jerryadeyemi20@gmail.com',
-    password: '@Welcome2026&',
+    password: process.env.TEST_ORGANIZER_PASSWORD,
     role: 'organizer',
     fullName: 'Test Organizer',
   },
 ];
+
+const missing = testUsers.filter((u) => !u.password);
+if (missing.length) {
+  console.error(
+    "Set TEST_TEACHER_PASSWORD, TEST_JUDGE_PASSWORD and TEST_ORGANIZER_PASSWORD before running. " +
+      "Passwords are never stored in the repo."
+  );
+  process.exit(1);
+}
 
 async function makeRequest(method, path, body, serviceRoleKey) {
   return new Promise((resolve, reject) => {
