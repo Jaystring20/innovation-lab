@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDown, AlertCircle, CheckCircle, Clock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface TeamRole {
   id: string;
@@ -97,10 +97,7 @@ export function TeamMissionProgress({
           // Fetch team member profiles with role assignments
           const { data: members } = await supabase
             .from('team_member_profiles')
-            .select(`
-              *,
-              user:auth.users(*)
-            `)
+            .select('*')
             .eq('team_id', team.id);
 
           // Fetch team mission progress for this stage

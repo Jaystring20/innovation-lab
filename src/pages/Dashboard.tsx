@@ -166,7 +166,7 @@ const Dashboard: React.FC = () => {
             <GlowButton
               onClick={() => navigate('/lab/setup-teams')}
               size="sm"
-              variant="outline"
+              variant="secondary"
             >
               Setup teams
             </GlowButton>

@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Play, Copy, Calendar, Share2, ChevronDown, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface LiveSession {
   id: string;
   title: string;
   description?: string;
-  scheduledDate: string; // "Fri, Oct 8"
-  scheduledTime: string; // "3:00 PM - 4:30 PM Lagos Time"
+  scheduledDate?: string; // "Fri, Oct 8" (upcoming sessions only)
+  scheduledTime?: string; // "3:00 PM - 4:30 PM Lagos Time"
   hostedBy: string;
   daysUntil?: number;
   meetingUrl?: string;
