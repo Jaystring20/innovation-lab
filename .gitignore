@@ -30,3 +30,7 @@ dist-ssr
 .git-commit-msg.txt
 
 .next/
+
+.env.*
+!.env.example
+!.env.*.example
