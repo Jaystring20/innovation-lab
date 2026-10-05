@@ -612,7 +612,7 @@ const Store: React.FC = () => {
                       ))}
                       <GlowButton
                         type="button"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => setTeams([...teams, { name: '', students: ['', '', '', ''] }])}
                         className="w-full"
                       >

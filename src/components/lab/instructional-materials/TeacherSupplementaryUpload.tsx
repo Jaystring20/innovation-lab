@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Upload, Trash2, Eye } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { FileUploadField } from '../FileUploadField';
 
 interface SupplementaryMaterial {
@@ -22,6 +22,8 @@ interface TeacherSupplementaryUploadProps {
   stageId: string;
   onUploaded?: () => void;
 }
+
+const MAX_FILES_PER_UPLOAD = 5;
 
 export function TeacherSupplementaryUpload({
   schoolId,
@@ -63,13 +65,13 @@ export function TeacherSupplementaryUpload({
     loadMaterials();
   }, [teacherId, stageId]);
 
-  const handleFilesSelected = async (files: File[]) => {
+const handleFilesSelected = async (files: File[]) => {
     setIsUploading(true);
     try {
       // Upload files and save to Supabase
       const uploadedMaterials: SupplementaryMaterial[] = [];
 
-      for (const file of files) {
+      for (const file of files.slice(0, MAX_FILES_PER_UPLOAD)) {
         // Simulate file upload (in real implementation, upload to Google Drive)
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -151,8 +153,7 @@ export function TeacherSupplementaryUpload({
       <div className="mb-4">
         <FileUploadField
           onFilesSelected={handleFilesSelected}
-          isDisabled={isUploading}
-          maxFiles={5}
+          disabled={isUploading}
           acceptedTypes={[
             'video/*',
             'application/pdf',

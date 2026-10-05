@@ -6,7 +6,7 @@ import Backdrop from '@/components/Backdrop';
 import Panel from '@/components/Panel';
 import GlowButton from '@/components/GlowButton';
 import HeroImagePlate from '@/components/HeroImagePlate';
-import { useAuth } from '@/contexts/AuthContext';
+import { hasOrganizerAccess, useAuth } from '@/contexts/AuthContext';
 import steamFoundryLogo from '@/assets/steam-foundry-logo.webp';
 
 /**
@@ -27,11 +27,11 @@ const Login: React.FC = () => {
   // Route by role once it resolves after sign-in.
   useEffect(() => {
     if (authLoading || !session || !role) return;
-    if (role === 'organizer') navigate('/organizer', { replace: true });
+    if (hasOrganizerAccess(role)) navigate('/organizer', { replace: true });
     else if (role === 'judge') navigate('/lab/judge', { replace: true });
     else if (role === 'student') navigate('/lab/student', { replace: true });
     // Team accounts (shared student accounts) also go to student dashboard
-    else if (role === 'student' || session?.user?.user_metadata?.is_team_account) {
+    else if (session?.user?.user_metadata?.is_team_account) {
       navigate('/lab/student', { replace: true });
     }
     else navigate('/lab/dashboard', { replace: true });
