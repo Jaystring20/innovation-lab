@@ -28,3 +28,5 @@ dist-ssr
 .env.local
 .gstack/
 .git-commit-msg.txt
+
+.next/
