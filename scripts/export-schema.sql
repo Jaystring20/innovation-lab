@@ -29,7 +29,9 @@ stmts(ord, k, stmt) as (
                 string_agg(format('  %I %s%s%s', a.attname,
                                   format_type(a.atttypid, a.atttypmod),
                                   case when a.attnotnull then ' not null' else '' end,
-                                  coalesce(' default ' || pg_get_expr(d.adbin, d.adrelid), '')),
+                                  case when a.attgenerated = 's'
+                                       then ' generated always as (' || pg_get_expr(d.adbin, d.adrelid) || ') stored'
+                                       else coalesce(' default ' || pg_get_expr(d.adbin, d.adrelid), '') end),
                            E',\n' order by a.attnum))
   from tbl t
   join pg_attribute a on a.attrelid = t.oid and a.attnum > 0 and not a.attisdropped
