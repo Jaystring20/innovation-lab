@@ -12,7 +12,7 @@ function getInitialTheme(): PublicTheme {
 }
 
 /**
- * Light/dark toggle scoped to the public marketing pages (Landing, Apen2026,
+ * Light/dark toggle scoped to the public marketing pages (Landing, Apen2027,
  * Privacy). The Lab/Store/dashboards stay on the fixed dark workspace theme
  * from ThemeContext — this is a separate, independent switch.
  */

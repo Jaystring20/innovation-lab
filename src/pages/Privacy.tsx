@@ -27,7 +27,7 @@ const Privacy: React.FC = () => {
 
         <header className="mb-8">
           <p className="text-sm font-semibold tracking-wider text-primary">
-            APEN 2026 · STEAM FOUNDRY
+            APEN 2027 · STEAM FOUNDRY
           </p>
           <h1 className="text-2xl font-bold text-foreground mt-1">Privacy Policy</h1>
           <p className="text-muted-foreground text-sm mt-2">Last updated {LAST_UPDATED}</p>
@@ -36,7 +36,7 @@ const Privacy: React.FC = () => {
         <Panel hover={false} className="space-y-6 text-sm text-muted-foreground leading-relaxed">
           <Section title="Who operates this site">
             <p>
-              STEAM Foundry and the APEN 2026 Innovation Store &amp; Lab are operated by{' '}
+              STEAM Foundry and the APEN 2027 Innovation Store &amp; Lab are operated by{' '}
               <strong className="text-foreground">Imperial Educational Services Ltd</strong>. This
               policy explains what information we collect through the Store (school registration
               and kit orders) and the Lab (team submissions, judging, and feedback), and how we use
@@ -108,7 +108,7 @@ const Privacy: React.FC = () => {
 
           <Section title="Data retention">
             <p>
-              We keep registration, order, and submission records for the duration of the APEN 2026
+              We keep registration, order, and submission records for the duration of the APEN 2027
               competition season and a reasonable period afterward for record-keeping (for example,
               payment and dispatch history). If you would like your school’s or your child’s
               information removed sooner, contact us using the details below.

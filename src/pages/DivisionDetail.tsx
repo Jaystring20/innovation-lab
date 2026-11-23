@@ -11,7 +11,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
 import { DELIVERABLES, DIVISIONS, getDivisionBySlug } from '@/data/divisions';
 
-const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
+const HANDBOOK_URL = '/downloads/apen-2027-competition-handbook.pdf';
 
 const DivisionDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -20,7 +20,7 @@ const DivisionDetail: React.FC = () => {
   const division = getDivisionBySlug(slug);
 
   if (!division) {
-    return <Navigate to="/apen-2026" replace />;
+    return <Navigate to="/apen-2027" replace />;
   }
 
   const otherDivisions = DIVISIONS.filter((d) => d.slug !== division.slug);
@@ -32,10 +32,10 @@ const DivisionDetail: React.FC = () => {
       <div className="relative z-10">
         <div className="max-w-5xl mx-auto px-5 pt-16 flex items-center justify-between mb-10">
           <Link
-            to="/apen-2026"
+            to="/apen-2027"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> APEN 2026
+            <ArrowLeft className="w-4 h-4" /> APEN 2027
           </Link>
           <ThemeToggle theme={theme} onToggle={toggle} />
         </div>
@@ -301,7 +301,7 @@ const DivisionDetail: React.FC = () => {
             <p className="text-xs font-semibold tracking-wider text-primary mb-6">OTHER DIVISIONS</p>
             <div className="grid sm:grid-cols-2 gap-4">
               {otherDivisions.map((d) => (
-                <Link key={d.slug} to={`/apen-2026/${d.slug}`} className="group">
+                <Link key={d.slug} to={`/apen-2027/${d.slug}`} className="group">
                   <Panel className="p-5 h-full flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <motion.div whileHover={reduceMotion ? {} : { scale: 1.1 }}>

@@ -25,7 +25,7 @@ const OrganizerLogin: React.FC = () => {
       navigate('/organizer', { replace: true });
     } else {
       signOut().then(() =>
-        setError('That account is not an organizer account. Ask the APEN 2026 team for access.'),
+        setError('That account is not an organizer account. Ask the APEN 2027 team for access.'),
       );
     }
   }, [authLoading, session, isOrganizer, navigate, signOut]);
@@ -77,7 +77,7 @@ const OrganizerLogin: React.FC = () => {
           <div className="text-center mb-8">
             <h1 className="text-xl font-semibold text-foreground mb-1 font-display">Organizer Sign In</h1>
             <p className="text-muted-foreground text-sm">
-              APEN 2026 Innovation Store — operations console
+              APEN 2027 Innovation Store — operations console
             </p>
           </div>
 
@@ -118,7 +118,7 @@ const OrganizerLogin: React.FC = () => {
           </form>
 
           <p className="text-center text-xs text-muted-foreground mt-6">
-            Organizer accounts are provisioned in Supabase Auth. Contact the APEN 2026
+            Organizer accounts are provisioned in Supabase Auth. Contact the APEN 2027
             team if you need access.
           </p>
         </Panel>

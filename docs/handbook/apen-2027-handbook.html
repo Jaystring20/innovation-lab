@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>APEN 2027 Competition Handbook</title>
+<!--
+  Source of public/downloads/apen-2027-competition-handbook.pdf.
+  Edit this file, then run scripts/build-handbook.cjs to regenerate the PDF.
+  The page header and "N of M" footer are added at print time by that script.
+-->
+<style>
+  @page { size: Letter; margin: 0.85in 0.95in 0.85in 0.95in; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; font-size: 10.5pt; line-height: 1.55; margin: 0; }
+  h1, h2, h3 { color: #111; page-break-after: avoid; break-after: avoid; }
+  h1 { font-size: 22pt; line-height: 1.2; margin: 0 0 14pt; }
+  h2 { font-size: 15pt; margin: 22pt 0 8pt; }
+  h3 { font-size: 10.5pt; letter-spacing: .08em; text-transform: uppercase; color: #444; margin: 16pt 0 6pt; }
+  p { margin: 0 0 9pt; }
+  ul, ol { margin: 0 0 9pt; padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 14pt; font-size: 9.5pt; page-break-inside: auto; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  th { text-align: left; font-weight: bold; padding: 6pt 6pt; border-bottom: 1.2pt solid #111; }
+  td { padding: 6pt 6pt; border-bottom: 0.6pt solid #ccc; vertical-align: top; }
+  .note { font-style: italic; color: #444; }
+  .box { border-left: 3pt solid #111; padding: 4pt 0 4pt 10pt; margin: 8pt 0 14pt; color: #333; font-size: 9.5pt; }
+
+  .cover { height: 9.2in; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
+  .cover .title { font-size: 44pt; font-weight: bold; line-height: 1.1; margin: 0; }
+  .cover hr { width: 2in; border: 0; border-top: 1pt solid #111; margin: 26pt 0 20pt; }
+  .cover .who { font-weight: bold; margin: 0; }
+
+  .toc { page-break-after: always; }
+  .toc .label { font-size: 11pt; font-weight: bold; letter-spacing: .2em; color: #555; margin: 0 0 22pt; }
+  .toc ol { list-style: none; padding: 0; margin: 0; }
+  .toc li { display: flex; align-items: baseline; margin: 0 0 9pt; font-size: 10pt; }
+  .toc li.sub { padding-left: 16pt; }
+  .toc li::after { content: ""; flex: 1; border-bottom: 0.8pt dashed #bbb; margin-left: 8pt; }
+
+  .keep { page-break-inside: avoid; break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <p class="title">APEN 2027<br>Competition<br>Handbook</p>
+  <hr>
+  <p class="who">APEN &amp; Imperial EdTech</p>
+  <p>Revised November 23, 2026</p>
+</section>
+
+<section class="toc">
+  <p class="label">CONTENTS</p>
+  <ol>
+    <li>APEN AI, Coding &amp; Robotics Competition Handbook</li>
+    <li class="sub">1. Welcome</li>
+    <li class="sub">2. Competition Overview</li>
+    <li class="sub">3. AI in the Competition</li>
+    <li class="sub">Generative AI &amp; Vibe Coding</li>
+    <li class="sub">Modalities</li>
+    <li class="sub">4. Equipment &amp; Resources</li>
+    <li class="sub">5. Competition Timeline — 8-Week Challenge</li>
+    <li class="sub">6. Stages of the Competition</li>
+    <li class="sub">7. Division Niche Breakdown</li>
+    <li class="sub">Primary School Division — Ages 7–12 — Agriculture</li>
+    <li class="sub">Secondary School Division — Ages 13–16 — Power</li>
+    <li class="sub">Sixth Form Division — Ages 16–18 — Security</li>
+    <li class="sub">8. Judging Criteria</li>
+    <li class="sub">9. Deliverables per Team</li>
+    <li class="sub">10. Prizes &amp; Awards</li>
+    <li class="sub">11. How to Participate</li>
+    <li class="sub">12. Participant Agreement</li>
+    <li class="sub">13. Conclusion</li>
+    <li class="sub">14. Contact</li>
+  </ol>
+</section>
+
+<h1>APEN AI, Coding &amp; Robotics<br>Competition Handbook</h1>
+<p>APEN 2027 · Lagos (Hybrid) · Organized by the Association of Private Educators in Nigeria (APEN), in partnership with Imperial EdTech</p>
+<p>Theme: “Smart Solutions for Tomorrow’s Nigeria — Design. Build. Intelligize.”</p>
+
+<h2>1. Welcome</h2>
+<p>Welcome to the APEN 2027 AI, Coding &amp; Robotics Competition. This year sharpens the focus: each age division owns one real-world Nigerian challenge, solved with hardware engineering and generative AI.</p>
+<ul>
+  <li>Primary Schools tackle <strong>Agriculture</strong></li>
+  <li>Secondary Schools tackle <strong>Power</strong></li>
+  <li>Sixth Form Colleges tackle <strong>Security</strong></li>
+</ul>
+<p>The competition pushes students to innovate at the intersection of physical computing and AI. The 2027 edition introduces a 4-stage Innovation Funnel that takes teams from pure design thinking, through a standardized hardware build, into open-ended AI integration (“Intelligize”), and culminates in a live Grand Finale Battle. Every team receives the same base kit; the AI layer is left open to their creativity — fair judging, genuine innovation rewarded.</p>
+
+<h2>2. Competition Overview</h2>
+<p>All projects follow a structured Engineering Design Thinking framework:</p>
+<ol>
+  <li><strong>Empathize</strong> — Conduct field research. Identify real pain points in Nigerian farms, homes, or communities.</li>
+  <li><strong>Define</strong> — Frame the challenge from that research. Set measurable goals.</li>
+  <li><strong>Ideate</strong> — Sketch design concepts. Select the most feasible hardware and AI approach.</li>
+  <li><strong>Prototype</strong> — Assemble the standardized APEN kit. Run real-world tests.</li>
+  <li><strong>Improve</strong> — Integrate the AI layer. Fix flaws found in testing. Optimize the experience.</li>
+  <li><strong>Communicate</strong> — Present the solution, its impact, and what the AI layer adds.</li>
+</ol>
+
+<h2>3. AI in the Competition</h2>
+<h3>Generative AI &amp; Vibe Coding</h3>
+<p>Coding is evolving. Foundational logic still matters, but students now use AI to accelerate development:</p>
+<ul>
+  <li><strong>Prompt Engineering</strong> — directing large language models to interpret sensor data, generate alerts, or write logic blocks.</li>
+  <li><strong>Vibe Coding</strong> — building dashboards and data-logging interfaces by describing intent to an AI rather than writing syntax from scratch.</li>
+  <li><strong>Edge AI &amp; Computer Vision</strong> — advanced teams may run lightweight ML models directly on microcontrollers to recognize patterns or anomalies.</li>
+</ul>
+<h3>Modalities</h3>
+<ul>
+  <li><strong>Physical Hands-on</strong> — direct work with the APEN kit and add-ons.</li>
+  <li><strong>Virtual Online</strong> — remote AI integration, dashboard building, digital submissions.</li>
+  <li><strong>Hybrid Learning</strong> — physical builds combined with virtual AI mentorship.</li>
+</ul>
+
+<h2>4. Equipment &amp; Resources</h2>
+<p>Each division uses one common kit tailored to its niche, so every team in a division builds the same core project and judging stays fair and consistent. An <strong>Innovation Store</strong> is available to all participating schools — because Stage 3 is open-ended, teams may purchase add-on component packs (extra sensors, camera modules, connectivity boards, power add-ons) to push their AI layer further.</p>
+<p><strong>Safety note (Secondary — Power Division):</strong> all power-sensing activities use a low-voltage DC proxy circuit to represent grid power. No team wires directly into live 220V household current.</p>
+
+<div class="keep">
+<h2>5. Competition Timeline — 8-Week Challenge</h2>
+<p>Runs in the second term of the Lagos State 2026/2027 harmonised academic calendar, from registration through the Grand Finale.</p>
+<table>
+  <thead><tr><th style="width:21%">Phase</th><th style="width:19%">Dates</th><th style="width:32%">Focus</th><th>Deliverable</th></tr></thead>
+  <tbody>
+    <tr><td>1 — Registration &amp; kit delivery</td><td>Until Jan 19, 2027</td><td>Registration and kit payment close Jan 19; kits delivered by Jan 25</td><td>—</td></tr>
+    <tr><td>2 — Stage 1 Design Sprint</td><td>Jan 25 – Jan 29, 2027</td><td>Design thinking &amp; problem definition</td><td>3-minute video pitch, due Jan 29</td></tr>
+    <tr><td>3 — Stage 2 Advanced Build</td><td>Feb 1 – Feb 21, 2027</td><td>Hardware assembly &amp; testing</td><td>Functional prototype, due Feb 21</td></tr>
+    <tr><td>4 — Judging &amp; mid-term break</td><td>Feb 22 – Feb 26, 2027</td><td>Build judging</td><td>Teams advancing to Stage 3 announced</td></tr>
+    <tr><td>5 — Stage 3 Intelligize</td><td>Mar 1 – Mar 14, 2027</td><td>AI integration &amp; Intelligize layer</td><td>Final video, AI prompt log &amp; poster, due Mar 14</td></tr>
+    <tr><td>6 — Judges review submissions</td><td>Mar 15 – Mar 18, 2027</td><td>Judges review final videos, prompt logs and posters</td><td>—</td></tr>
+    <tr><td>7 — Grand Finale (BATTLE)</td><td>Mar 23, 2027</td><td>Live presentations, then the judges’ final verdict and awards</td><td>APEN 2027 Champions crowned</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="box">School calendar dates to plan around: general election, Saturday January 16; Open Days, February 18 (Primary) and 19 (Secondary); mid-term break, February 22–26; Eid-el-Fitr public holidays, March 10–11. Build opens while Stage 1 is being judged, so every team keeps the full three weeks to build.</p>
+
+<h2>6. Stages of the Competition</h2>
+<p><strong>Stage 1 — Design (the problem-finding sprint).</strong> Pure design thinking and empathy. Conduct local field research, interview users, identify real pain points. Deliverable: 3-minute video pitch by January 29, 2027. Every team continues to Stage 2; the Design score counts toward each team’s overall total.</p>
+<p><strong>Stage 2 — Build (the standardized hardware phase).</strong> Closed-ended technical execution and fairness. Assemble and program the official APEN division kit so core hardware logic functions reliably. Deliverable: functional prototype by February 21, 2027. Every team uses identical hardware, so judging is consistent across all schools. Build submissions are judged during the mid-term break, and the top teams in each division advance to Stage 3.</p>
+<p><strong>Stage 3 — Intelligize (the open AI innovation phase).</strong> Open-ended AI integration and creativity. Teams integrate generative AI, machine learning, vibe coding, or edge AI to turn raw hardware data into human insight, drawing on the Innovation Store for any add-ons their vision requires. Deliverable: final AI prompt log, project video and design poster by March 14, 2027. Judges review these submissions from March 15 to 18.</p>
+<p><strong>Stage 4 — Battle (the Grand Finale).</strong> On March 23, 2027, teams advancing to the Grand Finale present a 3–5 minute final pitch covering hardware functionality, AI layer integration, and real-world impact, live in Lagos (virtual and/or physical). After the presentations, the judges deliver their final verdict and the winners are crowned APEN 2027 Champions.</p>
+
+<h2>7. Division Niche Breakdown</h2>
+<h3>Primary School Division — Ages 7–12 — Agriculture</h3>
+<p><strong>Project:</strong> Smart Farm Bot + LED Interface <strong>Challenge:</strong> Design and build a Smart Farm Bot that helps a plant grow using less water, less space, and less human effort — then make it intelligent. <em>(SDG 2, SDG 6)</em> <strong>Core hardware:</strong> ESP32-S3 microcontroller, environmental sensors, actuators, LED interface <strong>Kit price: ₦60,050 per team</strong></p>
+<table>
+  <thead><tr><th>Component</th><th style="width:12%">Qty</th><th style="width:16%">Unit price</th></tr></thead>
+  <tbody>
+    <tr><td>ESP32 38-Pin Type-C Development Board</td><td>1</td><td>₦16,000</td></tr>
+    <tr><td>USB Type-C Data/Programming Cable</td><td>1</td><td>₦3,500</td></tr>
+    <tr><td>DHT11 Temperature &amp; Humidity Sensor</td><td>1</td><td>₦2,000</td></tr>
+    <tr><td>LDR/Photoresistor Light Sensor</td><td>1</td><td>₦1,100</td></tr>
+    <tr><td>Water-Level Sensor</td><td>1</td><td>₦3,500</td></tr>
+    <tr><td>Water-Flow Sensor</td><td>1</td><td>₦5,500</td></tr>
+    <tr><td>5V DC Water Pump</td><td>1</td><td>₦6,600</td></tr>
+    <tr><td>1-Channel Relay Module</td><td>1</td><td>₦3,400</td></tr>
+    <tr><td>Mini DC Fan</td><td>1</td><td>₦4,500</td></tr>
+    <tr><td>LED Grow Light</td><td>1</td><td>₦1,000</td></tr>
+    <tr><td>Active Buzzer</td><td>1</td><td>₦1,450</td></tr>
+    <tr><td>Red / Green / Yellow-Blue LED</td><td>3</td><td>₦3,300</td></tr>
+    <tr><td>400-Hole Mini Breadboard</td><td>1</td><td>₦3,200</td></tr>
+    <tr><td>Packaging &amp; labelling</td><td>1</td><td>₦5,000</td></tr>
+  </tbody>
+</table>
+
+<h3>Secondary School Division — Ages 13–16 — Power</h3>
+<p><strong>Project:</strong> Smart Energy Bot <strong>Challenge:</strong> Use technology to monitor electricity consumption, detect energy waste, and use AI to help homes and schools make smarter, more environmentally friendly energy decisions. <em>(SDG 7, 9, 12)</em> <strong>Core hardware:</strong> ESP32 board, voltage and current sensors, actuators <strong>Safety:</strong> low-voltage safe proxy circuit only — no direct 220V mains wiring permitted <strong>Kit price: ₦63,100 per team</strong></p>
+<table>
+  <thead><tr><th>Component</th><th style="width:12%">Qty</th><th style="width:16%">Unit price</th></tr></thead>
+  <tbody>
+    <tr><td>ESP32 Development Board – 38 Pin Type-C</td><td>1</td><td>₦16,000</td></tr>
+    <tr><td>ZMPT101B AC Voltage Sensor</td><td>1</td><td>₦6,500</td></tr>
+    <tr><td>ACS712 20A Current Sensor</td><td>1</td><td>₦4,800</td></tr>
+    <tr><td>16×2 LCD + I2C Module</td><td>1</td><td>₦7,500</td></tr>
+    <tr><td>Push Button Tact Switch Module</td><td>1</td><td>₦2,100</td></tr>
+    <tr><td>MB-102 830-Point Breadboard</td><td>1</td><td>₦3,200</td></tr>
+    <tr><td>400-Hole Mini Breadboard</td><td>2</td><td>₦5,000</td></tr>
+    <tr><td>Jumper Wire Set (M-M/M-F/F-F)</td><td>1 pack</td><td>₦6,000</td></tr>
+    <tr><td>5V USB Power Supply</td><td>1</td><td>₦4,500</td></tr>
+    <tr><td>USB Type-C Cable</td><td>1</td><td>₦2,500</td></tr>
+    <tr><td>Packaging</td><td>1</td><td>₦5,000</td></tr>
+  </tbody>
+</table>
+
+<h3>Sixth Form Division — Ages 16–18 — Security</h3>
+<p><strong>Project:</strong> ESP32-CAM Smart Security Bot <strong>Challenge:</strong> Design an affordable smart security system that detects movement, captures visual evidence, alerts a user remotely, and uses AI to judge whether an observed event matters. <em>(SDG 9, 11, 16)</em> <strong>Core hardware:</strong> ESP32-CAM, PIR sensor, camera, Wi-Fi, phone alerts <strong>Kit price: ₦64,400 per team</strong></p>
+<table>
+  <thead><tr><th>Component</th><th style="width:12%">Qty</th><th style="width:16%">Unit price</th></tr></thead>
+  <tbody>
+    <tr><td>ESP32-CAM with OV2640 Camera</td><td>1</td><td>₦24,000</td></tr>
+    <tr><td>ESP32-CAM MB USB Programming Board</td><td>1</td><td>₦5,000</td></tr>
+    <tr><td>HC-SR501 PIR Motion Sensor</td><td>1</td><td>₦3,000</td></tr>
+    <tr><td>830-Point Solderless Breadboard</td><td>1</td><td>₦4,500</td></tr>
+    <tr><td>140-Piece Mixed Jumper Wire Set</td><td>1 pack</td><td>₦7,000</td></tr>
+    <tr><td>LM2596 DC-DC Buck Converter</td><td>1</td><td>₦3,800</td></tr>
+    <tr><td>18650 Li-ion Battery</td><td>2</td><td>₦8,000</td></tr>
+    <tr><td>18650 Battery Holder</td><td>1</td><td>₦2,100</td></tr>
+    <tr><td>JST/Power Connector Set</td><td>1 set</td><td>₦2,000</td></tr>
+    <tr><td>Packaging / student kit case &amp; labelling</td><td>1</td><td>₦5,000</td></tr>
+  </tbody>
+</table>
+<p class="note">Logistics: ₦10,000 flat delivery within Lagos, ₦20,000 outside Lagos, added at checkout. Challenges may be adjusted for material availability — alternative components will be provided where needed.</p>
+
+<h2>8. Judging Criteria</h2>
+<p>Scores are aggregated across all four stages of the Innovation Funnel.</p>
+<table>
+  <thead><tr><th style="width:24%">Criterion</th><th style="width:10%">Weight</th><th>What’s assessed</th></tr></thead>
+  <tbody>
+    <tr><td>Design Thinking &amp; Empathy</td><td>20%</td><td>User research evidence, problem definition clarity, ideation, SDG alignment</td></tr>
+    <tr><td>Hardware Execution &amp; Build Quality</td><td>30%</td><td>Build functionality and reliability, code quality, sensor calibration, actuator triggers</td></tr>
+    <tr><td>AI Innovation &amp; the Intelligize Layer</td><td>30%</td><td>Utility and creativity of AI integration, prompt engineering sophistication, vibe coding / edge AI complexity, prompt-log documentation</td></tr>
+    <tr><td>Presentation &amp; Documentation</td><td>20%</td><td>Clarity of the solution and journey, technical documentation quality, demonstration confidence, team collaboration</td></tr>
+  </tbody>
+</table>
+
+<h2>9. Deliverables per Team</h2>
+<p><strong>Stage 1 Video Pitch (3 min) — due January 29, 2027</strong> Field research and pain points, the proposed kit solution and real-world application, SDG alignment, and how the solution will be built and tested.</p>
+<p><strong>Physical Hardware Prototype — due February 21, 2027</strong> A fully functional model built strictly from the official APEN division kit, demonstrating reliable sensor readings and accurate actuator triggers.</p>
+<p><strong>Final Video Pitch (3–5 min) — due March 14, 2027</strong> The physical hardware in action with the AI layer working seamlessly alongside it in real time. Teams advancing to the Grand Finale present this live on March 23, 2027.</p>
+<p><strong>AI Prompt Log &amp; Design Poster — due March 14, 2027</strong> A poster summarizing the project journey and circuit design, plus a full log of every LLM prompt, prompt iteration, vibe-coding workflow, and edge-AI implementation used to reach the final build.</p>
+
+<h2>10. Prizes &amp; Awards</h2>
+<p>Cash grants, scholarships, and school materials and resources are awarded across all three divisions, including:</p>
+<ul>
+  <li>Advanced robotics kits and tech gadgets</li>
+  <li>Cash grants and technology coupons</li>
+  <li>Trophies and medals</li>
+  <li>Closed-door mentorship sessions with industry leaders in agri-tech, renewable energy, and security technology</li>
+  <li>Networking with professionals in innovation and tech entrepreneurship</li>
+  <li>Recognition as APEN 2027 Champions</li>
+</ul>
+
+<h2>11. How to Participate</h2>
+<p><strong>Step 1 — Register &amp; pitch.</strong> The school’s ICT or STEM teacher registers for their division and completes kit payment by January 19, 2027. Join the official announcements channel. The student team records and uploads the Stage 1 video pitch by January 29.</p>
+<p><strong>Step 2 — Receive &amp; build.</strong> Receive the official APEN kit by January 25. Join live AI and coding mentorship sessions. Assemble and test the standardized hardware from February 1 to 21, ready for judging.</p>
+<p><strong>Step 3 — Intelligize &amp; innovate.</strong> During Stage 3 (March 1–14), integrate the chosen AI, ML, or vibe-coded layer, drawing on the Innovation Store for any add-ons. Upload the final video, design poster, and AI prompt log by March 14.</p>
+<p><strong>Step 4 — Grand Finale &amp; recognition.</strong> Teams advancing to the Grand Finale present live in Lagos (virtual and/or physical) on March 23, 2027, taking part in the presentations and Q&amp;A, followed by the judges’ final verdict and the award ceremony. Champions are crowned and receive prizes and mentorship.</p>
+
+<h2>12. Participant Agreement</h2>
+<p>All participants agree to:</p>
+<ul>
+  <li>Use only approved, official APEN division kit components for the Stage 2 standardized build</li>
+  <li>Submit original work and document all AI prompt engineering in the prompt log</li>
+  <li>Follow the Engineering Design Thinking process throughout</li>
+  <li>Meet all submission and presentation deadlines across all seven phases</li>
+  <li>Take part in required presentations — Stage 1 video pitch, final video pitch, Grand Finale Battle</li>
+  <li>Comply with safety rules: Secondary Power Division teams use only low-voltage DC proxy circuits; no direct 220V mains wiring, ever</li>
+  <li>Attend the live Grand Finale Battle on March 23, 2027 if advancing to it, or forfeit the team’s place</li>
+  <li>Respect the decisions of the judging panel and industry experts</li>
+</ul>
+
+<h2>13. Conclusion</h2>
+<p>APEN 2027 integrates engineering design thinking with hands-on tech skills, empowering students to solve real Nigerian challenges in agriculture, power, and security. By following a structured problem-solving approach and incorporating AI, participants develop innovative, user-focused solutions for tomorrow’s Nigeria.</p>
+<p>The Grand Finale Battle on March 23, 2027 showcases the best of these innovations and crowns the APEN 2027 Champions — the result of an eight-week challenge spanning four stages: Design, Build, Intelligize, and Battle.</p>
+
+<h2>14. Contact</h2>
+<p><strong>Phone:</strong> +234 809 705 1401 · +234 803 820 0861 <strong>Email:</strong> <a href="mailto:omotayo@imperialedtech.com">omotayo@imperialedtech.com</a><br>
+<strong>Website:</strong> <a href="https://www.imperialedtech.com">www.imperialedtech.com</a> <strong>Technical Partner:</strong> Imperial EdTech</p>
+
+</body>
+</html>

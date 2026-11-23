@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "dist"
 
+# APEN 2026 became APEN 2027; the old handbook link was shared with schools.
+[[redirects]]
+  from = "/downloads/apen-2026-competition-handbook.pdf"
+  to = "/downloads/apen-2027-competition-handbook.pdf"
+  status = 301
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -13,7 +13,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 // console to do it.
 import Landing from "./pages/Landing";
 
-const Apen2026 = lazy(() => import("./pages/Apen2026"));
+const Apen2027 = lazy(() => import("./pages/Apen2027"));
 const DivisionDetail = lazy(() => import("./pages/DivisionDetail"));
 const Store = lazy(() => import("./pages/Store"));
 const OrderStatus = lazy(() => import("./pages/OrderStatus"));
@@ -38,6 +38,13 @@ const queryClient = new QueryClient({
   },
 });
 
+// APEN 2026 became APEN 2027 when the final moved to March 2027; links already
+// shared with schools keep working.
+const LegacyDivisionRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/apen-2027/${slug}`} replace />;
+};
+
 const RouteFallback = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
     <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -60,8 +67,8 @@ const App = () => (
 
                   {/* This year's competition — Store + Lab entry, reached via
                       "Register for a Competition" on the home page */}
-                  <Route path="/apen-2026" element={<Apen2026 />} />
-                  <Route path="/apen-2026/:slug" element={<DivisionDetail />} />
+                  <Route path="/apen-2027" element={<Apen2027 />} />
+                  <Route path="/apen-2027/:slug" element={<DivisionDetail />} />
 
                   {/* Store — public, no account needed */}
                   <Route path="/store" element={<Store />} />
@@ -80,7 +87,9 @@ const App = () => (
                   <Route path="/organizer/login" element={<OrganizerLogin />} />
                   <Route path="/organizer" element={<OrganizerDashboard />} />
 
-                  {/* Legacy paths from the earlier shell */}
+                  {/* Legacy paths */}
+                  <Route path="/apen-2026" element={<Navigate to="/apen-2027" replace />} />
+                  <Route path="/apen-2026/:slug" element={<LegacyDivisionRedirect />} />
                   <Route path="/dashboard" element={<Navigate to="/lab/dashboard" replace />} />
                   <Route path="/admin" element={<Navigate to="/organizer" replace />} />
 

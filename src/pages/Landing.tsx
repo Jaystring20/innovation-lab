@@ -42,7 +42,7 @@ const ROLES = [
   {
     name: 'Partner organizations',
     detail:
-      'Run a competition or program on the platform, the way APEN and Imperial EdTech run APEN 2026 today.',
+      'Run a competition or program on the platform, the way APEN and Imperial EdTech run APEN 2027 today.',
   },
 ];
 
@@ -78,7 +78,7 @@ const Landing: React.FC = () => {
                 Schools and instructors run a real, grade-appropriate problem every term, so
                 students learn to think by building, not memorizing.
               </p>
-              <Link to="/apen-2026">
+              <Link to="/apen-2027">
                 <GlowButton className="px-7 py-3 text-base font-semibold">
                   Register for a Competition <ArrowRight className="w-4 h-4" />
                 </GlowButton>
@@ -136,7 +136,7 @@ const Landing: React.FC = () => {
           <div className="max-w-6xl mx-auto px-5 py-16 md:py-20">
             <p className="text-xs font-semibold tracking-wider text-primary mb-3">CURRENT PROGRAM</p>
 
-            <Link to="/apen-2026" className="block group">
+            <Link to="/apen-2027" className="block group">
               <Panel className="p-7 md:p-9">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
                   <div className="flex-1">
@@ -155,7 +155,7 @@ const Landing: React.FC = () => {
                       <img src={imperialEdtechLogo} alt="Imperial EdTech" className="h-4 w-auto object-contain" />
                     </div>
                     <h3 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
-                      APEN 2026
+                      APEN 2027
                     </h3>
                     <p className="text-muted-foreground max-w-[52ch] leading-relaxed mb-6">
                       The AI, Coding &amp; Robotics Competition: one real Nigerian challenge per

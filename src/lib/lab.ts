@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 import type { Division } from './store';
 
 /* ------------------------------------------------------------------ *
- * APEN 2026 Lab — submissions & judging data layer (RLS-backed).
+ * APEN 2027 Lab — submissions & judging data layer (RLS-backed).
  *
  * Roles: organizer sees/does everything, judge scores assigned work,
  * teacher (one account per school) runs their teams. RLS in
@@ -227,7 +227,7 @@ export async function createTeam(schoolId: string, name: string): Promise<Team> 
 function friendlyTeamError(msg: string): string {
   if (/slots are in use/i.test(msg)) return msg;
   if (/row-level security/i.test(msg))
-    return 'Your account is not linked to a school yet. Ask the APEN 2026 team to link it.';
+    return 'Your account is not linked to a school yet. Ask the APEN 2027 team to link it.';
   return msg;
 }
 

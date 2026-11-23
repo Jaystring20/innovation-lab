@@ -60,7 +60,7 @@ Deno.serve(async (req: Request) => {
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const fromAddress = Deno.env.get("ORDER_EMAIL_FROM") ??
-    "APEN 2026 <apen@digitalcreativeshubltd.com>";
+    "APEN 2027 <apen@digitalcreativeshubltd.com>";
   const replyTo = Deno.env.get("ORDER_EMAIL_REPLY_TO") ||
     (fromAddress.match(/<([^>]+)>/)?.[1] ?? fromAddress);
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
@@ -122,7 +122,7 @@ Deno.serve(async (req: Request) => {
   const statusLink = siteUrl ? `${siteUrl}/order/${orderReference}` : "";
   const ref = escapeHtml(orderReference);
   const waText = encodeURIComponent(
-    `I have paid for APEN 2026 order ${orderReference} (${order.schools ? (order.schools as { name: string }).name : ""}) — ${naira(order.total_amount)}. Proof of payment attached.`,
+    `I have paid for APEN 2027 order ${orderReference} (${order.schools ? (order.schools as { name: string }).name : ""}) — ${naira(order.total_amount)}. Proof of payment attached.`,
   );
   const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : "";
 
@@ -163,10 +163,10 @@ Deno.serve(async (req: Request) => {
   const html = `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #dce3e8;border-radius:4px;padding:28px">
-    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2026 · Innovation Store</p>
+    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2027 · Innovation Store</p>
     <h1 style="margin:0 0 16px;font-size:22px">Your registration is received</h1>
     <p style="margin:0 0 16px">Hello ${escapeHtml(school.contact_name)},</p>
-    <p style="margin:0 0 20px">${escapeHtml(school.name)} is registered for APEN 2026. Keep this email — your order reference is how you track the order and how we match your payment.</p>
+    <p style="margin:0 0 20px">${escapeHtml(school.name)} is registered for APEN 2027. Keep this email — your order reference is how you track the order and how we match your payment.</p>
 
     <div style="background:#e7ecf7;border:1px solid #1a3b8b;border-radius:4px;padding:16px;text-align:center;margin:0 0 20px">
       <p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#1a3b8b">Order reference</p>
@@ -204,11 +204,11 @@ Deno.serve(async (req: Request) => {
 </body></html>`;
 
   const text = [
-    `APEN 2026 - Innovation Store`,
+    `APEN 2027 - Innovation Store`,
     ``,
     `Hello ${school.contact_name},`,
     ``,
-    `${school.name} is registered for APEN 2026.`,
+    `${school.name} is registered for APEN 2027.`,
     ``,
     `ORDER REFERENCE: ${orderReference}`,
     `Division: ${DIVISIONS[order.division] ?? order.division}`,
@@ -242,7 +242,7 @@ Deno.serve(async (req: Request) => {
       from: fromAddress,
       reply_to: replyTo,
       to: [school.contact_email],
-      subject: `APEN 2026 registration — ${orderReference}`,
+      subject: `APEN 2027 registration — ${orderReference}`,
       html,
       text,
     }),

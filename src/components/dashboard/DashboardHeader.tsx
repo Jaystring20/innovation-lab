@@ -23,7 +23,7 @@ const DashboardHeader: React.FC = () => {
         <div className="min-w-0">
           <p className="font-bold text-foreground leading-tight truncate">STEAM Foundry</p>
           <p className="text-xs text-muted-foreground truncate">
-            APEN 2026 · {role ? ROLE_LABEL[role] ?? role : 'Lab'}
+            APEN 2027 · {role ? ROLE_LABEL[role] ?? role : 'Lab'}
           </p>
         </div>
       </div>
