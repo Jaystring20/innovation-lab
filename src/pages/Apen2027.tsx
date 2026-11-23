@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 import { DIVISIONS } from '@/data/divisions';
 import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
-import apen2026Flier from '@/assets/apen-2026-flier.webp';
+import apen2027Flier from '@/assets/apen-2027-flier.webp';
 
 const HANDBOOK_URL = '/downloads/apen-2027-competition-handbook.pdf';
 
@@ -127,8 +127,8 @@ const Apen2027: React.FC = () => {
             >
               <Panel className="p-2 overflow-hidden">
                 <img
-                  src={apen2026Flier}
-                  alt="APEN AI, Coding & Robotics Competition — Smart Solutions for Tomorrow's Nigeria. Design. Build. Intelligize. Battle. Strictly for APEN schools. Levels: Primary, Secondary, Sixth Form divisions. Participation: Hybrid. Sept.–Nov. 2026."
+                  src={apen2027Flier}
+                  alt="APEN AI, Coding & Robotics Competition — Smart Solutions for Tomorrow's Nigeria. Design. Build. Intelligize. Battle. Strictly for APEN schools. Levels: Primary, Secondary, Sixth Form divisions. Participation: Hybrid. Jan.–Mar. 2027."
                   className="w-full h-auto rounded-[calc(var(--radius)-4px)]"
                 />
               </Panel>
