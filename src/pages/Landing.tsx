@@ -170,15 +170,15 @@ const Landing: React.FC = () => {
                     <div className="flex items-start gap-2.5">
                       <Calendar className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                       <div>
-                        <dt className="text-sm font-semibold text-foreground">9-week cycle</dt>
-                        <dd className="text-xs text-muted-foreground">Aug 31 &ndash; Nov 26, 2026</dd>
+                        <dt className="text-sm font-semibold text-foreground">8-week challenge</dt>
+                        <dd className="text-xs text-muted-foreground">Jan 25 &ndash; Mar 23, 2027</dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                       <div>
                         <dt className="text-sm font-semibold text-foreground">Grand Finale</dt>
-                        <dd className="text-xs text-muted-foreground">Nov 26, Lagos &middot; hybrid</dd>
+                        <dd className="text-xs text-muted-foreground">Mar 23, 2027, Lagos &middot; hybrid</dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-2.5">

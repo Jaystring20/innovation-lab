@@ -27,12 +27,13 @@ import apen2026Flier from '@/assets/apen-2026-flier.webp';
 const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
 
 const TIMELINE = [
-  { phase: '01', name: 'Pre-registration & kit dispatch', dates: 'Aug 31 – Sep 30' },
-  { phase: '02', name: 'Stage 1 — Design Sprint', dates: 'Sep 28 – Oct 4', deliverable: '3-minute video pitch' },
-  { phase: '03', name: 'Stage 2 — Advanced Build', dates: 'Oct 5 – Oct 23', deliverable: 'Functional prototype' },
-  { phase: '04', name: 'Judging & mid-term break', dates: 'Oct 24 – Nov 8', deliverable: 'Finalists selected' },
-  { phase: '05', name: 'Stage 3 — Intelligize', dates: 'Nov 9 – Nov 22', deliverable: 'AI prompt log & video' },
-  { phase: '06', name: 'Grand Finale — BATTLE', dates: 'Nov 26', deliverable: 'Champions crowned, Lagos' },
+  { phase: '01', name: 'Registration & kit dispatch', dates: 'Closes Jan 19', deliverable: 'Kits delivered by Jan 25' },
+  { phase: '02', name: 'Stage 1 — Design Sprint', dates: 'Jan 25 – Jan 29', deliverable: '3-minute video pitch' },
+  { phase: '03', name: 'Stage 2 — Advanced Build', dates: 'Feb 1 – Feb 21', deliverable: 'Functional prototype' },
+  { phase: '04', name: 'Judging & mid-term break', dates: 'Feb 22 – Feb 26', deliverable: 'Teams advance to Intelligize' },
+  { phase: '05', name: 'Stage 3 — Intelligize', dates: 'Mar 1 – Mar 14', deliverable: 'AI prompt log & video' },
+  { phase: '06', name: 'Final judging', dates: 'Mar 15 – Mar 18', deliverable: 'Finalists announced' },
+  { phase: '07', name: 'Grand Finale — BATTLE', dates: 'Mar 23', deliverable: 'Champions crowned, Lagos' },
 ];
 
 const RUBRIC = [
@@ -140,15 +141,15 @@ const Apen2026: React.FC = () => {
                   <div className="flex items-start gap-3">
                     <Calendar className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <dt className="text-sm font-semibold text-foreground">9-week cycle</dt>
-                      <dd className="text-sm text-muted-foreground">Aug 31 &ndash; Nov 26, 2026</dd>
+                      <dt className="text-sm font-semibold text-foreground">8-week challenge</dt>
+                      <dd className="text-sm text-muted-foreground">Jan 25 &ndash; Mar 23, 2027</dd>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                     <div>
                       <dt className="text-sm font-semibold text-foreground">Grand Finale — BATTLE</dt>
-                      <dd className="text-sm text-muted-foreground">Nov 26, Lagos &middot; hybrid</dd>
+                      <dd className="text-sm text-muted-foreground">Mar 23, 2027, Lagos &middot; hybrid</dd>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -229,11 +230,11 @@ const Apen2026: React.FC = () => {
         <section className="border-t border-border">
           <div className="max-w-5xl mx-auto px-5 py-16 md:py-20">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-2">
-              The nine-week cycle
+              The eight-week challenge
             </h2>
             <p className="text-muted-foreground max-w-[60ch] mb-10">
-              Four stages, Design through Battle, mapped to six phases that fit inside a single
-              academic term.
+              Four stages, Design through Battle, mapped to seven phases that fit inside the second
+              term of the 2026/2027 school year.
             </p>
 
             <ol className="space-y-0">
