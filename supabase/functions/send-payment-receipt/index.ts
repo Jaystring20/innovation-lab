@@ -86,7 +86,7 @@ Deno.serve(async (req: Request) => {
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const fromAddress = Deno.env.get("ORDER_EMAIL_FROM") ??
-    "APEN 2026 <apen@digitalcreativeshubltd.com>";
+    "APEN 2027 <apen@digitalcreativeshubltd.com>";
   const replyTo = Deno.env.get("ORDER_EMAIL_REPLY_TO") ||
     (fromAddress.match(/<([^>]+)>/)?.[1] ?? fromAddress);
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
@@ -146,7 +146,7 @@ Deno.serve(async (req: Request) => {
   const html = `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #dce3e8;border-radius:4px;padding:28px">
-    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2026 · Innovation Store</p>
+    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2027 · Innovation Store</p>
     <h1 style="margin:0 0 16px;font-size:22px">Payment received — receipt</h1>
     <p style="margin:0 0 16px">Hello ${escapeHtml(school.contact_name)},</p>
     <p style="margin:0 0 20px">We have confirmed payment for <strong>${escapeHtml(school.name)}</strong>. This email is your receipt — keep it for your records.</p>
@@ -176,7 +176,7 @@ Deno.serve(async (req: Request) => {
 </body></html>`;
 
   const text = [
-    `APEN 2026 - Innovation Store`,
+    `APEN 2027 - Innovation Store`,
     `PAYMENT RECEIVED - RECEIPT`,
     ``,
     `Hello ${school.contact_name},`,
@@ -210,7 +210,7 @@ Deno.serve(async (req: Request) => {
       from: fromAddress,
       reply_to: replyTo,
       to: [school.contact_email],
-      subject: `APEN 2026 payment receipt — ${orderReference}`,
+      subject: `APEN 2027 payment receipt — ${orderReference}`,
       html,
       text,
     }),

@@ -50,7 +50,7 @@ const OrderStatus: React.FC = () => {
       await recoverOrderReferences(recoverEmail.trim());
       // Phrased so it reveals nothing about whether the address is registered.
       setRecoverMsg(
-        'If that address has any APEN 2026 orders, we have emailed the reference numbers to it.',
+        'If that address has any APEN 2027 orders, we have emailed the reference numbers to it.',
       );
       setRecoverEmail('');
     } catch (err) {
@@ -115,7 +115,7 @@ const OrderStatus: React.FC = () => {
       <div className={wrap}>
         <Backdrop />
         <div className={inner}>
-          <Link to="/apen-2026" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
+          <Link to="/apen-2027" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <h1 className="text-2xl font-bold text-foreground mb-4">Track your order</h1>
@@ -177,7 +177,7 @@ const OrderStatus: React.FC = () => {
     <div className={wrap}>
       <Backdrop />
       <div className={inner}>
-        <Link to="/apen-2026" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
+        <Link to="/apen-2027" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
 
@@ -195,7 +195,7 @@ const OrderStatus: React.FC = () => {
         ) : order ? (
           <>
             <p className="text-sm font-semibold tracking-wider text-primary">
-              APEN 2026 · ORDER STATUS
+              APEN 2027 · ORDER STATUS
             </p>
             <h1 className="text-2xl font-bold text-foreground mt-1 mb-6">{reference}</h1>
 

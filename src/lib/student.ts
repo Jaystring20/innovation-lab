@@ -4,7 +4,7 @@ import type { Stage, Submission, SubmissionPayload, Feedback, Team } from './lab
 export type { Stage };
 
 /**
- * APEN 2026 Student Platform — data layer for the complete student learning experience.
+ * APEN 2027 Student Platform — data layer for the complete student learning experience.
  * Extends the core lab.ts with student-specific queries for missions, progress, XP, badges,
  * team collaboration, and portfolio tracking.
  */

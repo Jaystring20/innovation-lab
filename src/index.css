@@ -167,7 +167,7 @@
 /* ─────────────────────────────────────────────────────────────
    Public-page light theme — unlayered so it overrides :root when
    a .light class is set on a page wrapper by usePublicTheme.
-   Scoped to Landing / Apen2026 / Privacy; same warm-ink hue family
+   Scoped to Landing / Apen2027 / Privacy; same warm-ink hue family
    as the dark theme, luminance inverted. The Lab/Store/dashboards
    never receive this class and stay on the fixed dark workspace
    theme from ThemeContext.

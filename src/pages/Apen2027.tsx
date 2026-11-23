@@ -24,7 +24,7 @@ import apenSeal from '@/assets/apen-seal.webp';
 import imperialEdtechLogo from '@/assets/imperial-edtech-logo.webp';
 import apen2026Flier from '@/assets/apen-2026-flier.webp';
 
-const HANDBOOK_URL = '/downloads/apen-2026-competition-handbook.pdf';
+const HANDBOOK_URL = '/downloads/apen-2027-competition-handbook.pdf';
 
 const TIMELINE = [
   { phase: '01', name: 'Registration & kit dispatch', dates: 'Closes Jan 19', deliverable: 'Kits delivered by Jan 25' },
@@ -43,7 +43,7 @@ const RUBRIC = [
   { label: 'Presentation & Documentation', weight: 20 },
 ];
 
-const Apen2026: React.FC = () => {
+const Apen2027: React.FC = () => {
   const { theme, toggle } = usePublicTheme();
   const reduceMotion = useReducedMotion();
 
@@ -94,7 +94,7 @@ const Apen2026: React.FC = () => {
               </p>
               <SignalPulse className="w-28 h-9 text-primary mb-2 -ml-1" />
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-[1.05] tracking-tight mb-4">
-                APEN 2026
+                APEN 2027
               </h1>
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-[52ch] mb-3">
                 Smart solutions for tomorrow&rsquo;s Nigeria. Design, build, and intelligize a real
@@ -186,7 +186,7 @@ const Apen2026: React.FC = () => {
                   transition={{ duration: 0.5, delay: i * 0.08 }}
                 >
                   <Link
-                    to={`/apen-2026/${d.slug}`}
+                    to={`/apen-2027/${d.slug}`}
                     className="group grid md:grid-cols-[auto_1fr_auto] gap-4 md:gap-8 items-start py-8 -mx-4 px-4 rounded-lg transition-colors hover:bg-surface"
                   >
                     <div className="md:w-40 flex-shrink-0">
@@ -401,7 +401,7 @@ const Apen2026: React.FC = () => {
                 </div>
               </div>
               <div className="text-sm text-muted-foreground space-y-1">
-                <p className="text-foreground font-semibold">Questions about APEN 2026?</p>
+                <p className="text-foreground font-semibold">Questions about APEN 2027?</p>
                 <p>omotayo@imperialedtech.com</p>
                 <p>+234 809 705 1401 &middot; +234 803 820 0861</p>
               </div>
@@ -423,4 +423,4 @@ const Apen2026: React.FC = () => {
   );
 };
 
-export default Apen2026;
+export default Apen2027;

@@ -35,12 +35,12 @@ export interface Division {
 }
 
 /**
- * Single source of truth for the three APEN 2026 divisions — shared by the
- * competition overview (Apen2026.tsx) and each division's dedicated detail
+ * Single source of truth for the three APEN 2027 divisions — shared by the
+ * competition overview (Apen2027.tsx) and each division's dedicated detail
  * page (DivisionDetail.tsx). SDG titles are the UN's own official goal
  * names; everything else — including the full `bom` (bill of materials)
  * line items and pricing — is transcribed from the organizer's
- * "APEN 2026 Competition Handbook (Corrected Pricing)".
+ * "APEN 2027 Competition Handbook (Corrected Pricing)".
  *
  * `brief` is a short in-page synopsis for the detail hero.
  *

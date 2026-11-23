@@ -81,7 +81,7 @@ Deno.serve(async (req: Request) => {
   );
 
   const apiKey = Deno.env.get("RESEND_API_KEY");
-  const from = Deno.env.get("ORDER_EMAIL_FROM") ?? "APEN 2026 <apen@digitalcreativeshubltd.com>";
+  const from = Deno.env.get("ORDER_EMAIL_FROM") ?? "APEN 2027 <apen@digitalcreativeshubltd.com>";
   const replyTo = Deno.env.get("ORDER_EMAIL_REPLY_TO") ||
     (from.match(/<([^>]+)>/)?.[1] ?? from);
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
@@ -157,7 +157,7 @@ Deno.serve(async (req: Request) => {
           teamId: team.id,
           stageId: st.id,
           stageName: st.name,
-          subject: `${st.name} is open — APEN 2026`,
+          subject: `${st.name} is open — APEN 2027`,
           heading: `${st.name} is now open`,
           body: `${rec.teamName} can start work on ${st.name}. The deadline is ${fmtDate(st.due_at)}.`,
           cta: siteUrl ? { label: "Open the Lab", href: `${siteUrl}/lab/dashboard` } : undefined,
@@ -204,11 +204,11 @@ Deno.serve(async (req: Request) => {
         stageId: row.stage_id!,
         stageName: st.name,
         subject: advanced
-          ? `${rec.teamName} advances — APEN 2026`
-          : `APEN 2026 result for ${rec.teamName}`,
+          ? `${rec.teamName} advances — APEN 2027`
+          : `APEN 2027 result for ${rec.teamName}`,
         heading: advanced ? "Your team advances" : "Thank you for competing",
         body: advanced
-          ? `${rec.teamName} is through to the next round of APEN 2026. The next stage is open in the Lab now.`
+          ? `${rec.teamName} is through to the next round of APEN 2027. The next stage is open in the Lab now.`
           : `${rec.teamName} did not advance past ${st.name} this year. Judge feedback for every scored stage is in the Lab.`,
         cta: siteUrl ? { label: "Open the Lab", href: `${siteUrl}/lab/dashboard` } : undefined,
       });
@@ -292,7 +292,7 @@ async function send(
   const html = `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f4f6f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#16202b;line-height:1.6">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #dce3e8;border-radius:4px;padding:28px">
-    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2026 · Innovation Lab</p>
+    <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b8b9c">APEN 2027 · Innovation Lab</p>
     <h1 style="margin:0 0 16px;font-size:22px">${escapeHtml(n.heading)}</h1>
     <p style="margin:0 0 16px">Hello ${escapeHtml(rec.contactName)},</p>
     <p style="margin:0 0 20px">${escapeHtml(n.body)}</p>
@@ -302,12 +302,12 @@ async function send(
         ? `<p style="margin:0 0 20px"><a href="${n.cta.href}" style="display:inline-block;background:#1a3b8b;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">${escapeHtml(n.cta.label)}</a></p>`
         : ""
     }
-    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Design. Build. Intelligize. — APEN 2026</p>
+    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Design. Build. Intelligize. — APEN 2027</p>
   </div>
 </body></html>`;
 
   const text = [
-    "APEN 2026 - Innovation Lab",
+    "APEN 2027 - Innovation Lab",
     "",
     n.heading,
     "",

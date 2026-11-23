@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 /* ------------------------------------------------------------------ *
- * APEN 2026 Innovation Store — data layer (client-side, RLS-backed)
+ * APEN 2027 Innovation Store — data layer (client-side, RLS-backed)
  * ------------------------------------------------------------------ */
 
 export type Division = 'primary' | 'secondary' | 'sixth_form';
@@ -182,7 +182,7 @@ export function whatsappPayLink(
   numberDigits = WHATSAPP_NUMBER,
 ): string {
   const who = schoolName ? ` (${schoolName})` : '';
-  const msg = `I have paid for APEN 2026 order ${ref}${who} — ${naira.format(total)}. Proof of payment attached.`;
+  const msg = `I have paid for APEN 2027 order ${ref}${who} — ${naira.format(total)}. Proof of payment attached.`;
   return `https://wa.me/${numberDigits.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
 }
 

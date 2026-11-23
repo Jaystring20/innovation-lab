@@ -108,7 +108,7 @@ const Dashboard: React.FC = () => {
             Waiting to be linked to your school
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
-            Your account ({displayName}) is registered. The APEN 2026 team links it to your
+            Your account ({displayName}) is registered. The APEN 2027 team links it to your
             school once your kit order is confirmed — then your teams and the Innovation
             Funnel appear here.
           </p>
