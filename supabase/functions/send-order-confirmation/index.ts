@@ -199,7 +199,7 @@ Deno.serve(async (req: Request) => {
     ${waLink ? `<p style="margin:0 0 20px;text-align:center"><a href="${waLink}" style="display:inline-block;background:#25d366;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">Confirm payment on WhatsApp</a></p>` : ""}
     ${statusLink ? `<p style="margin:0 0 20px;text-align:center"><a href="${statusLink}" style="display:inline-block;background:#1a3b8b;color:#fff;text-decoration:none;padding:12px 22px;border-radius:4px;font-weight:600;font-size:15px">Track your order &amp; upload proof</a></p>` : ""}
 
-    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Every registered school receives a kit. Once your payment is confirmed, your kit is dispatched — ${escapeHtml(dispatchNote)}. Registration closes 25 September 2026.</p>
+    <p style="margin:0;font-size:13px;color:#7b8b9c;border-top:1px solid #e9eef1;padding-top:16px">Every registered school receives a kit. Once your payment is confirmed, your kit is dispatched — ${escapeHtml(dispatchNote)}. Registration closes 19 January 2027.</p>
   </div>
 </body></html>`;
 
@@ -229,7 +229,7 @@ Deno.serve(async (req: Request) => {
     waLink ? `  - Or send proof on WhatsApp to +234 803 883 8094, quoting ${orderReference}` : "",
     ``,
     `Every registered school receives a kit. Once payment is confirmed, your kit`,
-    `is dispatched - ${dispatchNote}. Registration closes 25 September 2026.`,
+    `is dispatched - ${dispatchNote}. Registration closes 19 January 2027.`,
   ].filter(Boolean).join("\n");
 
   const res = await fetch("https://api.resend.com/emails", {

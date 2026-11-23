@@ -255,7 +255,7 @@ const Store: React.FC = () => {
             {wantsKit === false
               ? 'Pick your division, add your teacher and teams, and get lab access — no kit purchase needed.'
               : 'Pick your division, choose the components you need, and see your total.'}{' '}
-            Registration closes September 25, 2026.
+            Registration closes January 19, 2027.
           </p>
         </header>
 
