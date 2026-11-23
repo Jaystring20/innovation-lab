@@ -20,7 +20,16 @@ async function checkLinkValidity(url: string): Promise<boolean> {
   }
 }
 
-function analyzeContent(payload: any) {
+interface SubmissionPayload {
+  video_url?: string;
+  doc_url?: string;
+  repo_url?: string;
+  notes?: string;
+}
+
+type ContentAnalysis = ReturnType<typeof analyzeContent>;
+
+function analyzeContent(payload: SubmissionPayload) {
   const text = [payload.video_url, payload.doc_url, payload.repo_url, payload.notes].filter(Boolean).join(" ");
   const words = text.split(/\s+/).filter((w: string) => w.length > 0);
   const wordCount = words.length;
@@ -30,13 +39,13 @@ function analyzeContent(payload: any) {
   return { wordCount, hasStructuredNotes, linkCount };
 }
 
-function calculateQualityScore(analysis: any, linkValidity: any): number {
+function calculateQualityScore(analysis: ContentAnalysis, linkValidity: Record<string, boolean>): number {
   let score = 50;
   if (analysis.wordCount >= 100 && analysis.wordCount <= 500) score += 15;
   else if (analysis.wordCount >= 50) score += 8;
   if (analysis.linkCount >= 2) score += 15;
   else if (analysis.linkCount === 1) score += 8;
-  const validLinks = Object.values(linkValidity).filter((v: any) => v).length;
+  const validLinks = Object.values(linkValidity).filter(Boolean).length;
   const totalLinks = Object.values(linkValidity).length;
   if (totalLinks > 0) {
     const validityPercentage = (validLinks / totalLinks) * 100;
@@ -47,7 +56,7 @@ function calculateQualityScore(analysis: any, linkValidity: any): number {
   return Math.min(100, score);
 }
 
-function generateSummary(payload: any, maxWords: number = 50): string {
+function generateSummary(payload: SubmissionPayload, maxWords: number = 50): string {
   const text = payload.notes || "";
   if (!text) return "No submission notes provided.";
   const words = text.split(/\s+/);
@@ -67,7 +76,7 @@ serve(async (req: Request) => {
     if (!submission) throw new Error("Submission not found");
     const payload = submission.payload;
     console.log("Checking link validity...");
-    const linkValidity = {};
+    const linkValidity: Record<string, boolean> = {};
     const brokenLinks = [];
     if (payload.video_url) {
       const isValid = await checkLinkValidity(payload.video_url);

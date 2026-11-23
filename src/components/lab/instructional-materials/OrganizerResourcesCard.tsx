@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Play, Download, Share2, ChevronDown, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface OrganizerResource {
   id: string;

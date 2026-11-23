@@ -131,17 +131,6 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 pt-6 border-t" style={{ borderColor: '#2a2420' }}>
-            <p className="text-xs mb-3" style={{ color: '#8b8680' }}>
-              Demo Credentials (Master Key Account):
-            </p>
-            <div className="bg-black/30 p-3 rounded text-xs space-y-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
-              <p><span style={{ color: '#8b8680' }}>Email:</span> <span style={{ color: '#da8a1d' }}>jerryadeyemi20@gmail.com</span></p>
-              <p><span style={{ color: '#8b8680' }}>Password:</span> <span style={{ color: '#da8a1d' }}>@Welcome2026&</span></p>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

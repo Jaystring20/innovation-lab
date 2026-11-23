@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
-import type { Stage, Submission, Feedback, Team } from './lab';
+import type { Stage, Submission, SubmissionPayload, Feedback, Team } from './lab';
+
+export type { Stage };
 
 /**
  * APEN 2026 Student Platform — data layer for the complete student learning experience.
@@ -63,7 +65,7 @@ export interface StudentSubmissionView {
   status: string;
   submitted_at: string | null;
   submitted_by?: string;
-  payload: Record<string, any>;
+  payload: SubmissionPayload;
   feedback?: Feedback;
 }
 
@@ -89,6 +91,30 @@ export interface LeaderboardEntry {
 }
 
 /* ----------------------- Queries ----------------------- */
+
+// Shapes of the PostgREST rows below. Embedded many-to-one relations
+// (submissions.stages) come back as a single object, not an array.
+type EmbeddedStage = { name?: string; key?: string } | null;
+
+interface SubmissionRow {
+  id: string;
+  stage_id: string;
+  status: string;
+  submitted_at: string | null;
+  payload: SubmissionPayload;
+  stages: EmbeddedStage;
+}
+
+type BadgeRow = Badge & { student_badges?: { unlocked_at: string | null }[] };
+
+interface StandingRow {
+  team_name: string;
+  division: string;
+  xp: number;
+  badges_earned: number | null;
+  current_stage: string;
+  schools: { name?: string } | null;
+}
 
 /**
  * Get all missions for a student's stage and division.
@@ -120,7 +146,7 @@ export async function getCurrentStage(teamId: string): Promise<Stage | null> {
     .maybeSingle();
 
   if (error && error.code !== 'PGRST116') throw new Error(error.message);
-  return data?.stages ?? null;
+  return (data?.stages as unknown as Stage | null) ?? null;
 }
 
 /**
@@ -135,7 +161,7 @@ export async function getTeamSubmissions(teamId: string): Promise<StudentSubmiss
 
   if (error) throw new Error(error.message);
 
-  const submissions = (data ?? []) as any[];
+  const submissions = (data ?? []) as unknown as SubmissionRow[];
   return submissions.map((s) => ({
     id: s.id,
     stage_id: s.stage_id,
@@ -185,7 +211,7 @@ export async function getStudentBadges(studentId: string): Promise<Badge[]> {
 
   if (error) throw new Error(error.message);
 
-  return ((data ?? []) as any[]).map((b) => ({
+  return ((data ?? []) as unknown as BadgeRow[]).map((b) => ({
     ...b,
     unlocked_at: b.student_badges?.[0]?.unlocked_at,
   }));
@@ -272,7 +298,7 @@ export async function getLeaderboard(
 
   if (error) throw new Error(error.message);
 
-  return ((data ?? []) as any[]).map((entry, idx) => ({
+  return ((data ?? []) as unknown as StandingRow[]).map((entry, idx) => ({
     rank: idx + 1,
     team_name: entry.team_name,
     division: entry.division,
@@ -328,13 +354,13 @@ export async function getPortfolio(teamId: string): Promise<Record<string, Stude
   if (error) throw new Error(error.message);
 
   const portfolio: Record<string, StudentSubmissionView[]> = {};
-  for (const submission of data ?? []) {
-    const key = (submission.stages as any)?.key ?? 'unknown';
+  for (const submission of (data ?? []) as unknown as SubmissionRow[]) {
+    const key = submission.stages?.key ?? 'unknown';
     if (!portfolio[key]) portfolio[key] = [];
     portfolio[key].push({
       id: submission.id,
       stage_id: submission.stage_id,
-      stage_name: (submission.stages as any)?.name ?? 'Unknown',
+      stage_name: submission.stages?.name ?? 'Unknown',
       status: submission.status,
       submitted_at: submission.submitted_at,
       payload: submission.payload,

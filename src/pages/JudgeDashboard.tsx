@@ -6,7 +6,7 @@ import Panel from '@/components/Panel';
 import AppShell from '@/components/AppShell';
 import StatusPill from '@/components/lab/StatusPill';
 import ScoreForm from '@/components/lab/ScoreForm';
-import { useAuth } from '@/contexts/AuthContext';
+import { hasOrganizerAccess, useAuth } from '@/contexts/AuthContext';
 import { DELIVERABLE_LABEL, judgeQueue, type JudgeQueueItem } from '@/lib/lab';
 import { DIVISION_SHORT } from '@/lib/store';
 import { cn } from '@/lib/utils';
@@ -28,7 +28,7 @@ const JudgeDashboard: React.FC = () => {
   useEffect(() => {
     if (authLoading) return;
     if (!session) navigate('/lab', { replace: true });
-    else if (role === 'organizer') navigate('/organizer', { replace: true });
+    else if (hasOrganizerAccess(role)) navigate('/organizer', { replace: true });
     else if (role === 'teacher') navigate('/lab/dashboard', { replace: true });
   }, [authLoading, session, role, navigate]);
 

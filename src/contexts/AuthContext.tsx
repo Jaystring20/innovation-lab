@@ -8,7 +8,11 @@ import React, {
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
-export type UserRole = 'organizer' | 'judge' | 'teacher' | 'student';
+export type UserRole = 'super_admin' | 'organizer' | 'judge' | 'teacher' | 'student';
+
+/** Mirrors is_organizer() in the database: super admins hold every organizer right. */
+export const hasOrganizerAccess = (role: UserRole | null | undefined) =>
+  role === 'organizer' || role === 'super_admin';
 
 export interface Profile {
   id: string;
@@ -26,6 +30,7 @@ interface AuthContextType {
   /** True until both the session and its profile have resolved. */
   loading: boolean;
   role: UserRole | null;
+  isSuperAdmin: boolean;
   isOrganizer: boolean;
   isJudge: boolean;
   isTeacher: boolean;
@@ -105,7 +110,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     profile,
     loading,
     role,
-    isOrganizer: role === 'organizer',
+    isSuperAdmin: role === 'super_admin',
+    isOrganizer: hasOrganizerAccess(role),
     isJudge: role === 'judge',
     isTeacher: role === 'teacher',
     isStudent: role === 'student',

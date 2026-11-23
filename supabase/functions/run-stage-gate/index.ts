@@ -66,7 +66,7 @@ Deno.serve(async (req: Request) => {
     .eq("id", userData.user.id)
     .maybeSingle();
 
-  if (profile?.role !== "organizer") {
+  if (profile?.role !== "organizer" && profile?.role !== "super_admin") {
     return json({ error: "Only organizers can run the stage gate." }, 403);
   }
 

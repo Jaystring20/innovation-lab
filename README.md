@@ -35,7 +35,7 @@ VITE_SUPABASE_ANON_KEY=
 
 The bank transfer details shown on the order page are a plain constant in
 `src/config/bank.ts` (public, display-only). The payment-instruction emails
-read their own copy from Supabase Edge Function secrets — see `EMAIL_SETUP.md`.
+read their own copy from Supabase Edge Function secrets — see `docs/guides/EMAIL_SETUP.md`.
 
 ## Build
 
@@ -54,3 +54,9 @@ repo).
 
 Supabase (project `sctsrxuquhzdjjnlsqbm`, eu-west-2) is managed separately —
 migrations and Edge Functions are deployed with the Supabase CLI / dashboard.
+
+## Docs
+
+- `docs/guides/` — setup and operating guides (deploy, email, judges, organizers, testing)
+- `docs/design/` — product and system design specs for the Lab, onboarding, and roles
+- `docs/archive/` — past status reports and superseded plans, kept for history

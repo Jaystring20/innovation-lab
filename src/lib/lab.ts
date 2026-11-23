@@ -40,8 +40,17 @@ export interface UploadedFile {
   gdrive_id?: string;
   gdrive_url?: string;
   thumbnail_url?: string;
-  preview_metadata?: Record<string, any>;
+  preview_metadata?: FilePreviewMetadata;
   status: 'pending' | 'uploading' | 'completed' | 'failed';
+}
+
+/** What extract-link-previews records about an uploaded file, when it can tell. */
+export interface FilePreviewMetadata {
+  duration?: number; // seconds
+  pageCount?: number;
+  language?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface SubmissionPayload {

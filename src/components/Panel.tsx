@@ -16,9 +16,10 @@ interface PanelProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
+  onClick?: () => void;
 }
 
-export default function Panel({ children, className = '', hover = true }: PanelProps) {
+export default function Panel({ children, className = '', hover = true, onClick }: PanelProps) {
   const hoverClass = hover ? 'hover:border-border/80' : '';
 
   return (
@@ -33,6 +34,7 @@ export default function Panel({ children, className = '', hover = true }: PanelP
         ${hoverClass}
         ${className}
       `}
+      onClick={onClick}
     >
       {children}
     </div>
