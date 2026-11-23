@@ -32,8 +32,8 @@ const TIMELINE = [
   { phase: '03', name: 'Stage 2 — Advanced Build', dates: 'Feb 1 – Feb 21', deliverable: 'Functional prototype' },
   { phase: '04', name: 'Judging & mid-term break', dates: 'Feb 22 – Feb 26', deliverable: 'Teams advance to Intelligize' },
   { phase: '05', name: 'Stage 3 — Intelligize', dates: 'Mar 1 – Mar 14', deliverable: 'AI prompt log & video' },
-  { phase: '06', name: 'Final judging', dates: 'Mar 15 – Mar 18', deliverable: 'Finalists announced' },
-  { phase: '07', name: 'Grand Finale — BATTLE', dates: 'Mar 23', deliverable: 'Champions crowned, Lagos' },
+  { phase: '06', name: 'Judges review submissions', dates: 'Mar 15 – Mar 18', deliverable: 'Pitch videos, prompt logs & posters' },
+  { phase: '07', name: 'Grand Finale — BATTLE', dates: 'Mar 23', deliverable: "Live presentations & judges' final verdict, Lagos" },
 ];
 
 const RUBRIC = [
