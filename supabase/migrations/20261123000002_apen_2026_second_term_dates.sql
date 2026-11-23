@@ -5,8 +5,8 @@
 --   Kits delivered by    Mon 25 Jan
 --   Design               Mon 25 Jan - Fri 29 Jan   no cut afterwards
 --   Build                Mon  1 Feb - Sun 21 Feb   cut after judging in mid-term (22-26 Feb)
---   Intelligize          Mon  1 Mar - Sun 14 Mar   finalists announced Thu 18 Mar
---   Battle               Tue 23 Mar
+--   Intelligize          Mon  1 Mar - Sun 14 Mar   judges review submissions 15-18 Mar
+--   Battle               Tue 23 Mar                live presentations, then the judges' final verdict
 --
 -- Build opens while Design is being judged: every team already has its Design
 -- and Build submissions (teams_after_insert), so "no cut after Design" means
