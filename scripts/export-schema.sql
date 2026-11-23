@@ -1,6 +1,11 @@
 -- Exports the live database structure (no data) as runnable SQL, for when
 -- `supabase db dump` is unavailable (it needs Docker). Paste into the Supabase
 -- SQL Editor, run, then Export -> Download CSV; the one cell holds the schema.
+--
+-- Keywords below are written as 'cre' || 'ate ...' on purpose: the Supabase SQL
+-- Editor scans query text for CREATE TABLE and then looks up each table it
+-- finds, so a literal 'create table public.%I' fails with
+-- 'relation "public" does not exist'.
 with
 tbl as (
   select c.oid, c.relname::text as name
@@ -10,7 +15,7 @@ tbl as (
 stmts(ord, k, stmt) as (
   -- enum types
   select 1, t.typname::text,
-         format('create type public.%I as enum (%s);', t.typname,
+         format('cre' || 'ate type public.%I as enum (%s);', t.typname,
                 string_agg(quote_literal(e.enumlabel), ', ' order by e.enumsortorder))
   from pg_type t
   join pg_enum e on e.enumtypid = t.oid
@@ -20,7 +25,7 @@ stmts(ord, k, stmt) as (
   union all
   -- tables and columns
   select 2, t.name,
-         format(E'create table public.%I (\n%s\n);', t.name,
+         format('cre' || E'ate table public.%I (\n%s\n);', t.name,
                 string_agg(format('  %I %s%s%s', a.attname,
                                   format_type(a.atttypid, a.atttypmod),
                                   case when a.attnotnull then ' not null' else '' end,
@@ -33,7 +38,7 @@ stmts(ord, k, stmt) as (
   union all
   -- primary keys, unique and check constraints, then foreign keys
   select case when con.contype = 'f' then 4 else 3 end, t.name,
-         format('alter table public.%I add constraint %I %s;', t.name, con.conname,
+         format('al' || 'ter table public.%I add constraint %I %s;', t.name, con.conname,
                 pg_get_constraintdef(con.oid))
   from tbl t join pg_constraint con on con.conrelid = t.oid
   union all
@@ -44,7 +49,7 @@ stmts(ord, k, stmt) as (
     and not exists (select 1 from pg_constraint c where c.conname = i.indexname)
   union all
   -- views
-  select 6, v.viewname::text, format(E'create or replace view public.%I as\n%s', v.viewname, v.definition)
+  select 6, v.viewname::text, format('cre' || E'ate or replace view public.%I as\n%s', v.viewname, v.definition)
   from pg_views v where v.schemaname = 'public'
   union all
   -- functions (skips ones installed by extensions)
@@ -54,12 +59,12 @@ stmts(ord, k, stmt) as (
     and not exists (select 1 from pg_depend dep where dep.objid = p.oid and dep.deptype = 'e')
   union all
   -- row level security switches
-  select 8, t.name, format('alter table public.%I enable row level security;', t.name)
+  select 8, t.name, format('al' || 'ter table public.%I enable row level security;', t.name)
   from tbl t join pg_class c on c.oid = t.oid where c.relrowsecurity
   union all
   -- policies, including storage buckets (payment proofs, uploads)
   select 9, p.schemaname || '.' || p.tablename,
-         format('create policy %I on %I.%I as %s for %s to %s%s%s;', p.policyname,
+         format('cre' || 'ate policy %I on %I.%I as %s for %s to %s%s%s;', p.policyname,
                 p.schemaname, p.tablename, p.permissive, p.cmd, array_to_string(p.roles, ', '),
                 coalesce(' using (' || p.qual || ')', ''),
                 coalesce(' with check (' || p.with_check || ')', ''))
