@@ -13,6 +13,10 @@
 -- the stage gate is simply not run for stage 1. Running it would eliminate any
 -- team without a Design score.
 --
+-- The only cut is the stage 2 gate after Build judging. It opens Intelligize and
+-- Battle together for the teams that advance, and every team that completes
+-- Intelligize presents at Battle, so the stage 3 gate is not run either.
+--
 -- lab-notifications reads opens_at / due_at, so the "stage is open" and
 -- deadline reminder emails follow these dates on their own.
 

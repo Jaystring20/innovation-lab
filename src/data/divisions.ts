@@ -297,7 +297,7 @@ export const DELIVERABLES = [
     name: 'Final Video Pitch',
     due: 'March 14, 2027',
     detail:
-      '3–5 minutes showing the physical hardware in action with the AI layer working seamlessly in real time. Finalists present this live at the Grand Finale BATTLE.',
+      '3–5 minutes showing the physical hardware in action with the AI layer working seamlessly in real time. Every team that completes Stage 3 presents this live at the Grand Finale BATTLE.',
   },
   {
     stage: 'Stage 3',

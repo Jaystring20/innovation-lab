@@ -71,7 +71,7 @@ const StandingsTable: React.FC<{ data: LabData }> = ({ data }) => {
                           </span>
                         )}
                         {s.advanced_at && (
-                          <span className="text-xs text-emerald-400 ml-2">finalist</span>
+                          <span className="text-xs text-emerald-400 ml-2">advanced</span>
                         )}
                       </td>
                       <td className="p-3 text-muted-foreground">{schoolName(s.school_id)}</td>

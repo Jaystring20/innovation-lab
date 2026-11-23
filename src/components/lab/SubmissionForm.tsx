@@ -167,7 +167,7 @@ const SubmissionForm: React.FC<{
       <div className="text-sm text-muted-foreground">
         <p className="mb-1 text-foreground font-medium">{DELIVERABLE_LABEL.live}</p>
         <p>
-          Nothing to upload for the Grand Finale — finalists present in person on{' '}
+          Nothing to upload for the Grand Finale — every team that completes Intelligize presents live on{' '}
           {stage.due_at ? new Date(stage.due_at).toLocaleDateString('en-NG', { dateStyle: 'long' }) : 'the finale date'}.
           Judges score the live pitch.
         </p>

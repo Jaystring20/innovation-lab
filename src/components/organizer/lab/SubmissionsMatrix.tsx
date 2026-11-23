@@ -84,7 +84,7 @@ const SubmissionsMatrix: React.FC<{ data: LabData; onChanged: () => void }> = ({
                       </div>
                     )}
                     {team.advanced_at && (
-                      <div className="text-xs text-emerald-400">Finalist</div>
+                      <div className="text-xs text-emerald-400">Advanced</div>
                     )}
                   </td>
                   <td className="p-3 text-muted-foreground">{team.schools?.name ?? '—'}</td>
